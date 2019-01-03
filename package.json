@@ -1,0 +1,25 @@
+{
+  "name": "spinal-env-viewer-plugin-ticket",
+  "version": "0.0.1",
+  "description": "ticket handler plugin",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "SpinalCom",
+  "dependencies": {
+    "spinal-service-ticket": "file:../spinal-service-ticket",
+    "spinal-env-viewer-context-menu-service": "git+https://github.com/spinalcom/spinal-env-viewer-context-menu-service.git",
+    "spinal-env-viewer-panel-manager-service": "git+https://github.com/spinalcom/spinal-env-viewer-panel-manager-service.git",
+    "vue": "^2.5.21",
+    "vuex": "^3.0.1"
+  },
+  "browserify": {
+    "transform": [
+      "vueify",
+      "babelify"
+    ]
+  }
+}
