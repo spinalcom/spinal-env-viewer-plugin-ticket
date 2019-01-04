@@ -24,7 +24,6 @@
 
 import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
 import { spinalPanelManagerService } from 'spinal-env-viewer-panel-manager-service';
-import store from './store';
 
 
 export class AddTypologyButton extends SpinalContextApp {
