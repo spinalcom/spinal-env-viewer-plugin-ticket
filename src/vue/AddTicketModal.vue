@@ -22,40 +22,44 @@
   -  <http://resources.spinalcom.com/licenses.pdf>.
   -->
 
+
 <template>
-    <md-dialog-prompt
-            :md-active.sync="displayAddTypology"
-            v-model="typologyName"
-            md-title="What's the name of the new ticket's type"
-            md-input-maxlength="30"
-            md-input-placeholder="Type the type's name"
-            md-confirm-text="validate"
-            md-cancel-text="cancel"
-            @md-cancel="onCancel"
-            @md-confirm="onConfirm"
-    />
+    <md-dialog :md-active="displayAddTicket">
+        <md-field>
+            <label>Name of the ticket</label>
+            <md-input v-model="ticketName"></md-input>
+        </md-field>
+        <md-dialog-actions>
+            <md-button class="md-primary" v-on:click="onCancel">Close
+            </md-button>
+            <md-button class="md-primary" v-on:click="onConfirm">Save
+            </md-button>
+        </md-dialog-actions>
+    </md-dialog>
 
 </template>
 
 <script>
   import { SpinalServiceTicket } from 'spinal-service-ticket'
   import { mapState } from 'vuex';
+
   export default {
-    name: "AddTypologyModal",
+    name: "AddTicket",
 
     data: function () {
       return {
-        typologyName: ""
+        ticketName: ""
       }
     },
 
-    computed: mapState(['displayAddTypology']),
+    computed: mapState( ['displayAddTicket', 'selectedNode'] ),
 
     methods: {
       onConfirm: function () {
-        SpinalServiceTicket.createProcess( this.typologyName )
+        const ticketId = SpinalServiceTicket.createTicket( { name: this.ticketName } );
+        SpinalServiceTicket.addTicket( ticketId, this.selectedNode.id.get() )
           .then( () => {
-            this.$store.commit( 'toggleAddTypology' );
+            this.$store.commit( 'TOGGLE_ADD_TICKET' );
           } )
           .catch( ( e ) => {
             console.error( 'loris',e )
@@ -63,9 +67,8 @@
       },
 
       onCancel: function () {
-        this.$store.commit( 'toggleAddTypology' )
+        this.$store.commit( 'TOGGLE_ADD_TICKET' )
       }
-
     }
   }
 </script >
