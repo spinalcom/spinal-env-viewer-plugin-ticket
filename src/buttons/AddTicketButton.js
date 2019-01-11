@@ -24,24 +24,31 @@
 
 import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
 import { spinalPanelManagerService } from 'spinal-env-viewer-panel-manager-service';
+import { SPINAL_TICKET_SERVICE_STEP_TYPE } from "spinal-service-ticket/dist/Constants";
 
 
-export class AddTypologyButton extends SpinalContextApp {
-
+export class AddTicketButton extends SpinalContextApp {
+  
   constructor() {
-    super('Add Ticket Typology', 'Add a new typology of ticket', {
-      icon: 'add_circle',
+    super( 'Add Ticket ', 'Add a new  ticket', {
+      icon: 'assignment',
       icon_type: 'in',
       backgroundColor: '#000000',
-      fontColor: '#FFFFFF',
-    });
+      fontColor: '#365bab',
+    } );
   }
-
-  isShown() {
-    return Promise.resolve(true);
+  
+  isShown( option ) {
+    
+    if (option.selectedNode.type.get() === SPINAL_TICKET_SERVICE_STEP_TYPE) {
+      return Promise.resolve( true );
+    } else {
+      return Promise.resolve( -1 );
+    }
   }
-
-  action() {
-    spinalPanelManagerService.openPanel("AddTypology", { initialValue: '' });
+  
+  action( option ) {
+    const nodeInfo = Object.assign( {}, option.selectedNode );
+    spinalPanelManagerService.openPanel( "AddTicket", nodeInfo );
   }
 }
