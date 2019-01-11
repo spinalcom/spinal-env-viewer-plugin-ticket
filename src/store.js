@@ -25,18 +25,52 @@
 import vuex from 'vuex';
 import vue from 'vue';
 
-vue.use(vuex);
+vue.use( vuex );
 
-const store = new vuex.Store({
+const store = new vuex.Store( {
   state: {
-    displayAddTypology: false,
+    displayAddProcess: false,
+    displayAddSentence: false,
+    displayAddStep: false,
+    displayAddTicket: false,
+    displayModifyTicket: false,
+    displayConfigProcess: false,
+    selectedNode: {},
+    processSteps: []
   },
   mutations: {
-    toggleAddTypology: (state) => {
-      const prev = state.displayAddTypology;
-      state.displayAddTypology = !prev;
+    TOGGLE_ADD_PROCESS: ( state ) => {
+      const prev = state.displayAddProcess;
+      state.displayAddProcess = !prev;
     },
+  
+    TOGGLE_ADD_SENTENCE: ( state ) => {
+      const prev = state.displayAddSentence;
+      state.displayAddSentence = !prev;
+    },
+  
+    TOGGLE_ADD_STEP: ( state ) => {
+      const prev = state.displayAddStep;
+      state.displayAddStep = !prev;
+    },
+  
+    TOGGLE_ADD_TICKET: ( state ) => {
+      const prev = state.displayAddTicket;
+      state.displayAddTicket = !prev;
+    },
+  
+    TOGGLE_MODIFY_TICKET: ( state ) => {
+      const prev = state.displayModifyTicket;
+      state.displayModifyTicket = !prev;
+    },
+    TOGGLE_CONFIG_PROCESS: ( state ) => {
+      const prev = state.displayConfigProcess;
+      state.displayConfigProcess = !prev;
+    },
+    SET_SELECTED_NODE: ( state, node ) => {
+      state.selectedNode = node;
+    }
   },
-});
+} );
 
 export default store;
