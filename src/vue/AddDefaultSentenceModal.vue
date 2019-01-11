@@ -24,7 +24,7 @@
 
 <template>
     <md-dialog-prompt
-            :md-active.sync="displayAddTypology"
+            :md-active="displayAddSentence"
             @md-cancel="onCancel"
             @md-confirm="onConfirm"
             md-cancel-text="cancel"
@@ -32,8 +32,7 @@
             md-input-maxlength="30"
             md-input-placeholder="Sentence..."
             md-title="What's the default sentence"
-            v-model="typologyName"
-    />
+            v-model="sentence"/>
 
 </template>
 
@@ -42,21 +41,22 @@
   import { mapState } from 'vuex';
 
   export default {
-    name: "AddTypologyModal",
+    name: "AddDefaultSentenceModal",
 
     data: function () {
       return {
-        typologyName: ""
+        sentence: "",
       }
     },
 
-    computed: mapState( ['displayAddTypology'] ),
+    computed: mapState( ['displayAddSentence', 'selectedNode'] ),
 
     methods: {
       onConfirm: function () {
-        SpinalServiceTicket.createProcess( this.typologyName )
+        SpinalServiceTicket.addDefaultSentence(
+          this.selectedNode.id.get(), this.sentence )
           .then( () => {
-            this.$store.commit( 'toggleAddTypology' );
+            this.$store.commit( 'TOGGLE_ADD_SENTENCE' );
           } )
           .catch( ( e ) => {
             console.error( e )
@@ -64,8 +64,9 @@
       },
 
       onCancel: function () {
-        this.$store.commit( 'toggleAddTypology' )
-      }
+        this.$store.commit( 'TOGGLE_ADD_SENTENCE' )
+      },
+
 
     }
   }
