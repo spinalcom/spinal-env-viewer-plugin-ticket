@@ -39,7 +39,7 @@ export class generateQR extends SpinalContextApp {
   }
 
   isShown( option ) {
-  
+
     console.log( option );
     if (option.selectedNode.type.get() === GeographicContextService.constants.CONTEXT_TYPE) {
       return Promise.resolve( true );
@@ -47,27 +47,31 @@ export class generateQR extends SpinalContextApp {
       return Promise.resolve( -1 );
     }
   }
-  
+
   action( option ) {
     const nodes = SpinalGraphService.getNodes();
-    
+
     for (const id in nodes) {
       if (nodes.hasOwnProperty( id )) {
         const node = nodes[id];
+  
         if (node.info.type.get() === GeographicContextService.constants.ROOM_TYPE) {
           const qrcode = SpinalGraphService.generateQRcode( id );
-          console.log( qrcode );
           const qrNode = SpinalGraphService.createNode( { qrcode } );
-          this.createContext()
+    
+          /*this.createContext()
             .then( contextId => {
               if (contextId) {
                 console.log( contextId );
                 SpinalGraphService.addChildInContext( id, qrNode, contextId, 'hasQRCode', 'Ref' );
               }
-      
-            } );
+           }
+           );*/
+    
+          console.log( qrNode );
         }
       }
+  
     }
   }
   
@@ -85,7 +89,7 @@ export class generateQR extends SpinalContextApp {
   }
   
   createContext() {
-    this.getContext()
+    return this.getContext()
       .then( context => {
         if (typeof context === 'undefined') {
           SpinalGraphService.addContext( 'QrCode' ).then(
