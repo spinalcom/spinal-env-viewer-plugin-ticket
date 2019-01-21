@@ -24,6 +24,7 @@
 
 import vuex from 'vuex';
 import vue from 'vue';
+import { SpinalServiceTicket } from "spinal-service-ticket";
 
 vue.use( vuex );
 
@@ -35,20 +36,40 @@ const store = new vuex.Store( {
     displayAddTicket: false,
     displayModifyTicket: false,
     displayConfigProcess: false,
+    displayAddCategory: false,
+    displayAddSubCategory: false,
     selectedNode: {},
-    processSteps: []
+    processSteps: [],
+    processes: [],
+    categoryByProcess: new Map()
   },
   mutations: {
+    ADD_CATEGORY_BY_PROCESS: ( state, option ) => {
+      state.categoryByProcess.set( option.process, option.categories );
+    },
+    ADD_PROCESSES: ( state, processes ) => {
+      for (const process of processes) {
+        if (!state.processes.includes( process )) {
+          state.processes.push( process );
+        }
+      }
+    },
+
     TOGGLE_ADD_PROCESS: ( state ) => {
       const prev = state.displayAddProcess;
       state.displayAddProcess = !prev;
     },
   
-    TOGGLE_ADD_SENTENCE: ( state ) => {
-      const prev = state.displayAddSentence;
-      state.displayAddSentence = !prev;
+    TOGGLE_ADD_SUB_CATEGORY: ( state ) => {
+      const prev = state.displayAddSubCategory;
+      state.displayAddSubCategory = !prev;
     },
   
+    TOGGLE_ADD_CATEGORY: ( state ) => {
+      const prev = state.displayAddCategory;
+      state.displayAddCategory = !prev;
+    },
+
     TOGGLE_ADD_STEP: ( state ) => {
       const prev = state.displayAddStep;
       state.displayAddStep = !prev;
@@ -63,14 +84,32 @@ const store = new vuex.Store( {
       const prev = state.displayModifyTicket;
       state.displayModifyTicket = !prev;
     },
+  
     TOGGLE_CONFIG_PROCESS: ( state ) => {
       const prev = state.displayConfigProcess;
       state.displayConfigProcess = !prev;
     },
+  
     SET_SELECTED_NODE: ( state, node ) => {
       state.selectedNode = node;
     }
+  
   },
+  actions: {
+    addProcesses: ( context, processes ) => {
+      context.commit( 'ADD_PROCESSES', processes );
+      for (const process of processes) {
+        SpinalServiceTicket.getCategoriesFromProcess( process )
+          .then( categories => {
+            context.commit( 'ADD_CATEGORY_BY_PROCESS', {
+              process,
+              categories
+            } );
+          } ).catch( e => console.error( e ) )
+        ;
+      }
+    }
+  }
 } );
 
 export default store;

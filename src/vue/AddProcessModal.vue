@@ -23,11 +23,17 @@
   -->
 
 <template>
-    <md-dialog :md-active="displayAddProcess">
+    <md-dialog
+            :md-active="displayAddProcess"
+    >
         <md-field>
             <label>Process name</label>
-            <md-input v-model="typologyName"></md-input>
+            <md-input v-model="processName"></md-input>
         </md-field>
+        <icon-selector
+                :icons="icons"
+                @icon-selected="onIconSelected"
+                title="Process icon"/>
         <md-dialog-actions>
             <md-button class="md-primary" v-on:click="onCancel">
                 Cancel
@@ -42,13 +48,16 @@
 <script>
   import { SpinalServiceTicket } from 'spinal-service-ticket'
   import { mapState } from 'vuex';
+  import { IconSelector } from "spinal-env-viewer-vue-components-lib";
 
   export default {
     name: "AddProcessModal",
-
+    components: { IconSelector },
     data: function () {
       return {
-        typologyName: ""
+        processName: "",
+        icons: ['poll', 'accessibility_new', 'streetview', 'build', 'warning'],
+        selectedIcon: "",
       }
     },
 
@@ -56,7 +65,11 @@
 
     methods: {
       onConfirm: function () {
-        SpinalServiceTicket.createProcess( { name: this.typologyName } )
+        const icon = this.selectedIcon === '' ? 'poll' : this.selectedIcon;
+        SpinalServiceTicket.createProcess( {
+            icon,
+            name: this.processName,
+          } )
           .then( () => {
             this.$store.commit( 'TOGGLE_ADD_PROCESS' );
           } )
@@ -67,8 +80,13 @@
 
       onCancel: function () {
         this.$store.commit( 'TOGGLE_ADD_PROCESS' )
+      },
+
+      onIconSelected: function ( event ) {
+        this.selectedIcon = event;
       }
-    }
+    },
+
   }
 </script>
 

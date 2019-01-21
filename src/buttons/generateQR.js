@@ -23,32 +23,47 @@
  */
 
 import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
-import { spinalPanelManagerService } from 'spinal-env-viewer-panel-manager-service';
-import { SERVICE_TYPE } from "spinal-service-ticket/dist/Constants";
+import GeographicContextService
+  from "spinal-env-viewer-context-geographic-service";
+import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 
 
-export class AddProcessButton extends SpinalContextApp {
-
+export class generateQR extends SpinalContextApp {
+  
   constructor() {
-    super( 'Add Ticket Typology', 'Add a new typology of ticket', {
-      icon: 'add_circle',
+    super( 'Generate QrCode', 'Qrcode', {
+      icon: 'streetview',
       icon_type: 'in',
       backgroundColor: '#000000',
-      fontColor: '#365bab',
     } );
   }
   
   isShown( option ) {
-    if (
-      (option.selectedNode.hasOwnProperty( 'type' ))
-      && (option.selectedNode.type.get() === SERVICE_TYPE)
-    ) {
+    
+    if (option.selectedNode.type.get() === GeographicContextService.constants.CONTEXT_TYPE) {
       return Promise.resolve( true );
+    } else {
+      return Promise.resolve( -1 );
     }
-    return Promise.resolve( -1 );
   }
-
+  
   action() {
-    spinalPanelManagerService.openPanel( "AddProcess" );
+    const nodes = SpinalGraphService.getNodes();
+    
+    
+    for (const id in nodes) {
+      if (nodes.hasOwnProperty( id )) {
+        const node = nodes[id];
+        if (node.info.type.get() === GeographicContextService.constants.ROOM_TYPE) {
+          const qrcode = SpinalGraphService.generateQRcode( id );
+          console.log( qrcode );
+          const qrNode = SpinalGraphService.createNode( { qrcode } );
+          SpinalGraphService.addChild( id, qrNode, 'hasQRCode', 'Ref' );
+        }
+        
+      }
+      
+      
+    }
   }
 }

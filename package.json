@@ -10,10 +10,15 @@
   "author": "",
   "license": "SpinalCom",
   "dependencies": {
-    "spinal-service-ticket": "file:../spinal-service-ticket",
+    "qrcode-generator": "^1.4.1",
+    "spinal-env-viewer-context-geographic-service": "file:../spinal-env-viewer-context-geographic-service",
     "spinal-env-viewer-context-menu-service": "git+https://github.com/spinalcom/spinal-env-viewer-context-menu-service.git",
+    "spinal-env-viewer-graph-service": "git+https://github.com/spinalcom/Spinal-Graph-Service.git",
     "spinal-env-viewer-panel-manager-service": "git+https://github.com/spinalcom/spinal-env-viewer-panel-manager-service.git",
+    "spinal-env-viewer-vue-components-lib": "git+https://spinal-env-viewer-vue-components-lib.git",
+    "spinal-service-ticket": "git+https://github.com/spinalcom/spinal-service-ticket.git",
     "vue": "^2.5.21",
+    "vue-color": "^2.7.0",
     "vuex": "^3.0.1"
   },
   "browserify": {

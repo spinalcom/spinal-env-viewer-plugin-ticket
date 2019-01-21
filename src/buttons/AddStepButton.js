@@ -31,7 +31,7 @@ export class AddStepButton extends SpinalContextApp {
   
   constructor() {
     super( 'Add Ticket Step', 'Add a new step for the process', {
-      icon: 'build',
+      icon: 'add',
       icon_type: 'in',
       backgroundColor: '#000000',
       fontColor: '#365bab',

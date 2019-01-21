@@ -24,15 +24,15 @@
 
 <template>
     <md-dialog-prompt
-            :md-active="displayAddSentence"
+            :md-active="displayAddSubCategory"
             @md-cancel="onCancel"
             @md-confirm="onConfirm"
             md-cancel-text="cancel"
             md-confirm-text="validate"
             md-input-maxlength="30"
-            md-input-placeholder="Sentence..."
-            md-title="What's the default sentence"
-            v-model="sentence"/>
+            md-input-placeholder="Category name..."
+            md-title="What's the category"
+            v-model="categoryName"/>
 
 </template>
 
@@ -41,22 +41,25 @@
   import { mapState } from 'vuex';
 
   export default {
-    name: "AddDefaultSentenceModal",
+    name: "AddCategoryModal",
 
     data: function () {
       return {
-        sentence: "",
+        categoryName: "",
       }
     },
 
-    computed: mapState( ['displayAddSentence', 'selectedNode'] ),
+    computed: mapState( ['displayAddSubCategory', 'selectedNode'] ),
 
     methods: {
       onConfirm: function () {
-        SpinalServiceTicket.addDefaultSentence(
-          this.selectedNode.id.get(), this.sentence )
+        let category = this.selectedNode.id.get();
+
+        SpinalServiceTicket.addSubCategory(
+          category,
+          this.categoryName )
           .then( () => {
-            this.$store.commit( 'TOGGLE_ADD_SENTENCE' );
+            this.$store.commit( 'TOGGLE_ADD_SUB_CATEGORY' );
           } )
           .catch( ( e ) => {
             console.error( e )
@@ -64,7 +67,7 @@
       },
 
       onCancel: function () {
-        this.$store.commit( 'TOGGLE_ADD_SENTENCE' )
+        this.$store.commit( 'TOGGLE_ADD_SUB_CATEGORY' )
       },
 
 

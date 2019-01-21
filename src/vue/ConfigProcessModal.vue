@@ -74,7 +74,7 @@
       }
     },
 
-    computed: mapState( ['displayConfigProcess'] ),
+    computed: mapState( ['displayConfigProcess', 'selectedNode'] ),
 
     methods: {
       onConfirm: function () {
@@ -92,7 +92,7 @@
           && this.selectedNode.hasOwnProperty( 'processId' )
         ) {
 
-          const processId = this.selectedNode.processId.get();
+          const processId = this.selectedNode.id.get();
           const stepIds = SpinalServiceTicket
             .getStepsFromProcess( processId );
 
@@ -107,8 +107,11 @@
     watch: {
       'selectedNode.name': {
         handler: function ( value ) {
-          if (typeof value !== "undefined")
+          if (typeof value !== "undefined") {
             this.processName = value.get();
+            console.log( value )
+          }
+          console.log( 'oksd', this.selectedNode );
         },
         immediate: true
       },

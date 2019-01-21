@@ -24,31 +24,32 @@
 
 import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
 import { spinalPanelManagerService } from 'spinal-env-viewer-panel-manager-service';
-import { SERVICE_TYPE } from "spinal-service-ticket/dist/Constants";
+import { PROCESS_TYPE } from "spinal-service-ticket/dist/Constants";
 
 
-export class AddProcessButton extends SpinalContextApp {
+export class AddCategoyButton extends SpinalContextApp {
 
   constructor() {
-    super( 'Add Ticket Typology', 'Add a new typology of ticket', {
-      icon: 'add_circle',
+    super( 'Add Category', 'Add a new category', {
+      icon: 'font_download',
       icon_type: 'in',
       backgroundColor: '#000000',
       fontColor: '#365bab',
     } );
   }
-  
+
   isShown( option ) {
     if (
-      (option.selectedNode.hasOwnProperty( 'type' ))
-      && (option.selectedNode.type.get() === SERVICE_TYPE)
+      (option.selectedNode.type.get() === PROCESS_TYPE)
     ) {
       return Promise.resolve( true );
+    } else {
+      return Promise.resolve( -1 );
     }
-    return Promise.resolve( -1 );
   }
-
-  action() {
-    spinalPanelManagerService.openPanel( "AddProcess" );
+  
+  action( option ) {
+    const nodeInfo = Object.assign( {}, option.selectedNode );
+    spinalPanelManagerService.openPanel( "AddCategory", nodeInfo );
   }
 }

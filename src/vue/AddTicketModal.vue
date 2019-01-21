@@ -25,10 +25,28 @@
 
 <template>
     <md-dialog :md-active="displayAddTicket">
+
         <md-field>
-            <label>Name of the ticket</label>
-            <md-input v-model="ticketName"></md-input>
+            <md-select name="Process" v-model="selectedProcess">
+                <md-option :key="index"
+                           :value="process.id.get()"
+                           v-for="(process, index) in getProcess()">
+                    {{process.name.get()}}
+                </md-option>
+            </md-select>
         </md-field>
+
+        <spinal-list :items="getCategories()"
+                     @item-selected="selectedCategory = $event"/>
+
+        {{selectedCategory.value}}
+
+
+        <md-field>
+            <label>note</label>
+            <md-input aria-placeholder="note..." v-model="note"/>
+        </md-field>
+
         <md-dialog-actions>
             <md-button class="md-primary" v-on:click="onCancel">Close
             </md-button>
@@ -41,37 +59,80 @@
 
 <script>
   import { SpinalServiceTicket } from 'spinal-service-ticket'
+  import { SpinalGraphService } from 'spinal-env-viewer-graph-service'
   import { mapState } from 'vuex';
+  import {
+    SpinalList,
+    SpinalListItem
+  } from "spinal-env-viewer-vue-components-lib";
 
   export default {
     name: "AddTicket",
-
+    components: { SpinalList, SpinalListItem },
     data: function () {
       return {
-        ticketName: ""
+        ticketName: "",
+        selectedCategory: { value: '' },
+        categories: [],
+        selectedProcess: ''
       }
     },
 
-    computed: mapState( ['displayAddTicket', 'selectedNode'] ),
+    computed: mapState( ['displayAddTicket', 'selectedNode', 'processes', 'categoryByProcess'] ),
 
     methods: {
+      getProcess: function () {
+        if (typeof this.processes !== "undefined") {
+          const processes = [];
+          for (let i = 0; i < this.processes.length; i++) {
+            processes.push( SpinalGraphService.getNode( this.processes[i] ) );
+          }
+          return processes;
+        }
+        return [];
+      },
+      getCategories: function () {
+        if (typeof this.categoryByProcess !== "undefined"
+          && this.selectedProcess.length !== 0
+          && this.categoryByProcess.has( this.selectedProcess )
+        ) {
+          return this.categoryByProcess.get( this.selectedProcess );
+        }
+        return [];
+      },
       onConfirm: function () {
-        const ticketId = SpinalServiceTicket.createTicket( { name: this.ticketName } );
+        const ticketId = SpinalServiceTicket.createTicket(
+          {
+            name: this.selectedCategory.value.name,
+            note: this.ticketName,
+            categories: this.selectedCategory
+
+          }
+        );
+
         SpinalServiceTicket.addTicket( ticketId, this.selectedNode.id.get() )
           .then( () => {
             this.$store.commit( 'TOGGLE_ADD_TICKET' );
           } )
           .catch( ( e ) => {
-            console.error( 'loris',e )
-          });
+            console.error( e )
+          } );
       },
 
       onCancel: function () {
         this.$store.commit( 'TOGGLE_ADD_TICKET' )
       }
+    },
+    watch: {
+      'selectedCategory': {
+        handler: function ( value ) {
+          console.log( value )
+        },
+        immediate: true
+      }
     }
   }
-</script >
+</script>
 
 <style scoped>
 

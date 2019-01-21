@@ -24,14 +24,14 @@
 
 import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
 import { spinalPanelManagerService } from 'spinal-env-viewer-panel-manager-service';
-import { PROCESS_TYPE } from "spinal-service-ticket/dist/Constants";
+import { SPINAL_TICKET_SERVICE_CATEGORY_TYPE } from "spinal-service-ticket/dist/Constants";
 
 
-export class AddSentenceButton extends SpinalContextApp {
+export class AddSubCategoryButton extends SpinalContextApp {
   
   constructor() {
-    super( 'Add Default Sentence', 'Add a new default sentence', {
-      icon: 'playlist_add',
+    super( 'Add sub category', 'Add a new category', {
+      icon: 'font_download',
       icon_type: 'in',
       backgroundColor: '#000000',
       fontColor: '#365bab',
@@ -39,7 +39,9 @@ export class AddSentenceButton extends SpinalContextApp {
   }
   
   isShown( option ) {
-    if (option.selectedNode.type.get() === PROCESS_TYPE) {
+    if (
+      (option.selectedNode.type.get() === SPINAL_TICKET_SERVICE_CATEGORY_TYPE)
+    ) {
       return Promise.resolve( true );
     } else {
       return Promise.resolve( -1 );
@@ -48,6 +50,6 @@ export class AddSentenceButton extends SpinalContextApp {
   
   action( option ) {
     const nodeInfo = Object.assign( {}, option.selectedNode );
-    spinalPanelManagerService.openPanel( "AddSentence", nodeInfo );
+    spinalPanelManagerService.openPanel( "AddSubCategory", nodeInfo );
   }
 }

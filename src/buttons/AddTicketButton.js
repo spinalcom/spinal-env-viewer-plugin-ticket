@@ -31,7 +31,7 @@ export class AddTicketButton extends SpinalContextApp {
   
   constructor() {
     super( 'Add Ticket ', 'Add a new  ticket', {
-      icon: 'assignment',
+      icon: 'note_add',
       icon_type: 'in',
       backgroundColor: '#000000',
       fontColor: '#365bab',
