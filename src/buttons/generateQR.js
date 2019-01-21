@@ -40,6 +40,7 @@ export class generateQR extends SpinalContextApp {
 
   isShown( option ) {
   
+    console.log( option );
     if (option.selectedNode.type.get() === GeographicContextService.constants.CONTEXT_TYPE) {
       return Promise.resolve( true );
     } else {
