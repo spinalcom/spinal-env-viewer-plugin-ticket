@@ -29,7 +29,7 @@ import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 
 
 export class generateQR extends SpinalContextApp {
-  
+
   constructor() {
     super( 'Generate QrCode', 'Qrcode', {
       icon: 'streetview',
@@ -37,9 +37,9 @@ export class generateQR extends SpinalContextApp {
       backgroundColor: '#000000',
     } );
   }
-  
+
   isShown( option ) {
-    
+  
     if (option.selectedNode.type.get() === GeographicContextService.constants.CONTEXT_TYPE) {
       return Promise.resolve( true );
     } else {
@@ -47,9 +47,8 @@ export class generateQR extends SpinalContextApp {
     }
   }
   
-  action() {
+  action( option ) {
     const nodes = SpinalGraphService.getNodes();
-    
     
     for (const id in nodes) {
       if (nodes.hasOwnProperty( id )) {
@@ -58,12 +57,43 @@ export class generateQR extends SpinalContextApp {
           const qrcode = SpinalGraphService.generateQRcode( id );
           console.log( qrcode );
           const qrNode = SpinalGraphService.createNode( { qrcode } );
-          SpinalGraphService.addChild( id, qrNode, 'hasQRCode', 'Ref' );
+          this.createContext()
+            .then( contextId => {
+              if (contextId) {
+                console.log( contextId );
+                SpinalGraphService.addChildInContext( id, qrNode, contextId, 'hasQRCode', 'Ref' );
+              }
+      
+            } );
         }
-        
       }
-      
-      
     }
+  }
+  
+  getContext() {
+    return SpinalGraphService
+      .getChildren( SpinalGraphService.getGraph().id.get(), ['hasContext'] )
+      .then( children => {
+        for (let i = 0; i < children.length; i++) {
+          if (children[i].name.get() === 'Qrcode') {
+            return Promise.resolve( children[i] );
+          }
+        }
+        return Promise.resolve();
+      } );
+  }
+  
+  createContext() {
+    this.getContext()
+      .then( context => {
+        if (typeof context === 'undefined') {
+          SpinalGraphService.addContext( 'QrCode' ).then(
+            context => {
+              return Promise.resolve( context.info.id.get() );
+            }
+          );
+        }
+        return Promise.resolve( context.id.get() );
+      } );
   }
 }
