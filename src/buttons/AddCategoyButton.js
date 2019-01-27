@@ -34,7 +34,7 @@ export class AddCategoyButton extends SpinalContextApp {
       icon: 'font_download',
       icon_type: 'in',
       backgroundColor: '#000000',
-      fontColor: '#365bab',
+      fontColor: '#ffffff',
     } );
   }
 

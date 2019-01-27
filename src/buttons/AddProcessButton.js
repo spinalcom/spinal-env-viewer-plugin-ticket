@@ -34,7 +34,7 @@ export class AddProcessButton extends SpinalContextApp {
       icon: 'add_circle',
       icon_type: 'in',
       backgroundColor: '#000000',
-      fontColor: '#365bab',
+      fontColor: '#ffffff',
     } );
   }
   

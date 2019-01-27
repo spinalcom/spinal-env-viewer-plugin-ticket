@@ -35,7 +35,7 @@ export class AddTicketButton extends SpinalContextApp {
       icon: 'note_add',
       icon_type: 'in',
       backgroundColor: '#000000',
-      fontColor: '#365bab',
+      fontColor: '#ffffff',
     } );
   }
 

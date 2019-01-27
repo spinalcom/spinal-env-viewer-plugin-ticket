@@ -34,7 +34,7 @@ export class ModifyTicketButton extends SpinalContextApp {
       icon: 'assignment_ind',
       icon_type: 'in',
       backgroundColor: '#000000',
-      fontColor: '#365bab',
+      fontColor: '#ffffff',
     } );
   }
   

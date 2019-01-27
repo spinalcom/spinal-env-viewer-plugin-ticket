@@ -33,7 +33,7 @@ export class ConfigProcessButton extends SpinalContextApp {
       icon: 'setting',
       icon_type: 'in',
       backgroundColor: '#000000',
-      fontColor: '#365bab',
+      fontColor: '#ffffff',
     } );
   }
   

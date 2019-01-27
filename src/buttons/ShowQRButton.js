@@ -36,7 +36,7 @@ export class ShowQRButton extends SpinalContextApp {
       icon: 'crop_free',
       icon_type: 'in',
       backgroundColor: '#000000',
-      fontColor: '#365bab',
+      fontColor: '#ffffff',
     } );
   }
   

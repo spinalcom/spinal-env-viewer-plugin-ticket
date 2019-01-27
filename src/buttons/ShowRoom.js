@@ -38,7 +38,7 @@ export class ShowRoom extends SpinalContextApp {
       icon: 'all_out',
       icon_type: 'in',
       backgroundColor: '#000000',
-      fontColor: '#365bab',
+      fontColor: '#ffffff',
     } );
   }
   
