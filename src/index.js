@@ -37,6 +37,7 @@ import AddTicketModal from "./vue/AddTicketModal.vue";
 import ModifyTicketModal from "./vue/ModifyTicketModal.vue";
 import ConfigProcessModal from "./vue/ConfigProcessModal.vue";
 import AddSubCategoryModal from "./vue/AddSubCategoryModal.vue";
+import ShowQR from "./vue/ShowQR.vue";
 
 import { AddProcessButton } from './buttons/AddProcessButton';
 import { AddCategoyButton } from "./buttons/AddCategoyButton";
@@ -45,7 +46,9 @@ import { AddTicketButton } from "./buttons/AddTicketButton";
 import { ModifyTicketButton } from "./buttons/ModifyTicketButton";
 import { ConfigProcessButton } from "./buttons/ConfigProcessButton";
 import { AddSubCategoryButton } from "./buttons/AddSubCategoyButton";
-import { generateQR } from "./buttons/generateQR";
+import { GenerateQR } from "./buttons/generateQR";
+import { ShowQRButton } from "./buttons/ShowQRButton";
+import { ShowRoom } from "./buttons/ShowRoom";
 
 
 if (typeof SpinalServiceTicket.contextId === "undefined") {
@@ -62,7 +65,10 @@ if (typeof SpinalServiceTicket.contextId === "undefined") {
     }
   } );
 }
-spinalContextMenuService.registerApp( 'GraphManagerSideBar', new generateQR() );
+
+spinalContextMenuService.registerApp( 'GraphManagerSideBar', new GenerateQR() );
+
+spinalContextMenuService.registerApp( 'GraphManagerSideBar', new ShowRoom() );
 
 
 spinalContextMenuService.registerApp( 'GraphManagerSideBar', new AddProcessButton() );
@@ -79,7 +85,7 @@ SpinalMountExtention.mount( {
         removed() {
         },
         closeDialog() {
-      
+
         },
       },
     } ),
@@ -103,7 +109,7 @@ SpinalMountExtention.mount( {
         removed() {
         },
         closeDialog() {
-    
+  
         },
       }
     } ),
@@ -127,7 +133,7 @@ SpinalMountExtention.mount( {
         removed() {
         },
         closeDialog() {
-        
+  
         },
       }
     } ),
@@ -199,7 +205,7 @@ SpinalMountExtention.mount( {
         removed() {
         },
         closeDialog() {
-        
+  
         },
       }
     } ),
@@ -223,7 +229,29 @@ SpinalMountExtention.mount( {
         removed() {
         },
         closeDialog() {
-        
+  
+        },
+      }
+    } ),
+  parentContainer: document.body
+  
+} );
+
+
+spinalContextMenuService.registerApp( 'GraphManagerSideBar', new ShowQRButton() );
+SpinalMountExtention.mount( {
+  name: 'Show_QR',
+  vueMountComponent: vue.extend(
+    {
+      store,
+      render: h => h( ShowQR ),
+      methods: {
+        opened( option ) {
+          store.commit( 'TOGGLE_SHOW_QR', option );
+        },
+        removed() {
+        },
+        closeDialog() {
         },
       }
     } ),

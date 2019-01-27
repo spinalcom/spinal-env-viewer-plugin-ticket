@@ -38,12 +38,19 @@ const store = new vuex.Store( {
     displayConfigProcess: false,
     displayAddCategory: false,
     displayAddSubCategory: false,
+    displayQRCode: false,
     selectedNode: {},
     processSteps: [],
     processes: [],
+    currentQR: '',
     categoryByProcess: new Map()
   },
   mutations: {
+    TOGGLE_SHOW_QR: ( state, option ) => {
+      const prev = state.displayQRCode;
+      state.displayQRCode = !prev;
+      state.currentQR = option;
+    },
     ADD_CATEGORY_BY_PROCESS: ( state, option ) => {
       state.categoryByProcess.set( option.process, option.categories );
     },
@@ -59,7 +66,7 @@ const store = new vuex.Store( {
       const prev = state.displayAddProcess;
       state.displayAddProcess = !prev;
     },
-  
+
     TOGGLE_ADD_SUB_CATEGORY: ( state ) => {
       const prev = state.displayAddSubCategory;
       state.displayAddSubCategory = !prev;
@@ -92,8 +99,8 @@ const store = new vuex.Store( {
   
     SET_SELECTED_NODE: ( state, node ) => {
       state.selectedNode = node;
-    }
-  
+    },
+
   },
   actions: {
     addProcesses: ( context, processes ) => {

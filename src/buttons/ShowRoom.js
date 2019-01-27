@@ -22,35 +22,54 @@
  *  <http://resources.spinalcom.com/licenses.pdf>.
  */
 
+
 import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
-import { spinalPanelManagerService } from 'spinal-env-viewer-panel-manager-service';
 import { SpinalGraphService } from "spinal-env-viewer-graph-service";
-import { QR_CODE_RELATION_NAME } from "../constant";
+import {
+  SPINAL_TICKET_SERVICE_TARGET_RELATION_NAME,
+  SPINAL_TICKET_SERVICE_TICKET_TYPE
+} from "spinal-service-ticket/dist/Constants";
 
 
-export class AddTicketButton extends SpinalContextApp {
-
+export class ShowRoom extends SpinalContextApp {
+  
   constructor() {
-    super( 'Add Ticket ', 'Add a new  ticket', {
-      icon: 'note_add',
+    super( 'Show Room', 'Show Room', {
+      icon: 'all_out',
       icon_type: 'in',
       backgroundColor: '#000000',
       fontColor: '#365bab',
     } );
   }
-
-  isShown( option ) {
-    const relationName = SpinalGraphService.getRelationNames( option.selectedNode.id.get() );
   
-    if (relationName.includes( QR_CODE_RELATION_NAME )) {
+  static predicat( node ) {
+    return node.info.type.get() === "BIMObject";
+  }
+  
+  isShown( option ) {
+    if (option.selectedNode.type.get() === SPINAL_TICKET_SERVICE_TICKET_TYPE) {
       return Promise.resolve( true );
     }
-  
+    
     return Promise.resolve( -1 );
   }
-
+  
   action( option ) {
-    const nodeInfo = Object.assign( {}, option.selectedNode );
-    spinalPanelManagerService.openPanel( "AddTicket", nodeInfo );
+    let realNode = SpinalGraphService.getRealNode( option.selectedNode.id.get() );
+    this.viewer = window.spinal.ForgeViewer.viewer;
+    let self = this;
+    realNode.find( [
+        SPINAL_TICKET_SERVICE_TARGET_RELATION_NAME,
+        "hasBIMObject",
+        'hasReferenceObject'
+      ],
+      ShowRoom.predicat
+      )
+      .then( lst => {
+        self.viewer.clearSelection();
+        let result = lst.map( x => x.info.dbid.get() );
+        self.viewer.select( result );
+      } );
   }
+  
 }

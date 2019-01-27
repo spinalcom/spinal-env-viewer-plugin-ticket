@@ -22,35 +22,32 @@
  *  <http://resources.spinalcom.com/licenses.pdf>.
  */
 
-import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
-import { spinalPanelManagerService } from 'spinal-env-viewer-panel-manager-service';
 import { SpinalGraphService } from "spinal-env-viewer-graph-service";
-import { QR_CODE_RELATION_NAME } from "../constant";
+import { QRCODE } from "./src/constant";
 
-
-export class AddTicketButton extends SpinalContextApp {
-
-  constructor() {
-    super( 'Add Ticket ', 'Add a new  ticket', {
-      icon: 'note_add',
-      icon_type: 'in',
-      backgroundColor: '#000000',
-      fontColor: '#365bab',
+export function getContext() {
+  return SpinalGraphService
+    .getChildren( SpinalGraphService.getGraph().info.id.get(), ['hasContext'] )
+    .then( children => {
+      for (let i = 0; i < children.length; i++) {
+        if (children[i].name.get() === QRCODE) {
+          return Promise.resolve( children[i] );
+        }
+      }
+      return Promise.resolve();
     } );
-  }
+}
 
-  isShown( option ) {
-    const relationName = SpinalGraphService.getRelationNames( option.selectedNode.id.get() );
-  
-    if (relationName.includes( QR_CODE_RELATION_NAME )) {
-      return Promise.resolve( true );
-    }
-  
-    return Promise.resolve( -1 );
-  }
-
-  action( option ) {
-    const nodeInfo = Object.assign( {}, option.selectedNode );
-    spinalPanelManagerService.openPanel( "AddTicket", nodeInfo );
-  }
+export function createContext() {
+  return getContext()
+    .then( context => {
+      if (typeof context === 'undefined') {
+        return SpinalGraphService.addContext( QRCODE ).then(
+          context => {
+            return Promise.resolve( context.info.id.get() );
+          }
+        );
+      }
+      return Promise.resolve( context.id.get() );
+    } );
 }

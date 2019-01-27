@@ -26,9 +26,9 @@ import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
 import GeographicContextService
   from "spinal-env-viewer-context-geographic-service";
 import { SpinalGraphService } from "spinal-env-viewer-graph-service";
+import { createContext } from "../../utils";
 
-
-export class generateQR extends SpinalContextApp {
+export class GenerateQR extends SpinalContextApp {
 
   constructor() {
     super( 'Generate QrCode', 'Qrcode', {
@@ -40,65 +40,48 @@ export class generateQR extends SpinalContextApp {
 
   isShown( option ) {
 
-    console.log( option );
     if (option.selectedNode.type.get() === GeographicContextService.constants.CONTEXT_TYPE) {
       return Promise.resolve( true );
     } else {
       return Promise.resolve( -1 );
     }
   }
+  
+  action() {
 
-  action( option ) {
     const nodes = SpinalGraphService.getNodes();
+    
+    createContext()
+      .then( contextId => {
+        if (contextId) {
+          for (const id in nodes) {
+            if (nodes.hasOwnProperty( id )) {
+              const node = nodes[id];
+              
+              if (node.info.type.get() === GeographicContextService.constants.ROOM_TYPE) {
+                const qrcode = SpinalGraphService.generateQRcode( id );
+                const qrNode = SpinalGraphService.createNode( { qrcode } );
+                console.log( qrcode );
+                SpinalGraphService
+                  .addChildInContext( id,
+                    qrNode, contextId,
+                    'hasQRCode', 'Ref' )
+                  .then( ( e ) => {
+                    console.log( 'good', e );
+                  } )
+                  .catch( e => {
+                    console.error( e );
+                  } );
 
-    for (const id in nodes) {
-      if (nodes.hasOwnProperty( id )) {
-        const node = nodes[id];
-  
-        if (node.info.type.get() === GeographicContextService.constants.ROOM_TYPE) {
-          const qrcode = SpinalGraphService.generateQRcode( id );
-          const qrNode = SpinalGraphService.createNode( { qrcode } );
-    
-          /*this.createContext()
-            .then( contextId => {
-              if (contextId) {
-                console.log( contextId );
-                SpinalGraphService.addChildInContext( id, qrNode, contextId, 'hasQRCode', 'Ref' );
               }
-           }
-           );*/
-    
-          console.log( qrNode );
-        }
-      }
-  
-    }
-  }
-  
-  getContext() {
-    return SpinalGraphService
-      .getChildren( SpinalGraphService.getGraph().id.get(), ['hasContext'] )
-      .then( children => {
-        for (let i = 0; i < children.length; i++) {
-          if (children[i].name.get() === 'Qrcode') {
-            return Promise.resolve( children[i] );
+            }
+            
           }
         }
-        return Promise.resolve();
-      } );
+      } )
+      .catch( ( e ) => {console.log( e );} );
+    
   }
-  
-  createContext() {
-    return this.getContext()
-      .then( context => {
-        if (typeof context === 'undefined') {
-          SpinalGraphService.addContext( 'QrCode' ).then(
-            context => {
-              return Promise.resolve( context.info.id.get() );
-            }
-          );
-        }
-        return Promise.resolve( context.id.get() );
-      } );
-  }
+
+
 }

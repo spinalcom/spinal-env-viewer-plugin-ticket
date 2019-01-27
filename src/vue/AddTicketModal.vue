@@ -39,7 +39,6 @@
         <spinal-list :items="getCategories()"
                      @item-selected="selectedCategory = $event"/>
 
-        {{selectedCategory.value}}
 
 
         <md-field>
@@ -74,7 +73,8 @@
         ticketName: "",
         selectedCategory: { value: '' },
         categories: [],
-        selectedProcess: ''
+        selectedProcess: '',
+        note: ''
       }
     },
 
@@ -101,16 +101,18 @@
         return [];
       },
       onConfirm: function () {
-        const ticketId = SpinalServiceTicket.createTicket(
-          {
-            name: this.selectedCategory.value.name,
-            note: this.ticketName,
-            categories: this.selectedCategory
+        const ticket = {
+          name: this.selectedCategory.value.value,
+          note: this.note,
+          categories: this.selectedCategory
+        };
 
-          }
-        );
+        const ticketId = SpinalServiceTicket.createTicket( ticket );
 
-        SpinalServiceTicket.addTicket( ticketId, this.selectedNode.id.get() )
+        SpinalServiceTicket.addLocationToTicket( ticketId,
+          this.selectedNode.id.get() );
+        SpinalServiceTicket.addTicketToProcess( ticketId,
+          this.selectedProcess )
           .then( () => {
             this.$store.commit( 'TOGGLE_ADD_TICKET' );
           } )

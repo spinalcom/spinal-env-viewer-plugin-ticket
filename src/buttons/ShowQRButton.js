@@ -22,35 +22,41 @@
  *  <http://resources.spinalcom.com/licenses.pdf>.
  */
 
+
 import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
-import { spinalPanelManagerService } from 'spinal-env-viewer-panel-manager-service';
 import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 import { QR_CODE_RELATION_NAME } from "../constant";
+import { spinalPanelManagerService } from "spinal-env-viewer-panel-manager-service";
 
 
-export class AddTicketButton extends SpinalContextApp {
-
+export class ShowQRButton extends SpinalContextApp {
+  
   constructor() {
-    super( 'Add Ticket ', 'Add a new  ticket', {
-      icon: 'note_add',
+    super( 'Show QR', 'Show QR', {
+      icon: 'crop_free',
       icon_type: 'in',
       backgroundColor: '#000000',
       fontColor: '#365bab',
     } );
   }
-
+  
   isShown( option ) {
     const relationName = SpinalGraphService.getRelationNames( option.selectedNode.id.get() );
-  
+    
     if (relationName.includes( QR_CODE_RELATION_NAME )) {
       return Promise.resolve( true );
     }
-  
+    
     return Promise.resolve( -1 );
   }
-
+  
   action( option ) {
-    const nodeInfo = Object.assign( {}, option.selectedNode );
-    spinalPanelManagerService.openPanel( "AddTicket", nodeInfo );
+    SpinalGraphService.getChildren( option.selectedNode.id.get(), [QR_CODE_RELATION_NAME] )
+      .then( children => {
+          if (children.length > 0) {
+            spinalPanelManagerService.openPanel( "Show_QR", children[0].qrcode );
+          }
+        }
+      );
   }
 }

@@ -26,8 +26,13 @@
 <template>
     <md-dialog :md-active="displayModifyTicket">
         <md-field>
-            <label>Name of the ticket</label>
+            <label>Problem</label>
             <md-input v-model="ticketName"></md-input>
+        </md-field>
+
+        <md-field>
+            <label>Note</label>
+            <md-input v-model="ticketNote"></md-input>
         </md-field>
 
         <label for="steps">Steps</label>
@@ -60,6 +65,7 @@
       return {
         selectedStep: "",
         ticketName: "",
+        ticketNote: '',
         steps: [{ name: "" }]
 
       }
@@ -78,8 +84,10 @@
         if (this.ticketName !== this.selectedNode.name) {
           SpinalGraphService
             .modifyNode(
-              this.selectedNode.id.get(),
-              { name: this.ticketName }
+              this.selectedNode.id.get(), {
+                name: this.ticketName,
+                note: this.ticketNote
+              }
             )
         }
         this.$store.commit( 'TOGGLE_MODIFY_TICKET' )
@@ -110,8 +118,17 @@
     watch: {
       'selectedNode.name': {
         handler: function ( value ) {
+          console.log( 'selectedNode', this.selectedNode );
+
           if (typeof value !== "undefined")
             this.ticketName = value.get();
+        },
+        immediate: true
+      },
+      'selectedNode.note': {
+        handler: function ( value ) {
+          if (typeof value !== "undefined")
+            this.ticketNote = value.get();
         },
         immediate: true
       },
