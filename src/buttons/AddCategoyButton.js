@@ -24,13 +24,13 @@
 
 import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
 import { spinalPanelManagerService } from 'spinal-env-viewer-panel-manager-service';
-import { PROCESS_TYPE } from "spinal-service-ticket/dist/Constants";
+import { PROCESS_TYPE, SPINAL_TICKET_SERVICE_INCIDENT_TYPE } from "spinal-service-ticket/dist/Constants";
 
 
 export class AddCategoyButton extends SpinalContextApp {
 
   constructor() {
-    super( 'Add Category', 'Add a new category', {
+    super( 'Ajouter un incident commun', 'Ajouter un incident commun', {
       icon: 'font_download',
       icon_type: 'in',
       backgroundColor: '#000000',
@@ -40,7 +40,7 @@ export class AddCategoyButton extends SpinalContextApp {
 
   isShown( option ) {
     if (
-      (option.selectedNode.type.get() === PROCESS_TYPE)
+      (option.selectedNode.type.get() === PROCESS_TYPE || option.selectedNode.type.get() === SPINAL_TICKET_SERVICE_INCIDENT_TYPE)
     ) {
       return Promise.resolve( true );
     } else {

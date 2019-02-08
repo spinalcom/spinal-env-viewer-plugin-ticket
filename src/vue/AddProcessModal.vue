@@ -27,19 +27,19 @@
             :md-active="displayAddProcess"
     >
         <md-field>
-            <label>Process name</label>
+            <label>Nom de typologie</label>
             <md-input v-model="processName"></md-input>
         </md-field>
         <icon-selector
                 :icons="icons"
                 @icon-selected="onIconSelected"
-                title="Process icon"/>
+                title="Icons"/>
         <md-dialog-actions>
             <md-button class="md-primary" v-on:click="onCancel">
-                Cancel
+                Annuler
             </md-button>
             <md-button class="md-primary" v-on:click="onConfirm">
-                Create
+                Valider
             </md-button>
         </md-dialog-actions>
     </md-dialog>

@@ -30,7 +30,7 @@ import { PROCESS_TYPE } from "spinal-service-ticket/dist/Constants";
 export class AddStepButton extends SpinalContextApp {
   
   constructor() {
-    super( 'Add Ticket Step', 'Add a new step for the process', {
+    super( 'Ajouter une étape', 'Ajouter une étape', {
       icon: 'add',
       icon_type: 'in',
       backgroundColor: '#000000',

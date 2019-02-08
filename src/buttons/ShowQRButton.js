@@ -32,8 +32,8 @@ import { spinalPanelManagerService } from "spinal-env-viewer-panel-manager-servi
 export class ShowQRButton extends SpinalContextApp {
   
   constructor() {
-    super( 'Show QR', 'Show QR', {
-      icon: 'crop_free',
+    super( 'Afficher le QRcode', 'Afficher le QRcode', {
+      icon: 'nfc',
       icon_type: 'in',
       backgroundColor: '#000000',
       fontColor: '#ffffff',

@@ -31,8 +31,8 @@ import { createContext } from "../utils";
 export class GenerateQR extends SpinalContextApp {
 
   constructor() {
-    super( 'Generate QrCode', 'Qrcode', {
-      icon: 'streetview',
+    super( 'Generer les QrCodes', 'Qrcode', {
+      icon: 'nfc',
       icon_type: 'in',
       backgroundColor: '#000000',
     } );

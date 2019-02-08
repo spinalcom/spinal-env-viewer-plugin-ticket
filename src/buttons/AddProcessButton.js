@@ -30,7 +30,7 @@ import { SERVICE_TYPE } from "spinal-service-ticket/dist/Constants";
 export class AddProcessButton extends SpinalContextApp {
 
   constructor() {
-    super( 'Add Ticket Typology', 'Add a new typology of ticket', {
+    super( "Ajouter une typologie d'incident", "Ajouter une typologie d'incident", {
       icon: 'add_circle',
       icon_type: 'in',
       backgroundColor: '#000000',

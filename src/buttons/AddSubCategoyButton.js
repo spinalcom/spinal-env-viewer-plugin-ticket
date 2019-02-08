@@ -39,13 +39,14 @@ export class AddSubCategoryButton extends SpinalContextApp {
   }
   
   isShown( option ) {
-    if (
-      (option.selectedNode.type.get() === SPINAL_TICKET_SERVICE_CATEGORY_TYPE)
+    return Promise.resolve(-1);
+   /* if (
+      (option.selectedNode.type.get() === SPINAL_TICKET_SERVICE_INCIDENT_TYPE)
     ) {
       return Promise.resolve( true );
     } else {
       return Promise.resolve( -1 );
-    }
+    }*/
   }
   
   action( option ) {

@@ -34,7 +34,7 @@ import {
 export class ShowRoom extends SpinalContextApp {
   
   constructor() {
-    super( 'Show Room', 'Show Room', {
+    super( 'Localiser', 'Localiser', {
       icon: 'all_out',
       icon_type: 'in',
       backgroundColor: '#000000',

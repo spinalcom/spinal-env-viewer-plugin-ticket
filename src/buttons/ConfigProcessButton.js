@@ -39,14 +39,15 @@ export class ConfigProcessButton extends SpinalContextApp {
   
   isShown( option ) {
     
-    if (
+   /* if (
       (option.selectedNode.hasOwnProperty( 'type' ))
       && (option.selectedNode.type.get() === PROCESS_TYPE)) {
       return Promise.resolve( true );
     } else {
       return Promise.resolve( -1 );
     }
-    
+   */
+    return Promise.resolve( -1 );
   }
   
   action( option ) {

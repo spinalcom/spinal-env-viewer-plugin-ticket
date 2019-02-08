@@ -24,17 +24,19 @@
 
 <template>
     <md-dialog :md-active="displayAddStep">
-        <md-dialog-title>Create Step</md-dialog-title>
+        <md-dialog-title>Créer une étape</md-dialog-title>
         <md-field>
-            <label>Name of the step</label>
+            <label>Nom de l'étape</label>
             <md-input v-model="stepName"></md-input>
         </md-field>
 
         <photoshop-picker v-model="stepColor"/>
         <md-dialog-actions>
-            <md-button class="md-primary" v-on:click="onCancel">Close
+            <md-button class="md-primary" v-on:click="onCancel">
+                Annuler
             </md-button>
-            <md-button class="md-primary" v-on:click="onConfirm">Save
+            <md-button class="md-primary" v-on:click="onConfirm">
+                Valider
             </md-button>
         </md-dialog-actions>
     </md-dialog>
