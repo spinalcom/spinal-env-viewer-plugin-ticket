@@ -58,12 +58,6 @@ if (typeof SpinalServiceTicket.contextId === "undefined") {
       clearInterval( interval );
     }
   } );
-  const interval2 = setInterval( () => {
-    if (SpinalServiceTicket.isInitialized()) {
-      store.dispatch( 'addProcesses', SpinalServiceTicket.getAllProcess() );
-      clearInterval( interval2 );
-    }
-  } );
 }
 
 spinalContextMenuService.registerApp( 'GraphManagerSideBar', new GenerateQR() );
