@@ -30,7 +30,7 @@ export class ConfigProcessButton extends SpinalContextApp {
   
   constructor() {
     super( 'Configure Process', 'Configure a process', {
-      icon: 'setting',
+      icon: 'settings',
       icon_type: 'in',
       backgroundColor: '#000000',
       fontColor: '#ffffff',
