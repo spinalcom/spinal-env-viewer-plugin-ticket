@@ -59,9 +59,10 @@
 </template>
 
 <script>
+  import { SpinalGraphService } from 'spinal-env-viewer-graph-service'
   import { SpinalServiceTicket } from 'spinal-service-ticket'
   import { mapState } from 'vuex';
-  import { SpinalIconButton } from "spinal-env-viewer-vue-components-lib";
+  import { SpinalIconButton } from "spinal-env-viewer-vue-components-lib"
 
   export default {
     name: "ConfigProcessModal",
@@ -111,7 +112,6 @@
             this.processName = value.get();
             console.log( value )
           }
-          console.log( 'oksd', this.selectedNode );
         },
         immediate: true
       },
