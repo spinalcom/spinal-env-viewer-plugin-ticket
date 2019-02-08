@@ -56,7 +56,31 @@
     data: function () {
       return {
         processName: "",
-        icons: ['poll', 'accessibility_new', 'streetview', 'build', 'warning'],
+        icons: [
+          'poll',
+          'accessibility_new',
+          'streetview',
+          'build',
+          'warning',
+          'accessible',
+          'account_balance',
+          'alarm',
+          'all_inbox',
+          'all_out',
+          'announcement',
+          'bug_report',
+          'bookmark',
+          'book',
+          'dashboard',
+          'favorite',
+          'help',
+          'group_work',
+          'block',
+          'ac_unit',
+          'spa',
+          'kitchen',
+          'meeting_room'
+        ],
         selectedIcon: "",
       }
     },
