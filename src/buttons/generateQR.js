@@ -26,7 +26,7 @@ import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
 import GeographicContextService
   from "spinal-env-viewer-context-geographic-service";
 import { SpinalGraphService } from "spinal-env-viewer-graph-service";
-import { createContext } from "../../utils";
+import { createContext } from "../utils";
 
 export class GenerateQR extends SpinalContextApp {
 
