@@ -49,7 +49,8 @@ import { AddSubCategoryButton } from "./buttons/AddSubCategoyButton";
 import { GenerateQR } from "./buttons/generateQR";
 import { ShowQRButton } from "./buttons/ShowQRButton";
 import { ShowRoom } from "./buttons/ShowRoom";
-
+import Toasted from "vue-toasted"
+Vue.use(Toasted);
 
 if (typeof SpinalServiceTicket.contextId === "undefined") {
   const interval = setInterval( () => {
