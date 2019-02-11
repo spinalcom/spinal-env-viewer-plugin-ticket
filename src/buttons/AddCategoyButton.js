@@ -24,7 +24,7 @@
 
 import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
 import { spinalPanelManagerService } from 'spinal-env-viewer-panel-manager-service';
-import { PROCESS_TYPE, SPINAL_TICKET_SERVICE_INCIDENT_TYPE } from "spinal-service-ticket/dist/Constants";
+import { PROCESS_TYPE, SPINAL_TICKET_SERVICE_INCIDENT_SECTION_TYPE } from "spinal-service-ticket/dist/Constants";
 
 
 export class AddCategoyButton extends SpinalContextApp {
@@ -40,7 +40,8 @@ export class AddCategoyButton extends SpinalContextApp {
 
   isShown( option ) {
     if (
-      (option.selectedNode.type.get() === PROCESS_TYPE || option.selectedNode.type.get() === SPINAL_TICKET_SERVICE_INCIDENT_TYPE)
+      (option.selectedNode.type.get() === PROCESS_TYPE
+        || option.selectedNode.type.get() === SPINAL_TICKET_SERVICE_INCIDENT_SECTION_TYPE)
     ) {
       return Promise.resolve( true );
     } else {
