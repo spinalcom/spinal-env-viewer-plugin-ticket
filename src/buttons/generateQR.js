@@ -67,7 +67,7 @@ export class GenerateQR extends SpinalContextApp {
               const node = nodes[id];
               const relationName = SpinalGraphService.getRelationNames(id);
               if (node.info.type.get() === GeographicContextService.constants.ROOM_TYPE
-                && relationName.includes(QR_CODE_RELATION_NAME) ) {
+                && !relationName.includes(QR_CODE_RELATION_NAME) ) {
                 const qrcode = SpinalGraphService.generateQRcode( id );
                 const qrNode = SpinalGraphService.createNode( { qrcode , type: QRCODE} );
                 count++;
