@@ -26,24 +26,25 @@
 <template>
     <md-dialog :md-active="displayAddTicket">
 
-        <md-field>
-            <md-select name="Process" v-model="selectedProcess">
-                <md-option :key="index"
-                           :value="process.id.get()"
-                           v-for="(process, index) in processesComputed">
-                    {{process.name.get()}}
-                </md-option>
-            </md-select>
-        </md-field>
+        <div class="add-ticket-modal-body">
+            <md-field>
+                <md-select name="Process" v-model="selectedProcess">
+                    <md-option :key="index"
+                               :value="process.id.get()"
+                               v-for="(process, index) in processesComputed">
+                        {{process.name.get()}}
+                    </md-option>
+                </md-select>
+            </md-field>
 
-        <spinal-list :items="categories"
-                     @item-selected="selectedCategory = $event"/>
+            <spinal-list :items="categories"
+                         @item-selected="selectedCategory = $event"/>
 
-        <md-field>
-            <label>note</label>
-            <md-input aria-placeholder="note..." v-model="note"/>
-        </md-field>
-
+            <md-field>
+                <label>note</label>
+                <md-input aria-placeholder="note..." v-model="note"/>
+            </md-field>
+        </div>
         <md-dialog-actions>
             <md-button class="md-primary" v-on:click="onCancel">Annuler
             </md-button>
@@ -62,6 +63,7 @@
     SpinalList,
     SpinalListItem
   } from "spinal-env-viewer-vue-components-lib";
+
   function spread() {
     const res = {};
     for (const arg of arguments) {
@@ -69,6 +71,7 @@
     }
     return res;
   }
+
   export default {
     name: "AddTicket",
     components: { SpinalList, SpinalListItem },
@@ -90,7 +93,7 @@
         'categoryByProcess'
       ] ),
       {
-        processesComputed: function (  ) {
+        processesComputed: function () {
           if (typeof this.processes !== "undefined") {
             const processes = [];
             for (let i = 0; i < this.processes.length; i++) {
@@ -149,15 +152,15 @@
       }
     },
     watch: {
-      'selectedProcess' : {
-        handler: function (value) {
-          const categories = this.$store.getters.getCategories(value);
+      'selectedProcess': {
+        handler: function ( value ) {
+          const categories = this.$store.getters.getCategories( value );
           const tmpCat = [];
           for (let i = 0; i < categories.length; i++) {
-            console.log('categorie', categories[i][0]);
-            tmpCat.push(categories[i][0]);
+            console.log( 'categorie', categories[i][0] );
+            tmpCat.push( categories[i][0] );
           }
-          this.categories.push(...tmpCat);
+          this.categories.push( ...tmpCat );
         }
       },
       'selectedCategory': {
@@ -168,11 +171,13 @@
       }
     },
     mounted() {
-      this.$store.dispatch('getProcess');
+      this.$store.dispatch( 'getProcess' );
     }
   }
 </script>
 
 <style scoped>
-
+    .add-ticket-modal-body{
+        padding: 8px;
+    }
 </style>
