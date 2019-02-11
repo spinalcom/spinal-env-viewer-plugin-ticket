@@ -65,7 +65,9 @@ export class GenerateQR extends SpinalContextApp {
           for (const id in nodes) {
             if (nodes.hasOwnProperty( id )) {
               const node = nodes[id];
-              if (node.info.type.get() === GeographicContextService.constants.ROOM_TYPE) {
+              const relationName = SpinalGraphService.getRelationNames(id);
+              if (node.info.type.get() === GeographicContextService.constants.ROOM_TYPE
+                && relationName.includes(QR_CODE_RELATION_NAME) ) {
                 const qrcode = SpinalGraphService.generateQRcode( id );
                 const qrNode = SpinalGraphService.createNode( { qrcode , type: QRCODE} );
                 count++;
@@ -83,7 +85,8 @@ export class GenerateQR extends SpinalContextApp {
               }
             }
           }
-          Vue.toasted.show(`${count} QRcode generated`)
+          const toast = Vue.toasted.success(`${count} QRcode generated`);
+          toast.goAway(1500);
         }
       } )
       .catch( ( e ) => {console.log( e );} );
