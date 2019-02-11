@@ -195,6 +195,7 @@ SpinalMountExtention.mount( {
         opened( option ) {
           store.commit( 'TOGGLE_MODIFY_TICKET' );
           store.commit( 'SET_SELECTED_NODE', option );
+          store.dispatch('getProcess');
         },
         removed() {
         },
