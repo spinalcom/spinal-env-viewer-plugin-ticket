@@ -26,14 +26,16 @@
     <md-dialog
             :md-active="displayAddProcess"
     >
-        <md-field>
-            <label>Nom de typologie</label>
-            <md-input v-model="processName"></md-input>
-        </md-field>
-        <icon-selector
-                :icons="icons"
-                @icon-selected="onIconSelected"
-                title="Icons"/>
+        <div class="add-typology-modal-body">
+            <md-field>
+                <label>Nom de typologie</label>
+                <md-input v-model="processName"></md-input>
+            </md-field>
+            <icon-selector
+                    :icons="icons"
+                    @icon-selected="onIconSelected"
+                    title="Icons"/>
+        </div>
         <md-dialog-actions>
             <md-button class="md-primary" v-on:click="onCancel">
                 Annuler
@@ -42,6 +44,7 @@
                 Valider
             </md-button>
         </md-dialog-actions>
+
     </md-dialog>
 </template>
 
@@ -115,5 +118,7 @@
 </script>
 
 <style scoped>
-
+.add-typology-modal-body{
+    padding: 24px
+}
 </style>
