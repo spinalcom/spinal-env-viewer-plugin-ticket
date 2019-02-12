@@ -49,6 +49,7 @@ import { AddSubCategoryButton } from "./buttons/AddSubCategoyButton";
 import { GenerateQR } from "./buttons/generateQR";
 import { ShowQRButton } from "./buttons/ShowQRButton";
 import { ShowRoom } from "./buttons/ShowRoom";
+import { TiketPanelBtn } from "./buttons/PanelTicketButton";
 
 
 if (typeof SpinalServiceTicket.contextId === "undefined") {
@@ -69,7 +70,6 @@ if (typeof SpinalServiceTicket.contextId === "undefined") {
 spinalContextMenuService.registerApp( 'GraphManagerSideBar', new GenerateQR() );
 
 spinalContextMenuService.registerApp( 'GraphManagerSideBar', new ShowRoom() );
-
 
 spinalContextMenuService.registerApp( 'GraphManagerSideBar', new AddProcessButton() );
 SpinalMountExtention.mount( {
@@ -205,12 +205,12 @@ SpinalMountExtention.mount( {
         removed() {
         },
         closeDialog() {
-  
+
         },
       }
     } ),
   parentContainer: document.body
-  
+
 } );
 
 
@@ -229,12 +229,12 @@ SpinalMountExtention.mount( {
         removed() {
         },
         closeDialog() {
-  
+
         },
       }
     } ),
   parentContainer: document.body
-  
+
 } );
 
 
@@ -258,3 +258,26 @@ SpinalMountExtention.mount( {
   parentContainer: document.body
 
 } );
+
+spinalContextMenuService.registerApp( 'GraphManagerTopBar', new ShowQRButton() );
+SpinalMountExtention.mount( {
+  name: 'Show_QR',
+  vueMountComponent: vue.extend(
+    {
+      store,
+      render: h => h( ShowQR ),
+      methods: {
+        opened( option ) {
+          console.log("opened");
+        },
+        removed() {
+        },
+        closeDialog() {
+        },
+      }
+    } ),
+  parentContainer: document.body
+
+} );
+
+spinalContextMenuService.registerApp('GraphManagerTopBar', new TiketPanelBtn());
