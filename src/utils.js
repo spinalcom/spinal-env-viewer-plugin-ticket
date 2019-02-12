@@ -23,7 +23,7 @@
  */
 
 import { SpinalGraphService } from "spinal-env-viewer-graph-service";
-import { QRCODE } from "./src/constant";
+import { QRCODE } from "./constant";
 
 export function getContext() {
   return SpinalGraphService

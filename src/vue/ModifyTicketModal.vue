@@ -26,7 +26,7 @@
 <template>
     <md-dialog :md-active="displayModifyTicket">
         <md-field>
-            <label>Problem</label>
+            <label>Titre de l'incident</label>
             <md-input v-model="ticketName"></md-input>
         </md-field>
 
@@ -35,7 +35,7 @@
             <md-input v-model="ticketNote"></md-input>
         </md-field>
 
-        <label for="steps">Steps</label>
+        <label for="steps">Etape</label>
         <select id="steps" name="steps" v-model="selectedStep">
             <option :value="step.id" v-for="step in getStep()">
                 {{step.name}}
@@ -43,9 +43,9 @@
         </select>
 
         <md-dialog-actions>
-            <md-button class="md-primary" v-on:click="onCancel">Close
+            <md-button class="md-primary" v-on:click="onCancel">Annuler
             </md-button>
-            <md-button class="md-primary" v-on:click="onConfirm">Save
+            <md-button class="md-primary" v-on:click="onConfirm">Valider
             </md-button>
         </md-dialog-actions>
     </md-dialog>

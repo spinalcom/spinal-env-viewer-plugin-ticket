@@ -30,7 +30,7 @@ export class ConfigProcessButton extends SpinalContextApp {
   
   constructor() {
     super( 'Configure Process', 'Configure a process', {
-      icon: 'setting',
+      icon: 'settings',
       icon_type: 'in',
       backgroundColor: '#000000',
       fontColor: '#ffffff',
@@ -39,14 +39,15 @@ export class ConfigProcessButton extends SpinalContextApp {
   
   isShown( option ) {
     
-    if (
+   /* if (
       (option.selectedNode.hasOwnProperty( 'type' ))
       && (option.selectedNode.type.get() === PROCESS_TYPE)) {
       return Promise.resolve( true );
     } else {
       return Promise.resolve( -1 );
     }
-    
+   */
+    return Promise.resolve( -1 );
   }
   
   action( option ) {

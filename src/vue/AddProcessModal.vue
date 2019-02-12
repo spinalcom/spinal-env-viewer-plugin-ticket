@@ -26,22 +26,25 @@
     <md-dialog
             :md-active="displayAddProcess"
     >
-        <md-field>
-            <label>Process name</label>
-            <md-input v-model="processName"></md-input>
-        </md-field>
-        <icon-selector
-                :icons="icons"
-                @icon-selected="onIconSelected"
-                title="Process icon"/>
+        <div class="add-typology-modal-body">
+            <md-field>
+                <label>Nom de typologie</label>
+                <md-input v-model="processName"></md-input>
+            </md-field>
+            <icon-selector
+                    :icons="icons"
+                    @icon-selected="onIconSelected"
+                    title="Icons"/>
+        </div>
         <md-dialog-actions>
             <md-button class="md-primary" v-on:click="onCancel">
-                Cancel
+                Annuler
             </md-button>
             <md-button class="md-primary" v-on:click="onConfirm">
-                Create
+                Valider
             </md-button>
         </md-dialog-actions>
+
     </md-dialog>
 </template>
 
@@ -56,7 +59,31 @@
     data: function () {
       return {
         processName: "",
-        icons: ['poll', 'accessibility_new', 'streetview', 'build', 'warning'],
+        icons: [
+          'poll',
+          'accessibility_new',
+          'streetview',
+          'build',
+          'warning',
+          'accessible',
+          'account_balance',
+          'alarm',
+          'all_inbox',
+          'all_out',
+          'announcement',
+          'bug_report',
+          'bookmark',
+          'book',
+          'dashboard',
+          'favorite',
+          'help',
+          'group_work',
+          'block',
+          'ac_unit',
+          'spa',
+          'kitchen',
+          'meeting_room'
+        ],
         selectedIcon: "",
       }
     },
@@ -91,5 +118,7 @@
 </script>
 
 <style scoped>
-
+.add-typology-modal-body{
+    padding: 24px
+}
 </style>

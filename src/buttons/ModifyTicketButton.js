@@ -30,7 +30,7 @@ import { SPINAL_TICKET_SERVICE_TICKET_TYPE } from "spinal-service-ticket/dist/Co
 export class ModifyTicketButton extends SpinalContextApp {
   
   constructor() {
-    super( 'Modify Ticket ', 'Modify a ticket', {
+    super( 'Modifier', 'Modify a ticket', {
       icon: 'assignment_ind',
       icon_type: 'in',
       backgroundColor: '#000000',

@@ -50,19 +50,15 @@ import { GenerateQR } from "./buttons/generateQR";
 import { ShowQRButton } from "./buttons/ShowQRButton";
 import { ShowRoom } from "./buttons/ShowRoom";
 import { TiketPanelBtn } from "./buttons/PanelTicketButton";
+import Toasted from "vue-toasted"
 
+vue.use(Toasted);
 
 if (typeof SpinalServiceTicket.contextId === "undefined") {
   const interval = setInterval( () => {
     if (SpinalGraphService.graph.hasOwnProperty( 'info' )) {
       SpinalServiceTicket.init();
       clearInterval( interval );
-    }
-  } );
-  const interval2 = setInterval( () => {
-    if (SpinalServiceTicket.isInitialized()) {
-      store.dispatch( 'addProcesses', SpinalServiceTicket.getAllProcess() );
-      clearInterval( interval2 );
     }
   } );
 }
@@ -201,6 +197,7 @@ SpinalMountExtention.mount( {
         opened( option ) {
           store.commit( 'TOGGLE_MODIFY_TICKET' );
           store.commit( 'SET_SELECTED_NODE', option );
+          store.dispatch('getProcess');
         },
         removed() {
         },

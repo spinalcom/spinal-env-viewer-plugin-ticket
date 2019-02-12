@@ -31,7 +31,7 @@ import { QR_CODE_RELATION_NAME } from "../constant";
 export class AddTicketButton extends SpinalContextApp {
 
   constructor() {
-    super( 'Add Ticket ', 'Add a new  ticket', {
+    super( 'Déclarer un incident', 'Déclarer un incident', {
       icon: 'note_add',
       icon_type: 'in',
       backgroundColor: '#000000',

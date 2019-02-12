@@ -25,14 +25,21 @@
 import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
 import GeographicContextService
   from "spinal-env-viewer-context-geographic-service";
-import { SpinalGraphService } from "spinal-env-viewer-graph-service";
-import { createContext } from "../../utils";
-
+import {
+  SPINAL_RELATION_PTR_LST_TYPE,
+  SpinalGraphService
+} from "spinal-env-viewer-graph-service";
+import { createContext } from "../utils";
+import {
+  QR_CODE_RELATION_NAME,
+  QRCODE
+} from "../constant";
+import Vue from "vue";
 export class GenerateQR extends SpinalContextApp {
 
   constructor() {
-    super( 'Generate QrCode', 'Qrcode', {
-      icon: 'streetview',
+    super( 'Generer les QrCodes', 'Qrcode', {
+      icon: 'nfc',
       icon_type: 'in',
       backgroundColor: '#000000',
     } );
@@ -54,20 +61,22 @@ export class GenerateQR extends SpinalContextApp {
     createContext()
       .then( contextId => {
         if (contextId) {
+          let count = 0;
           for (const id in nodes) {
             if (nodes.hasOwnProperty( id )) {
               const node = nodes[id];
-              
-              if (node.info.type.get() === GeographicContextService.constants.ROOM_TYPE) {
+              const relationName = SpinalGraphService.getRelationNames(id);
+              if (node.info.type.get() === GeographicContextService.constants.ROOM_TYPE
+                && !relationName.includes(QR_CODE_RELATION_NAME) ) {
                 const qrcode = SpinalGraphService.generateQRcode( id );
-                const qrNode = SpinalGraphService.createNode( { qrcode } );
-                console.log( qrcode );
+                const qrNode = SpinalGraphService.createNode( { qrcode , type: QRCODE} );
+                count++;
                 SpinalGraphService
                   .addChildInContext( id,
                     qrNode, contextId,
-                    'hasQRCode', 'Ref' )
+                    QR_CODE_RELATION_NAME, SPINAL_RELATION_PTR_LST_TYPE )
                   .then( ( e ) => {
-                    console.log( 'good', e );
+                  
                   } )
                   .catch( e => {
                     console.error( e );
@@ -75,8 +84,9 @@ export class GenerateQR extends SpinalContextApp {
 
               }
             }
-            
           }
+          const toast = Vue.toasted.success(`${count} QRcode generated`);
+          toast.goAway(1500);
         }
       } )
       .catch( ( e ) => {console.log( e );} );

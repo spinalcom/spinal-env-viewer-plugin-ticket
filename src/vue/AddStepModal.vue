@@ -24,17 +24,21 @@
 
 <template>
     <md-dialog :md-active="displayAddStep">
-        <md-dialog-title>Create Step</md-dialog-title>
-        <md-field>
-            <label>Name of the step</label>
-            <md-input v-model="stepName"></md-input>
-        </md-field>
+        <md-dialog-title>Créer une étape</md-dialog-title>
+        <div class="add-step-modal-body">
+            <md-field>
+                <label>Nom de l'étape</label>
+                <md-input v-model="stepName"></md-input>
+            </md-field>
 
-        <photoshop-picker v-model="stepColor"/>
+            <photoshop-picker v-model="stepColor"/>
+        </div>
         <md-dialog-actions>
-            <md-button class="md-primary" v-on:click="onCancel">Close
+            <md-button class="md-primary" v-on:click="onCancel">
+                Annuler
             </md-button>
-            <md-button class="md-primary" v-on:click="onConfirm">Save
+            <md-button class="md-primary" v-on:click="onConfirm">
+                Valider
             </md-button>
         </md-dialog-actions>
     </md-dialog>
@@ -62,7 +66,6 @@
 
     methods: {
       onConfirm: function () {
-        console.log( this.stepColor );
         const stepId =
           SpinalServiceTicket.createStep( this.stepName,
             this.stepColor.hex );
@@ -83,5 +86,7 @@
 </script>
 
 <style scoped>
-
+    .add-step-modal-body{
+        padding: 24px;
+    }
 </style>

@@ -27,11 +27,11 @@
             :md-active="displayAddCategory"
             @md-cancel="onCancel"
             @md-confirm="onConfirm"
-            md-cancel-text="cancel"
-            md-confirm-text="validate"
+            md-cancel-text="Annuler"
+            md-confirm-text="Valider"
             md-input-maxlength="30"
-            md-input-placeholder="Category name..."
-            md-title="What's the category"
+            md-input-placeholder="Nom de l'incident"
+            md-title="Incident commun"
             v-model="categoryName"/>
 
 </template>

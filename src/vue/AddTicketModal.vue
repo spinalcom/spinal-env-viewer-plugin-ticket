@@ -26,30 +26,29 @@
 <template>
     <md-dialog :md-active="displayAddTicket">
 
-        <md-field>
-            <md-select name="Process" v-model="selectedProcess">
-                <md-option :key="index"
-                           :value="process.id.get()"
-                           v-for="(process, index) in getProcess()">
-                    {{process.name.get()}}
-                </md-option>
-            </md-select>
-        </md-field>
+        <div class="add-ticket-modal-body">
+            <md-field>
+                <md-select name="Process" v-model="selectedProcess">
+                    <md-option :key="index"
+                               :value="process.id.get()"
+                               v-for="(process, index) in processesComputed">
+                        {{process.name.get()}}
+                    </md-option>
+                </md-select>
+            </md-field>
 
-        <spinal-list :items="getCategories()"
-                     @item-selected="selectedCategory = $event"/>
+            <spinal-list :items="categories"
+                         @item-selected="selectedCategory = $event"/>
 
-
-
-        <md-field>
-            <label>note</label>
-            <md-input aria-placeholder="note..." v-model="note"/>
-        </md-field>
-
+            <md-field>
+                <label>note</label>
+                <md-input aria-placeholder="note..." v-model="note"/>
+            </md-field>
+        </div>
         <md-dialog-actions>
-            <md-button class="md-primary" v-on:click="onCancel">Close
+            <md-button class="md-primary" v-on:click="onCancel">Annuler
             </md-button>
-            <md-button class="md-primary" v-on:click="onConfirm">Save
+            <md-button class="md-primary" v-on:click="onConfirm">Valider
             </md-button>
         </md-dialog-actions>
     </md-dialog>
@@ -65,6 +64,14 @@
     SpinalListItem
   } from "spinal-env-viewer-vue-components-lib";
 
+  function spread() {
+    const res = {};
+    for (const arg of arguments) {
+      Object.assign( res, arg );
+    }
+    return res;
+  }
+
   export default {
     name: "AddTicket",
     components: { SpinalList, SpinalListItem },
@@ -72,13 +79,32 @@
       return {
         ticketName: "",
         selectedCategory: { value: '' },
-        categories: [],
         selectedProcess: '',
-        note: ''
+        note: '',
+        categories: []
       }
     },
 
-    computed: mapState( ['displayAddTicket', 'selectedNode', 'processes', 'categoryByProcess'] ),
+    computed: spread(
+      mapState( [
+        'displayAddTicket',
+        'selectedNode',
+        'processes',
+        'categoryByProcess'
+      ] ),
+      {
+        processesComputed: function () {
+          if (typeof this.processes !== "undefined") {
+            const processes = [];
+            for (let i = 0; i < this.processes.length; i++) {
+              processes.push( SpinalGraphService.getNode( this.processes[i] ) );
+            }
+            return processes;
+          }
+          return [];
+        },
+      }
+    ),
 
     methods: {
       getProcess: function () {
@@ -126,16 +152,32 @@
       }
     },
     watch: {
+      'selectedProcess': {
+        handler: function ( value ) {
+          const categories = this.$store.getters.getCategories( value );
+          const tmpCat = [];
+          for (let i = 0; i < categories.length; i++) {
+            console.log( 'categorie', categories[i][0] );
+            tmpCat.push( categories[i][0] );
+          }
+          this.categories.push( ...tmpCat );
+        }
+      },
       'selectedCategory': {
         handler: function ( value ) {
           console.log( value )
         },
         immediate: true
       }
+    },
+    mounted() {
+      this.$store.dispatch( 'getProcess' );
     }
   }
 </script>
 
 <style scoped>
-
+    .add-ticket-modal-body{
+        padding: 8px;
+    }
 </style>
