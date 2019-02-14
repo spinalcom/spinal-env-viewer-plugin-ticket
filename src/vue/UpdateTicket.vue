@@ -20,24 +20,27 @@ with this file. If not, see
 
 <template>
 	<div style="margin-left: 10px">
-	<p>Change ticket's step</p>
-	<select v-bind="select">
-		<option v-for="steps in listOfSteps"  >
+	<p class="lineDataForTicket">Titre du ticket :      {{ ticketName }}</p>
+	<p class="lineDataForTicket">Changer l'état du ticket 
+	<select class="dataElement" v-model="select">
+		<option v-for="steps in listOfSteps">
 			{{ steps }}	
 		</option>
-	</select>	
-	<p>Change ticket's note</p>
-	<input type="text" v-model="note">
-	<md-button class="md-raised md-primary button-valid-modif-ticket" style="position:absolute; margin-top:40px" v-on:click="changeTicket">Change</md-button>
+	</select>
+	</p>
+	<p class="lineDataForTicket">Changer la note du ticket
+	<input class="dataElement" type="text" v-model="note">
+	</p>
+	<md-button class="md-raised md-primary button-valid-modif-ticket" style="position:absolute; margin-top:15px" v-on:click="changeTicket">Valider</md-button>
 	</div>
 </template>
 
 <script>
 import { SpinalGraphService } from 'spinal-env-viewer-graph-service';
-
+import { SpinalServiceTicket } from 'spinal-service-ticket';
 export default {
   name: "PanelUpdateTicket",
-  props: ["updateticketObj", "listOfSteps"],
+  props: ["updateticketObj", "listOfSteps", "currentProcess", "stepNode", "stepFrom"],
   data() {
     return {
 		stepsSelected: "",
@@ -54,13 +57,24 @@ export default {
     changeTicket: function() {
 		let realNode = SpinalGraphService.getRealNode(this.updateticketObj.id.get());
 		console.log(realNode);
-		console.log("note =", this.note, " step =",this.stepsSelected);
+		console.log("current process:", this.currentProcess, " current step=", this.stepNode);
+		realNode.info.note.set(this.note);
+
+		if (this.currentSelect !== this.select) {
+			console.log();
+			console.log(this.stepNode);
+			SpinalServiceTicket.moveTicket(this.updateticketObj.id.get(), this.stepNode[this.currentSelect], this.stepNode[this.select])
+		}
+		//SpinalServiceTicket.getTicketsFromStepAsync(realNode.info.id.get()).then(steps => console.log("steps = ", steps))
+		console.log("note =", this.note, " step =",this.select);
     }
   },
   mounted: function() {
 	this.select = this.listOfSteps[0];
+	this.currentSelect = this.select;
 	console.log(this.updateticketObj);
 	this.note = this.updateticketObj.note.get();
+	this.ticketName = this.updateticketObj.name.get()
   }
 };
 
@@ -70,7 +84,15 @@ export default {
 #modifyPanelTicket {
 	margin-left: 10px;
 }
-#utton-valid-modif-ticket {
+#button-valid-modif-ticket {
 	margin-top: 1px;
+}
+.dataElement {
+	background: #505254;
+	margin-top: 4px;
+	color: white;
+}
+.dataElement:hover {
+  background-color: #262728;
 }
 </style>

@@ -25,7 +25,7 @@ with this file. If not, see
 
   <div id="selectStepDiv">
    <select v-model="stepList">
-    <option disabled value="">Chose Process</option>
+    <option disabled value="">Choose Process</option>
     <option v-for="ticket in tickets">
       {{ ticket }}
     </option>
@@ -46,10 +46,13 @@ with this file. If not, see
 
   </div>
 
+  <md-button v-if="selected==1" class="md-raised" style="margin-left:10px; margin-top:19px" v-on:click="selected=0">Retour</md-button>
   <updateticket v-if="selected==1"
                 :updateticketObj="updateticketObj"
-                :listOfSteps="stepsList"></updateticket>
-  <md-button v-if="selected==1" class="md-raised md-accent" style="margin-left:80px; margin-top:19px" v-on:click="selected=0">Return</md-button>
+                :listOfSteps="stepsList"
+                :currentProcess="selectedProcess"
+                :stepNode="listOfStepsForProcess"
+                :stepFrom="steps"></updateticket>
 </div>
 </template>
 
@@ -131,6 +134,7 @@ export default {
     selectSteps: function(event) {
       //console.log("selected steps", event, this.selectedProcess);
       let str = event.target.innerText;
+      console.log("------------->", this.steps)
       //str = str.replace(/\s+/g, '');
       this.ticketNode = [];
       this.ticketsList = [];
@@ -177,18 +181,23 @@ export default {
           .then((k) => {
              let stepsName = [];
              let name;
+             let stepNode;
+             this.listOfStepsForProcess = {};
 
              for (var i in k) {
-                name = SpinalGraphService.getRealNode(k[i].id.get()).info.name.get();
+                stepNode = SpinalGraphService.getRealNode(k[i].id.get());
+                name = stepNode.info.name.get();
                 stepsName.push(name);
-                if (name == "Declared") {
+                this.listOfStepsForProcess[name] = stepNode;
+
+                if (name == "Déclarer") {
                   let realnode = SpinalGraphService.getRealNode(k[i].id.get());
 
                   realnode.getChildren().then((tickets) => {
                        for (var node in tickets) {
 
-                          self.ticketNode.push(tickets[node]);
-                          console.log(tickets[node]);
+                          self.ticketNode.push(tickets[node].info);
+                          console.log(tickets[node], "<-----------");
                           self.ticketsList.push(tickets[node].info.note.get());
                         }
                   });
