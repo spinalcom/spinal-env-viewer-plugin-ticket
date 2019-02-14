@@ -39,7 +39,7 @@
             <md-field>
                 <md-select name="incidents commun" v-model="selectedCategory">
                     <md-option :key="index"
-                               :value="incident.name"
+                               :value="incident.id"
                                v-for="(incident, index) in incidents">
                         {{incident.name}}
                     </md-option>
@@ -135,7 +135,7 @@
       },
       onConfirm: function () {
        const ticket = {
-          name: this.selectedCategory.value.value,
+          name: this.selectedCategory,
           note: this.note,
           categories: this.selectedCategory,
           processId: this.selectedProcess
