@@ -104,17 +104,17 @@ export default {
       this.activeNodesId = [ event.nodeId ];
     },
     zoomRoom: function(event) {
-      console.log("event  selecte room");
+      //console.log("event  selecte room");
       let str = event.target.parentElement.firstElementChild.innerText;
 
       for (var i in this.ticketNode) {
         if (this.ticketNode[i].note.get() === str) {
           //window.spinal.ForgeViewer.viewer.select(this.ticketNode[i].element.info.model_id);
           //let el = SpinalGraphService.getRealNode(this.ticketNode[i].element.info.id.get());
-          console.log(this.ticketNode[i].element);
+          //console.log(this.ticketNode[i].element);
           //window.spinal.ForgeViewer.viewer.select(el.)
 
-          console.log(this.ticketNode[i])
+          //console.log(this.ticketNode[i])
         }
       }
     },
@@ -125,7 +125,7 @@ export default {
       for (var i in this.ticketNode) {
         if (this.ticketNode[i].note.get() === nodeValue) {
           this.updateticketObj = this.ticketNode[i];
-          console.log("found ticket", nodeValue);
+          //console.log("found ticket", nodeValue);
         }
       }
 
@@ -134,7 +134,7 @@ export default {
     selectSteps: function(event) {
       //console.log("selected steps", event, this.selectedProcess);
       let str = event.target.innerText;
-      console.log("------------->", this.steps)
+      //console.log("------------->", this.steps)
       //str = str.replace(/\s+/g, '');
       this.ticketNode = [];
       this.ticketsList = [];
@@ -174,7 +174,7 @@ export default {
       while ( ite < process.size ) {
         iterator_value = iterator1.next().value;
         processName = SpinalGraphService.getRealNode(iterator_value);
-        console.log(processName, value)
+        //console.log(processName, value)
         if (processName.info.name.get() === value) {
           self.selectedProcess = processName;
           SpinalServiceTicket.getStepsFromProcessAsync(iterator_value)
@@ -197,7 +197,7 @@ export default {
                        for (var node in tickets) {
 
                           self.ticketNode.push(tickets[node].info);
-                          console.log(tickets[node], "<-----------");
+                          //console.log(tickets[node], "<-----------");
                           self.ticketsList.push(tickets[node].info.note.get());
                         }
                   });
