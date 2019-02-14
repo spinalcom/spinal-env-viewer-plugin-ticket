@@ -68,7 +68,6 @@
           'accessible',
           'account_balance',
           'alarm',
-          'all_inbox',
           'all_out',
           'announcement',
           'bug_report',
@@ -82,7 +81,6 @@
           'ac_unit',
           'spa',
           'kitchen',
-          'meeting_room'
         ],
         selectedIcon: "",
       }

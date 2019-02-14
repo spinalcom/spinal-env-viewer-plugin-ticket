@@ -24,31 +24,34 @@
 
 
 <template>
-    <md-dialog :md-active="displayModifyTicket">
-        <md-field>
-            <label>Titre de l'incident</label>
-            <md-input v-model="ticketName"></md-input>
-        </md-field>
 
-        <md-field>
-            <label>Note</label>
-            <md-input v-model="ticketNote"></md-input>
-        </md-field>
+        <md-dialog :md-active="displayModifyTicket">
+            <div class="modify-ticket-modal-body">
+            <md-field>
+                <label>Titre de l'incident</label>
+                <md-input v-model="ticketName"></md-input>
+            </md-field>
 
-        <label for="steps">Etape</label>
-        <select id="steps" name="steps" v-model="selectedStep">
-            <option :value="step.id" v-for="step in getStep()">
-                {{step.name}}
-            </option>
-        </select>
-
-        <md-dialog-actions>
-            <md-button class="md-primary" v-on:click="onCancel">Annuler
-            </md-button>
-            <md-button class="md-primary" v-on:click="onConfirm">Valider
-            </md-button>
-        </md-dialog-actions>
-    </md-dialog>
+            <md-field>
+                <label>Note</label>
+                <md-input v-model="ticketNote"></md-input>
+            </md-field>
+            <md-field>
+                <label for="steps">Etape</label>
+                <md-select id="steps" name="steps" v-model="selectedStep">
+                    <md-option :value="step.id" v-for="step in steps">
+                        {{step.name}}
+                    </md-option>
+                </md-select>
+            </md-field>
+            <md-dialog-actions>
+                <md-button class="md-primary" v-on:click="onCancel">Annuler
+                </md-button>
+                <md-button class="md-primary" v-on:click="onConfirm">Valider
+                </md-button>
+            </md-dialog-actions>
+            </div>
+        </md-dialog>
 
 </template>
 
@@ -66,10 +69,10 @@
         selectedStep: "",
         ticketName: "",
         ticketNote: '',
-        steps: [{ name: "" }]
-
+        steps: []
       }
     },
+
 
     computed: mapState( ['displayModifyTicket', 'selectedNode'] ),
 
@@ -77,9 +80,11 @@
       onConfirm: function () {
 
         if (this.selectedStep !== this.selectedNode.stepId) {
-          SpinalServiceTicket.moveTicket( this.selectedNode.id.get(),
+          SpinalServiceTicket.moveTicket(
+            this.selectedNode.id.get(),
             this.selectedNode.stepId.get(),
-            this.selectedStep );
+            this.selectedStep
+          );
         }
         if (this.ticketName !== this.selectedNode.name) {
           SpinalGraphService
@@ -97,20 +102,26 @@
         this.$store.commit( 'TOGGLE_MODIFY_TICKET' )
       },
 
-      getStep: function () {
+      getStep: async function () {
         if (
           (typeof this.selectedNode !== "undefined")
           && this.selectedNode.hasOwnProperty( 'processId' )
         ) {
 
           const processId = this.selectedNode.processId.get();
-          const stepIds = SpinalServiceTicket
-            .getStepsFromProcess( processId );
-
-          return stepIds.map( ( stepId ) => {
-            const node = SpinalGraphService.getNode( stepId );
+          const stepIds = await SpinalServiceTicket
+            .getStepsFromProcessAsync( processId );
+          const steps = stepIds.map( ( stepId ) => {
+            const node = SpinalGraphService.getNode( stepId.id.get() );
             return { id: node.id.get(), name: node.name.get() }
           } );
+          if (steps.length !== this.steps.length) {
+            for (let i = 0; i < steps.length; i++) {
+              if (!this.steps.includes(steps[i]))
+                this.steps.push(steps[i])
+            }
+          }
+
         }
         return [];
       }
@@ -142,11 +153,20 @@
           }
         },
         immediate: true
+      },
+      'selectedNode.processId': {
+        handler: function ( value ) {
+          this.getStep();
+        },
+        immediate: true
       }
     }
   }
 </script>
-
 <style scoped>
+
+    .modify-ticket-modal-body {
+        padding: 16px;
+    }
 
 </style>

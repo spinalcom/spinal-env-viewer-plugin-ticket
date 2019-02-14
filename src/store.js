@@ -26,7 +26,8 @@ import vuex from 'vuex';
 import vue from 'vue';
 import { SpinalGraphService } from 'spinal-env-viewer-graph-service'
 import { SpinalServiceTicket } from "spinal-service-ticket";
-import { SPINAL_TICKET_SERVICE_PROCESS_RELATION_NAME, SPINAL_TICKET_SERVICE_STEP_RELATION_NAME } from "spinal-service-ticket/dist/Constants";
+import { SPINAL_TICKET_SERVICE_PROCESS_RELATION_NAME,
+  SPINAL_TICKET_SERVICE_STEP_RELATION_NAME } from "spinal-service-ticket/dist/Constants";
 
 
 
@@ -125,8 +126,6 @@ const store = new vuex.Store( {
           context.commit('ADD_PROCESS', processId);
           SpinalServiceTicket.getCategoriesFromProcess( processId )
             .then( categories => {
-              console.log('categories', categories);
-              console.log('processID', processId)
               context.commit( 'ADD_CATEGORY_BY_PROCESS', {
                 process: processId,
                 categories
@@ -151,8 +150,8 @@ const store = new vuex.Store( {
     }
   },
   getters: {
-    getCategories: (state) => (processId) => {
-      return state.categoryByProcess.get(processId);
+    getCategories: (state) =>  (processId) => {
+      return  SpinalServiceTicket.getCategoriesFromProcess(processId);
     }
   }
 } );
