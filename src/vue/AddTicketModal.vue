@@ -134,7 +134,6 @@
         return [];
       },
       onConfirm: function () {
-        console.log('selecetedCategoy', this.selectedCategory);
        const ticket = {
           name: this.selectedCategory.value.value,
           note: this.note,
