@@ -36,9 +36,16 @@
                     </md-option>
                 </md-select>
             </md-field>
+            <md-field>
+                <md-select name="incidents commun" v-model="selectedCategory">
+                    <md-option :key="index"
+                               :value="incident.name"
+                               v-for="(incident, index) in incidents">
+                        {{incident.name}}
+                    </md-option>
+                </md-select>
+            </md-field>
 
-            <spinal-list :items="categories"
-                         @item-selected="selectedCategory = $event"/>
 
             <md-field>
                 <label>note</label>
@@ -81,7 +88,7 @@
         selectedCategory: { value: '' },
         selectedProcess: '',
         note: '',
-        categories: []
+        incidents: []
       }
     },
 
@@ -127,16 +134,20 @@
         return [];
       },
       onConfirm: function () {
-        const ticket = {
+        console.log('selecetedCategoy', this.selectedCategory);
+       const ticket = {
           name: this.selectedCategory.value.value,
           note: this.note,
-          categories: this.selectedCategory
+          categories: this.selectedCategory,
+          processId: this.selectedProcess
         };
 
         const ticketId = SpinalServiceTicket.createTicket( ticket );
 
         SpinalServiceTicket.addLocationToTicket( ticketId,
-          this.selectedNode.id.get() );
+          this.selectedNode.id.get()
+        );
+
         SpinalServiceTicket.addTicketToProcess( ticketId,
           this.selectedProcess )
           .then( () => {
@@ -146,7 +157,6 @@
             console.error( e )
           } );
       },
-
       onCancel: function () {
         this.$store.commit( 'TOGGLE_ADD_TICKET' )
       }
@@ -154,13 +164,12 @@
     watch: {
       'selectedProcess': {
         handler: function ( value ) {
-          const categories = this.$store.getters.getCategories( value );
-          const tmpCat = [];
-          for (let i = 0; i < categories.length; i++) {
-            console.log( 'categorie', categories[i][0] );
-            tmpCat.push( categories[i][0] );
-          }
-          this.categories.push( ...tmpCat );
+            this.$store.getters.getCategories( value ).then(incidents => {
+              for (let i = 0; i < incidents.length; i++) {
+                console.log('incident', incidents[i][0]);
+                this.incidents.push( incidents[i][0]  );
+              }
+            });
         }
       },
       'selectedCategory': {
