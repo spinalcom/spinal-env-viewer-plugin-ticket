@@ -16,7 +16,7 @@
     "spinal-env-viewer-graph-service": "git+https://github.com/spinalcom/Spinal-Graph-Service.git",
     "spinal-env-viewer-panel-manager-service": "git+https://github.com/spinalcom/spinal-env-viewer-panel-manager-service.git",
     "spinal-env-viewer-vue-components-lib": "git+https://github.com/spinalcom/spinal-env-viewer-vue-components-lib.git",
-    "spinal-service-ticket": "git+https://github.com/spinalcom/spinal-service-ticket.git",
+    "spinal-service-ticket": "https://github.com/spinalcom/spinal-service-ticket.git",
     "vue": "^2.5.21",
     "vue-color": "^2.7.0",
     "vue-toasted": "^1.1.26",
