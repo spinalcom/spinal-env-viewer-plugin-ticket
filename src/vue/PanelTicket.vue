@@ -24,7 +24,7 @@ with this file. If not, see
   <div v-if="selected==0">
 
   <div id="selectStepDiv">
-   <select v-model="stepList">
+   <select id="selectStepDivId" v-model="stepList">
     <option disabled value="">Choose Process</option>
     <option v-for="ticket in tickets">
       {{ ticket }}
@@ -84,23 +84,25 @@ export default {
     };
   },
   methods: {
-    opened: function(option) {
+    opened: function() {
       let self = this;
       this.tickets = [];
       SpinalGraphService.getChildren(SpinalGraphService.getContext("Ticket Service").info.id.get())
-      .then(k => k.forEach(function(el){ self.tickets.push(el.name.get()); } ) );
+      .then(k => k.forEach(function(el){ self.tickets.push(el.name.get()); console.log("lol")} ) );
+      if (this.stepList !== "")
+        this.selectProcess(this.thisProcess);
     },
     closed: function() {
-      console.log("closed ticketpanel");
-    },
-    onHideBimObject: function ( event ) {
-      console.log( "hide bim obj event", event )
+    this.nodes = {};
+    this.displayNodes = [];
+    this.stepsList = [];
+    this.ticketsList = [];
+    this.ticketNode = [];
     },
     hasChildInContext: function (id, contextId) {
       return SpinalGraphService.hasChildInContext(id, contextId);
     },
     onNodeSelected: function(event) {
-      console.log(event);
       this.activeNodesId = [ event.nodeId ];
     },
     zoomRoom: function(event) {
@@ -125,17 +127,13 @@ export default {
       for (var i in this.ticketNode) {
         if (this.ticketNode[i].note.get() === nodeValue) {
           this.updateticketObj = this.ticketNode[i];
-          //console.log("found ticket", nodeValue);
         }
       }
 
       this.selected = 1;
     },
     selectSteps: function(event) {
-      //console.log("selected steps", event, this.selectedProcess);
       let str = event.target.innerText;
-      //console.log("------------->", this.steps)
-      //str = str.replace(/\s+/g, '');
       this.ticketNode = [];
       this.ticketsList = [];
       let self = this;
@@ -152,11 +150,8 @@ export default {
         }
       })
 
-    }
-  },
-  watch: {
-    stepList:  function(value) {
-
+    },
+    selectProcess: function(value) {
       let processName;
       let iterator_value;
 
@@ -174,7 +169,6 @@ export default {
       while ( ite < process.size ) {
         iterator_value = iterator1.next().value;
         processName = SpinalGraphService.getRealNode(iterator_value);
-        //console.log(processName, value)
         if (processName.info.name.get() === value) {
           self.selectedProcess = processName;
           SpinalServiceTicket.getStepsFromProcessAsync(iterator_value)
@@ -195,9 +189,7 @@ export default {
 
                   realnode.getChildren().then((tickets) => {
                        for (var node in tickets) {
-
                           self.ticketNode.push(tickets[node].info);
-                          //console.log(tickets[node], "<-----------");
                           self.ticketsList.push(tickets[node].info.note.get());
                         }
                   });
@@ -220,6 +212,16 @@ export default {
         ite++;
       }
       });
+    }
+  },
+  watch: {
+    stepList:  function(value) {
+      this.thisProcess = value;
+      this.selectProcess(value);
+    },
+    selected: function() {
+      if (this.selected == 0)
+        this.selectProcess(this.thisProcess);
     }
   },
   mounted: function() {
