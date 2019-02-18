@@ -39,7 +39,7 @@
             <md-field>
                 <md-select name="incidents commun" v-model="selectedCategory">
                     <md-option :key="index"
-                               :value="incident.id"
+                               :value="incident"
                                v-for="(incident, index) in incidents">
                         {{incident.name}}
                     </md-option>
@@ -134,10 +134,11 @@
         return [];
       },
       onConfirm: function () {
+
        const ticket = {
-          name: this.selectedCategory,
+          name: this.selectedCategory.name,
           note: this.note,
-          categories: this.selectedCategory,
+          categories: this.selectedCategory.id,
           processId: this.selectedProcess
         };
 
@@ -165,7 +166,6 @@
         handler: function ( value ) {
             this.$store.getters.getCategories( value ).then(incidents => {
               for (let i = 0; i < incidents.length; i++) {
-                console.log('incident', incidents[i][0]);
                 this.incidents.push( incidents[i][0]  );
               }
             });
