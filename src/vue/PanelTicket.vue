@@ -60,6 +60,9 @@ with this file. If not, see
 import { SpinalServiceTicket } from 'spinal-service-ticket';
 import { SpinalGraphService } from 'spinal-env-viewer-graph-service';
 import updateticket from './UpdateTicket.vue';
+import {
+  SPINAL_TICKET_SERVICE_TARGET_RELATION_NAME
+} from "spinal-service-ticket/dist/Constants";
 
 export default {
   name: "PanelTicket",
@@ -111,14 +114,31 @@ export default {
 
       for (var i in this.ticketNode) {
         if (this.ticketNode[i].note.get() === str) {
-          //window.spinal.ForgeViewer.viewer.select(this.ticketNode[i].element.info.model_id);
-          //let el = SpinalGraphService.getRealNode(this.ticketNode[i].element.info.id.get());
-          //console.log(this.ticketNode[i].element);
-          //window.spinal.ForgeViewer.viewer.select(el.)
+          console.log("zoom", this.ticketNode[i]);
+          let realNode = SpinalGraphService.getRealNode(this.ticketNode[i].id.get());
 
-          //console.log(this.ticketNode[i])
+          this.viewer = window.spinal.ForgeViewer.viewer;
+          let self = this;
+          realNode.find( [
+            SPINAL_TICKET_SERVICE_TARGET_RELATION_NAME,
+            "hasBIMObject",
+            'hasReferenceObject'
+          ],
+          this.predicat
+          )
+          .then( lst => {
+            console.log("in then", lst)
+            self.viewer.clearSelection();
+            let result = lst.map( x => x.info.dbid.get() );
+            console.log(result);
+            self.viewer.select( result );
+          } );
         }
       }
+    },
+    predicat: function( node ) {
+      console.log(node);
+      return node.info.type.get() === "BIMObject";
     },
     modifyTicket: function(event) {
 
@@ -149,7 +169,6 @@ export default {
           }
         }
       })
-
     },
     selectProcess: function(value) {
       let processName;
@@ -193,16 +212,6 @@ export default {
                           self.ticketsList.push(tickets[node].info.note.get());
                         }
                   });
-
-                   // SpinalServiceTicket.getTicketsFromStepAsync(k[i].id.get()).then((tickets) => {
-
-                   //    for (var node in tickets) {
-                   //       self.ticketNode.push(tickets[node]);
-                   //       console.log(tickets[node]);
-                   //       self.ticketsList.push(tickets[node].note.get());
-                   //     }
-                   // })
-
                 }
              }
              self.stepsList = stepsName;
