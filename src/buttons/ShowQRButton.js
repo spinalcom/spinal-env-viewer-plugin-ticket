@@ -41,12 +41,15 @@ export class ShowQRButton extends SpinalContextApp {
   }
   
   isShown( option ) {
-    const relationName = SpinalGraphService.getRelationNames( option.selectedNode.id.get() );
-    
-    if (relationName.includes( QR_CODE_RELATION_NAME )) {
-      return Promise.resolve( true );
+    if (typeof option.selectedNode !== 'undefined') {
+      const relationName = SpinalGraphService.getRelationNames( option.selectedNode.id.get() );
+      if (relationName.includes( QR_CODE_RELATION_NAME )) {
+        return Promise.resolve( true );
+      }
+      else {
+        return Promise.resolve( -1 );
+      }
     }
-    
     return Promise.resolve( -1 );
   }
   
