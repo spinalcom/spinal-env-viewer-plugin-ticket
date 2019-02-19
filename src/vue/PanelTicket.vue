@@ -109,12 +109,10 @@ export default {
       this.activeNodesId = [ event.nodeId ];
     },
     zoomRoom: function(event) {
-      //console.log("event  selecte room");
       let str = event.target.parentElement.firstElementChild.innerText;
 
       for (var i in this.ticketNode) {
         if (this.ticketNode[i].note.get() === str) {
-          console.log("zoom", this.ticketNode[i]);
           let realNode = SpinalGraphService.getRealNode(this.ticketNode[i].id.get());
 
           this.viewer = window.spinal.ForgeViewer.viewer;
@@ -127,10 +125,8 @@ export default {
           this.predicat
           )
           .then( lst => {
-            console.log("in then", lst)
             self.viewer.clearSelection();
             let result = lst.map( x => x.info.dbid.get() );
-            console.log(result);
             self.viewer.select( result );
           } );
         }
