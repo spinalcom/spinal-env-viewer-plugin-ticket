@@ -96,7 +96,13 @@ export default {
       SpinalGraphService.getChildren(SpinalGraphService.getContext("Ticket Service").info.id.get())
       .then(k => k.forEach(function(el){
         self.tickets.push(el.name.get());
-      //  console.log(self.doc.getElementById("selectStepDivId"))
+        let El = self.doc.getElementById("selectStepDivId");
+        setTimeout(function() {
+          self.selectProcess(El.innerText);
+          setTimeout(function() {
+            El.firstChild.setAttribute("selected", "selected");
+          }, 100);
+        }, 100);
       })
 
       );
@@ -104,11 +110,11 @@ export default {
         this.selectProcess(this.thisProcess);
     },
     closed: function() {
-    this.nodes = {};
-    this.displayNodes = [];
-    this.stepsList = [];
-    this.ticketsList = [];
-    this.ticketNode = [];
+      this.nodes = {};
+      this.displayNodes = [];
+      this.stepsList = [];
+      this.ticketsList = [];
+      this.ticketNode = [];
     },
     hasChildInContext: function (id, contextId) {
       return SpinalGraphService.hasChildInContext(id, contextId);
@@ -117,6 +123,7 @@ export default {
       this.activeNodesId = [ event.nodeId ];
     },
     zoomRoom: function(event) {
+      console.log("zoomRoom");
       let str = event.target.parentElement.firstElementChild.innerText;
 
       for (var i in this.ticketNode) {
