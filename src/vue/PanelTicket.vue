@@ -33,7 +33,9 @@ with this file. If not, see
   </div>
 
   <div class="stepbox" v-for="step in stepsList">
+    <md-badge md-position="bottom" class="md-primary lolkekos" md-content="1">
       <md-button type="button" v-on:click="selectSteps">{{ step }} </md-button>
+    </md-badge>
   </div>
 
   <div class="divDisplayTickets">
@@ -123,11 +125,11 @@ export default {
       this.activeNodesId = [ event.nodeId ];
     },
     zoomRoom: function(event) {
-      console.log("zoomRoom");
+
       let str = event.target.parentElement.firstElementChild.innerText;
 
       for (var i in this.ticketNode) {
-        if (this.ticketNode[i].note.get() === str) {
+        if (this.ticketNode[i].name.get() === str) {
           let realNode = SpinalGraphService.getRealNode(this.ticketNode[i].id.get());
 
           let self = this;
@@ -391,4 +393,8 @@ export default {
   margin-right: 20px;
 }
 
+.lolkekos {
+  height: 10px;
+  width: 10px;
+}
 </style>
