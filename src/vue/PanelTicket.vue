@@ -25,11 +25,11 @@ with this file. If not, see
 
   <div id="selectStepDiv">
    <select id="selectStepDivId" v-model="stepList">
-    <option disabled value="">Choose Process</option>
     <option v-for="ticket in tickets">
       {{ ticket }}
     </option>
   </select>
+    <md-icon class="ButtonShowAllTicket md-size-1x" title="show all ticket's place" v-on:click.native="zoomAllTickets">remove_red_eye</md-icon>
   </div>
 
   <div class="stepbox" v-for="step in stepsList">
@@ -39,8 +39,8 @@ with this file. If not, see
   <div class="divDisplayTickets">
     <div class="divTicketsWithButton" v-for="ticket in ticketsList">
         <p class="stepbox" v-on:click="modifyTicket"> {{ ticket }} </p>
-        <button class="ButtonChangeTicket" v-model="stepper" v-on:click="modifyTicket">Modify</button>
-          <md-icon class="ButtonChangeTicket md-size-1x" title="find room" v-on:click.native="zoomRoom">zoom_in</md-icon>
+        <md-icon class="ButtonChangeTicket" v-model="stepper" v-on:click.native="modifyTicket">edit</md-icon>
+        <md-icon class="ButtonChangeTicket md-size-1x" title="find room" v-on:click.native="zoomRoom">remove_red_eye</md-icon>
     </div>
   </div>
 
@@ -89,9 +89,17 @@ export default {
   methods: {
     opened: function() {
       let self = this;
+      this.viewer = window.spinal.ForgeViewer.viewer;
       this.tickets = [];
+      this.arrayOfSelect = [];
+      this.doc = document;
       SpinalGraphService.getChildren(SpinalGraphService.getContext("Ticket Service").info.id.get())
-      .then(k => k.forEach(function(el){ self.tickets.push(el.name.get()); console.log("lol")} ) );
+      .then(k => k.forEach(function(el){
+        self.tickets.push(el.name.get());
+      //  console.log(self.doc.getElementById("selectStepDivId"))
+      })
+
+      );
       if (this.stepList !== "")
         this.selectProcess(this.thisProcess);
     },
@@ -115,7 +123,6 @@ export default {
         if (this.ticketNode[i].note.get() === str) {
           let realNode = SpinalGraphService.getRealNode(this.ticketNode[i].id.get());
 
-          this.viewer = window.spinal.ForgeViewer.viewer;
           let self = this;
           realNode.find( [
             SPINAL_TICKET_SERVICE_TARGET_RELATION_NAME,
@@ -133,7 +140,6 @@ export default {
       }
     },
     predicat: function( node ) {
-      console.log(node);
       return node.info.type.get() === "BIMObject";
     },
     modifyTicket: function(event) {
@@ -147,6 +153,45 @@ export default {
       }
 
       this.selected = 1;
+    },
+    zoomAllTickets: function(event) {
+      let self = this;
+      let realNode;
+
+      for (var index in this.listOfStepsForProcess) {
+
+          this.listOfStepsForProcess[index].getChildren().then((tickets) => {
+
+            for (var node in tickets) {
+
+              realNode = SpinalGraphService.getRealNode(tickets[node].info.id.get());
+              // this.viewer.impl.setSelectionColor(new THREE.Color(realNode.info.color.get()))
+              realNode.find( [
+                SPINAL_TICKET_SERVICE_TARGET_RELATION_NAME,
+                "hasBIMObject",
+                'hasReferenceObject'
+              ],
+              this.predicat
+              )
+              .then( lst => {
+                self.viewer.clearSelection();
+                let result = lst.map( x => x.info.dbid.get() );
+                //self.viewer.select( result );
+                this.setColorMaterial(result, realNode.info.color.get());
+
+              } );
+
+
+            }
+        });
+      }
+       window.addEventListener("click", this.eventForColor, true);
+
+    },
+    eventForColor: function(event) {
+      this.restoreColorMaterial(this.arrayOfSelect);
+      window.removeEventListener("click", this.eventForColor);
+      event.preventDefault();
     },
     selectSteps: function(event) {
       let str = event.target.innerText;
@@ -165,6 +210,62 @@ export default {
           }
         }
       })
+    },
+    addMaterial: function(color) {
+      let material = new THREE.MeshPhongMaterial({
+        color: color
+      });
+      this.viewer.impl.createOverlayScene("temperary-colored-overlay", material, material);
+      return material;
+    },
+    setColorMaterial: function(objectids, color) {
+      let material = this.addMaterial(color);
+      self = this;
+      for (var i=0; i<objectids.length; i++ ) {
+
+        let objectId = objectids[i];
+        this.arrayOfSelect.push(objectId);
+        var it = self.viewer.model.getData().instanceTree;
+
+        it.enumNodeFragments(objectId, function (fragId) {
+
+        var renderProxy = self.viewer.impl.getRenderProxy(self.viewer.model, fragId);
+        renderProxy.meshProxy = new THREE.Mesh(renderProxy.geometry, renderProxy.material);
+
+        renderProxy.meshProxy.matrix.copy(renderProxy.matrixWorld);
+        renderProxy.meshProxy.matrixWorldNeedsUpdate = true;
+        renderProxy.meshProxy.matrixAutoUpdate = false;
+        renderProxy.meshProxy.frustumCulled = false;
+        self.viewer.impl.addOverlay("temperary-colored-overlay", renderProxy.meshProxy);
+        self.viewer.impl.invalidate(true);
+
+        }, false);
+      }
+    },
+    restoreColorMaterial: function(objectids) {
+
+      let self = this;
+      for (var i=0; i<objectids.length; i++ ) {
+        let objectid = objectids[i];
+
+        var it = self.viewer.model.getData().instanceTree;
+
+        it.enumNodeFragments(objectid, function (fragId) {
+
+        var renderProxy = self.viewer.impl.getRenderProxy(self.viewer.model, fragId);
+
+        if(renderProxy.meshProxy){
+
+          self.viewer.impl.clearOverlay("temperary-colored-overlay");
+          //viewer.impl.removeOverlay(overlayName, renderProxy.meshProxy);
+          delete renderProxy.meshProxy;
+
+          self.viewer.impl.invalidate(true);
+
+          }
+        }, true);
+      }
+      self.arrayOfSelect = [];
     },
     selectProcess: function(value) {
       let processName;
@@ -203,9 +304,10 @@ export default {
                   let realnode = SpinalGraphService.getRealNode(k[i].id.get());
 
                   realnode.getChildren().then((tickets) => {
+
                        for (var node in tickets) {
                           self.ticketNode.push(tickets[node].info);
-                          self.ticketsList.push(tickets[node].info.note.get());
+                          self.ticketsList.push(tickets[node].info.name.get());
                         }
                   });
                 }
@@ -261,7 +363,7 @@ export default {
 }
 
 .divTicketsWithButton {
-  /*display: inline-block;*/
+  height: 35px;
   margin-left: 10px;
 }
 
@@ -273,8 +375,13 @@ export default {
   display: inline-block;
   float: right;
   margin-right: 20px;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
+.ButtonShowAllTicket {
+  display: inline-block;
+  float: right;
+  margin-right: 20px;
+}
 
 </style>
