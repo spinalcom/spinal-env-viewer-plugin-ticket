@@ -220,7 +220,7 @@ export default {
     },
     setColorMaterial: function(objectids, color) {
       let material = this.addMaterial(color);
-      self = this;
+      let self = this;
       for (var i=0; i<objectids.length; i++ ) {
 
         let objectId = objectids[i];
@@ -257,7 +257,7 @@ export default {
         if(renderProxy.meshProxy){
 
           self.viewer.impl.clearOverlay("temperary-colored-overlay");
-          //viewer.impl.removeOverlay(overlayName, renderProxy.meshProxy);
+
           delete renderProxy.meshProxy;
 
           self.viewer.impl.invalidate(true);
