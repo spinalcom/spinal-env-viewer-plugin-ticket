@@ -38,6 +38,8 @@ import ModifyTicketModal from "./vue/ModifyTicketModal.vue";
 import ConfigProcessModal from "./vue/ConfigProcessModal.vue";
 import AddSubCategoryModal from "./vue/AddSubCategoryModal.vue";
 import ShowQR from "./vue/ShowQR.vue";
+import DisplayRoomTicketModal from "./vue/DisplayRoomTicketModal.vue";
+
 
 import { AddProcessButton } from './buttons/AddProcessButton';
 import { AddCategoyButton } from "./buttons/AddCategoyButton";
@@ -50,10 +52,13 @@ import { GenerateQR } from "./buttons/generateQR";
 import { ShowQRButton } from "./buttons/ShowQRButton";
 import { ShowRoom } from "./buttons/ShowRoom";
 import { TiketPanelBtn } from "./buttons/PanelTicketButton";
+import { DisplayRoomTicketsButton } from "./buttons/DisplayRoomTicketsButton";
+
 import Toasted from "vue-toasted"
 
 vue.use(Toasted);
-
+const TOP_BAR_HOOK_NAME = 'GraphManagerTopBar';
+const SIDE_BAR_HOOK_NAME = 'GraphManagerSideBar';
 if (typeof SpinalServiceTicket.contextId === "undefined") {
   const interval = setInterval( () => {
     if (SpinalGraphService.graph.hasOwnProperty( 'info' )) {
@@ -63,11 +68,11 @@ if (typeof SpinalServiceTicket.contextId === "undefined") {
   } );
 }
 
-spinalContextMenuService.registerApp( 'GraphManagerSideBar', new GenerateQR() );
+spinalContextMenuService.registerApp(SIDE_BAR_HOOK_NAME , new GenerateQR() );
 
-spinalContextMenuService.registerApp( 'GraphManagerSideBar', new ShowRoom() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new ShowRoom() );
 
-spinalContextMenuService.registerApp( 'GraphManagerSideBar', new AddProcessButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddProcessButton() );
 SpinalMountExtention.mount( {
   name: 'AddProcess',
   vueMountComponent: vue.extend(
@@ -90,7 +95,7 @@ SpinalMountExtention.mount( {
 } );
 
 
-spinalContextMenuService.registerApp( 'GraphManagerSideBar', new AddCategoyButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddCategoyButton() );
 SpinalMountExtention.mount( {
   name: 'AddCategory',
   vueMountComponent: vue.extend(
@@ -114,7 +119,7 @@ SpinalMountExtention.mount( {
 } );
 
 
-spinalContextMenuService.registerApp( 'GraphManagerSideBar', new AddSubCategoryButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddSubCategoryButton() );
 SpinalMountExtention.mount( {
   name: 'AddSubCategory',
   vueMountComponent: vue.extend(
@@ -138,7 +143,7 @@ SpinalMountExtention.mount( {
 } );
 
 
-spinalContextMenuService.registerApp( 'GraphManagerSideBar', new AddStepButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddStepButton() );
 SpinalMountExtention.mount( {
   name: 'AddStep',
   vueMountComponent: vue.extend(
@@ -162,7 +167,7 @@ SpinalMountExtention.mount( {
 } );
 
 
-spinalContextMenuService.registerApp( 'GraphManagerSideBar', new AddTicketButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddTicketButton() );
 SpinalMountExtention.mount( {
   name: 'AddTicket',
   vueMountComponent: vue.extend(
@@ -186,7 +191,7 @@ SpinalMountExtention.mount( {
 } );
 
 
-spinalContextMenuService.registerApp( 'GraphManagerSideBar', new ModifyTicketButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new ModifyTicketButton() );
 SpinalMountExtention.mount( {
   name: 'ModifyTicket',
   vueMountComponent: vue.extend(
@@ -211,7 +216,7 @@ SpinalMountExtention.mount( {
 } );
 
 
-spinalContextMenuService.registerApp( 'GraphManagerSideBar', new ConfigProcessButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new ConfigProcessButton() );
 SpinalMountExtention.mount( {
   name: 'ConfigProcess',
   vueMountComponent: vue.extend(
@@ -235,7 +240,7 @@ SpinalMountExtention.mount( {
 } );
 
 
-spinalContextMenuService.registerApp( 'GraphManagerSideBar', new ShowQRButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new ShowQRButton() );
 SpinalMountExtention.mount( {
   name: 'Show_QR',
   vueMountComponent: vue.extend(
@@ -256,7 +261,7 @@ SpinalMountExtention.mount( {
 
 } );
 
-spinalContextMenuService.registerApp( 'GraphManagerTopBar', new ShowQRButton() );
+spinalContextMenuService.registerApp( TOP_BAR_HOOK_NAME, new ShowQRButton() );
 SpinalMountExtention.mount( {
   name: 'Show_QR',
   vueMountComponent: vue.extend(
@@ -277,4 +282,12 @@ SpinalMountExtention.mount( {
 
 } );
 
-spinalContextMenuService.registerApp('GraphManagerTopBar', new TiketPanelBtn());
+spinalContextMenuService.registerApp(TOP_BAR_HOOK_NAME, new TiketPanelBtn());
+
+spinalContextMenuService.registerApp(SIDE_BAR_HOOK_NAME, new DisplayRoomTicketsButton());
+SpinalMountExtention.mount({
+  name: 'DisplayRoomTicket',
+  vueMountComponent: vue.extend(DisplayRoomTicketModal),
+  parentContainer: document.body
+  
+});
