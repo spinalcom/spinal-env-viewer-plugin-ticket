@@ -145,10 +145,6 @@
 
         const ticketId = SpinalServiceTicket.createTicket( ticket );
 
-
-        SpinalServiceTicket.addLocationToTicket( ticketId,
-          this.selectedNode.id.get()
-        );
         SpinalServiceTicket.addLocationToTicket(
           this.selectedNode.id.get(),
           ticketId
