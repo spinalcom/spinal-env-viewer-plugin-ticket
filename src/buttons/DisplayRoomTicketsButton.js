@@ -25,15 +25,16 @@
 
 import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
 import { SpinalGraphService } from "spinal-env-viewer-graph-service";
-import { QR_CODE_RELATION_NAME } from "../constant";
 import { spinalPanelManagerService } from "spinal-env-viewer-panel-manager-service";
+import { SPINAL_TICKET_SERVICE_TARGET_RELATION_NAME } from "spinal-service-ticket/dist/Constants";
+import GeographicContextService
+  from "spinal-env-viewer-context-geographic-service";
 
-
-export class ShowQRButton extends SpinalContextApp {
+export class DisplayRoomTicketsButton extends SpinalContextApp {
   
   constructor() {
-    super( 'Afficher le QRcode', 'Afficher le QRcode', {
-      icon: 'nfc',
+    super( 'Afficher tous les tickets associer a une room', 'Afficher tous les tickets associer a une room', {
+      icon: 'attach_money',
       icon_type: 'in',
       backgroundColor: '#000000',
       fontColor: '#ffffff',
@@ -41,9 +42,10 @@ export class ShowQRButton extends SpinalContextApp {
   }
   
   isShown( option ) {
-    if (typeof option.selectedNode !== 'undefined') {
+    if (typeof option.selectedNode.id !== 'undefined') {
       const relationName = SpinalGraphService.getRelationNames( option.selectedNode.id.get() );
-      if (relationName.includes( QR_CODE_RELATION_NAME )) {
+      if (relationName.includes( SPINAL_TICKET_SERVICE_TARGET_RELATION_NAME) &&
+        option.selectedNode.type.get()  === GeographicContextService.constants.ROOM_TYPE) {
         return Promise.resolve( true );
       }
       else {
@@ -54,10 +56,14 @@ export class ShowQRButton extends SpinalContextApp {
   }
   
   action( option ) {
-    SpinalGraphService.getChildren( option.selectedNode.id.get(), [QR_CODE_RELATION_NAME] )
+    SpinalGraphService.getChildren( option.selectedNode.id.get(), [SPINAL_TICKET_SERVICE_TARGET_RELATION_NAME] )
       .then( children => {
           if (children.length > 0) {
-            spinalPanelManagerService.openPanel( "Show_QR", children[0].qrcode );
+            const opt = {
+              roomName: option.selectedNode.name.get(),
+              tickets: children
+            };
+            spinalPanelManagerService.openPanel( "DisplayRoomTicket", opt );
           }
         }
       );

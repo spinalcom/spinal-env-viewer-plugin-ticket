@@ -39,7 +39,7 @@
             <md-field>
                 <md-select name="incidents commun" v-model="selectedCategory">
                     <md-option :key="index"
-                               :value="incident"
+                               :value="incident.id"
                                v-for="(incident, index) in incidents">
                         {{incident.name}}
                     </md-option>
@@ -134,18 +134,20 @@
         return [];
       },
       onConfirm: function () {
-
+        const selectedIncident = this.incidents.filter(incident =>
+          incident.id === this.selectedCategory);
        const ticket = {
-          name: this.selectedCategory.name,
+          name: selectedIncident[0].name,
           note: this.note,
-          categories: this.selectedCategory.id,
+          categories: selectedIncident[0].id,
           processId: this.selectedProcess
         };
 
         const ticketId = SpinalServiceTicket.createTicket( ticket );
 
-        SpinalServiceTicket.addLocationToTicket( ticketId,
-          this.selectedNode.id.get()
+        SpinalServiceTicket.addLocationToTicket(
+          this.selectedNode.id.get(),
+          ticketId
         );
 
         SpinalServiceTicket.addTicketToProcess( ticketId,
@@ -155,7 +157,8 @@
           } )
           .catch( ( e ) => {
             console.error( e )
-          } );
+          })
+        ;
       },
       onCancel: function () {
         this.$store.commit( 'TOGGLE_ADD_TICKET' )
@@ -165,9 +168,11 @@
       'selectedProcess': {
         handler: function ( value ) {
             this.$store.getters.getCategories( value ).then(incidents => {
+              this.incidents = [];
               for (let i = 0; i < incidents.length; i++) {
                 this.incidents.push( incidents[i][0]  );
               }
+              this.incidents.push({name: 'autre', id: 'autre'});
             });
         }
       },
