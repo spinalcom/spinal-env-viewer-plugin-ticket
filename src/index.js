@@ -261,27 +261,6 @@ SpinalMountExtention.mount( {
 
 } );
 
-spinalContextMenuService.registerApp( TOP_BAR_HOOK_NAME, new ShowQRButton() );
-SpinalMountExtention.mount( {
-  name: 'Show_QR',
-  vueMountComponent: vue.extend(
-    {
-      store,
-      render: h => h( ShowQR ),
-      methods: {
-        opened( option ) {
-          console.log("opened");
-        },
-        removed() {
-        },
-        closeDialog() {
-        },
-      }
-    } ),
-  parentContainer: document.body
-
-} );
-
 spinalContextMenuService.registerApp(TOP_BAR_HOOK_NAME, new TiketPanelBtn());
 
 spinalContextMenuService.registerApp(SIDE_BAR_HOOK_NAME, new DisplayRoomTicketsButton());
