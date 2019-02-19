@@ -33,9 +33,7 @@ with this file. If not, see
   </div>
 
   <div class="stepbox" v-for="step in stepsList">
-    <md-badge md-position="bottom" class="md-primary lolkekos" md-content="1">
       <md-button type="button" v-on:click="selectSteps">{{ step }} </md-button>
-    </md-badge>
   </div>
 
   <div class="divDisplayTickets">
@@ -156,7 +154,7 @@ export default {
       let nodeValue = event.target.previousSibling.previousElementSibling.innerText;
 
       for (var i in this.ticketNode) {
-        if (this.ticketNode[i].note.get() === nodeValue) {
+        if (this.ticketNode[i].name.get() === nodeValue) {
           this.updateticketObj = this.ticketNode[i];
         }
       }
