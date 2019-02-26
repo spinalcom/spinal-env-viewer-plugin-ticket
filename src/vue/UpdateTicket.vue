@@ -44,7 +44,9 @@ export default {
   data() {
     return {
 		stepsSelected: "",
-		note: ""
+		note: "",
+		ticketName: "",
+		select: ""
     };
   },
   methods: {
@@ -71,6 +73,7 @@ export default {
   mounted: function() {
 	this.select = this.listOfSteps[0];
 	this.currentSelect = this.select;
+	console.log(this.listOfSteps, this.select);
 	if (this.updateticketObj.note === undefined) {
 		this.note = "";
 		this.newAttrNote = true;
