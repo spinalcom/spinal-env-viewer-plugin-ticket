@@ -24,11 +24,13 @@ with this file. If not, see
   <div v-if="selected==0">
 
   <div id="selectStepDiv">
-   <select id="selectStepDivId" v-model="stepList">
-    <option v-for="ticket in tickets">
+  <md-field>
+   <md-select id="selectStepDivId" v-model="thisProcess" @md-selected="selectProcess">
+    <md-option v-for="ticket in tickets" :value="ticket" class="optionForSelect">
       {{ ticket }}
-    </option>
-  </select>
+    </md-option>
+  </md-select>
+  </md-field>
     <md-icon class="ButtonShowAllTicket md-size-1x" title="show all ticket's place" v-on:click.native="zoomAllTickets">remove_red_eye</md-icon>
   </div>
 
@@ -75,6 +77,7 @@ export default {
       selectedProcess: "",
       updateticketObj: {},
       tickets: [],
+      thisProcess: {},
       stepsList: [],
       stepList: '',
       ticketNode: [],
@@ -96,13 +99,7 @@ export default {
       SpinalGraphService.getChildren(SpinalGraphService.getContext("Ticket Service").info.id.get())
       .then(k => k.forEach(function(el){
         self.tickets.push(el.name.get());
-        let El = self.doc.getElementById("selectStepDivId");
-        setTimeout(function() {
-          self.selectProcess(El.innerText);
-          setTimeout(function() {
-            El.firstChild.setAttribute("selected", "selected");
-          }, 100);
-        }, 100);
+        self.thisProcess = self.tickets[0];
       })
 
       );
@@ -112,8 +109,8 @@ export default {
     closed: function() {
       this.nodes = {};
       this.displayNodes = [];
-      this.stepsList = [];
-      this.ticketsList = [];
+      //this.stepsList = [];
+      //this.ticketsList = [];
       this.ticketNode = [];
     },
     hasChildInContext: function (id, contextId) {
@@ -211,7 +208,7 @@ export default {
             SpinalGraphService.getChildren(childrens[i].id.get()).then((tickets) => {
               for ( var node in tickets ) {
                 self.ticketNode.push(tickets[node]);
-                self.ticketsList.push(tickets[node].note.get());
+                self.ticketsList.push(tickets[node].name.get());
               }
             });
           }
@@ -329,9 +326,13 @@ export default {
     }
   },
   watch: {
-    stepList:  function(value) {
-      this.thisProcess = value;
+    thisProcess: {
+      handler: function(value) {
+      console.log("call wathc", value)
+    //  this.thisProcess = value;
       this.selectProcess(value);
+    },
+    immediate: true,
     },
     selected: function() {
       if (this.selected == 0)
