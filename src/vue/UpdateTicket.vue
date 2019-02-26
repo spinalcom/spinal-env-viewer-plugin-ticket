@@ -56,25 +56,23 @@ export default {
     },
     changeTicket: function() {
 		let realNode = SpinalGraphService.getRealNode(this.updateticketObj.id.get());
-		//console.log(realNode);
-		//console.log("current process:", this.currentProcess, " current step=", this.stepNode);
 		realNode.info.note.set(this.note);
 
 		if (this.currentSelect !== this.select) {
-			//console.log();
-			//console.log(this.stepNode);
+			console.log(this.stepNode);
 			SpinalServiceTicket.moveTicket(this.updateticketObj.id.get(), this.stepNode[this.currentSelect], this.stepNode[this.select])
 		}
-		//SpinalServiceTicket.getTicketsFromStepAsync(realNode.info.id.get()).then(steps => console.log("steps = ", steps))
-		//console.log("note =", this.note, " step =",this.select);
     }
   },
   mounted: function() {
 	this.select = this.listOfSteps[0];
 	this.currentSelect = this.select;
-	//console.log(this.updateticketObj);
-	this.note = this.updateticketObj.note.get();
-	this.ticketName = this.updateticketObj.name.get()
+	if (this.updateticketObj.note === undefined) {
+		this.note = "";
+		this.newAttrNote = true;
+	} else
+		this.note = this.updateticketObj.note.get();
+	this.ticketName = this.updateticketObj.name.get();
   }
 };
 
