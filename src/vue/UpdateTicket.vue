@@ -56,7 +56,11 @@ export default {
     },
     changeTicket: function() {
 		let realNode = SpinalGraphService.getRealNode(this.updateticketObj.id.get());
-		realNode.info.note.set(this.note);
+		if (this.newAttrNote === true) {
+			realNode.info.add_attr({node: this.note});
+			SpinalGraphService.modifyNode(realNode.info.id.get(), {node: this.note});
+		} else
+			realNode.info.note.set(this.note);
 
 		if (this.currentSelect !== this.select) {
 			console.log(this.stepNode);
@@ -72,6 +76,7 @@ export default {
 		this.newAttrNote = true;
 	} else
 		this.note = this.updateticketObj.note.get();
+	console.log(this.updateticketObj);
 	this.ticketName = this.updateticketObj.name.get();
   }
 };
