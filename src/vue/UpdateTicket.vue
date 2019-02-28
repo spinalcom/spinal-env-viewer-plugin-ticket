@@ -66,7 +66,8 @@ export default {
 
 		if (this.currentSelect !== this.select) {
 			console.log(this.stepNode);
-			SpinalServiceTicket.moveTicket(this.updateticketObj.id.get(), this.stepNode[this.currentSelect], this.stepNode[this.select])
+
+			SpinalServiceTicket.moveTicket(this.updateticketObj.id.get(), this.stepNode[this.currentSelect].info.id.get(), this.stepNode[this.select].info.id.get())
 		}
     }
   },
