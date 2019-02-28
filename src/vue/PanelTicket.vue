@@ -85,6 +85,7 @@ export default {
       ticketsList: [],
       nodes: {},
       displayNodes: [],
+      ticketToZoom: {},
       activeNodesId: [],
       selected: 0
     };
@@ -161,13 +162,12 @@ export default {
     zoomAllTickets: function(event) {
       let self = this;
       let realNode;
+      let arrToColor = [];
 
       for (var index in this.listOfStepsForProcess) {
 
           this.listOfStepsForProcess[index].getChildren().then((tickets) => {
-
             for (var node in tickets) {
-
               realNode = SpinalGraphService.getRealNode(tickets[node].info.id.get());
               // this.viewer.impl.setSelectionColor(new THREE.Color(realNode.info.color.get()))
               realNode.find( [
@@ -178,23 +178,24 @@ export default {
               this.predicat
               )
               .then( lst => {
-                self.viewer.clearSelection();
-                let result = lst.map( x => x.info.dbid.get() );
+                let result = lst.map( function(x) { self.ticketToZoom[x.info.dbid.get()] = realNode.info.color.get(); return (x.info.dbid.get()) });
+                arrToColor = arrToColor.concat(result);
                 //self.viewer.select( result );
-                this.setColorMaterial(result, realNode.info.color.get());
-
+                //this.setColorMaterial(result, realNode.info.color.get());
               } );
-
-
             }
         });
       }
+
+      setTimeout(function() {
+        self.setColorMaterial(arrToColor);
+      }, 500);
        window.addEventListener("click", this.eventForColor, true);
 
     },
     eventForColor: function(event) {
       this.restoreColorMaterial(this.arrayOfSelect);
-      window.removeEventListener("click", this.eventForColor);
+      window.removeEventListener("click", this.eventForColor, true);
       event.preventDefault();
     },
     selectSteps: function(event) {
@@ -222,32 +223,37 @@ export default {
       this.viewer.impl.createOverlayScene("temperary-colored-overlay", material, material);
       return material;
     },
-    setColorMaterial: function(objectids, color) {
-      let material = this.addMaterial(color);
+    setColorMaterial: function(objectids) {
       let self = this;
+      let material;
+
       for (var i=0; i<objectids.length; i++ ) {
 
         let objectId = objectids[i];
-        this.arrayOfSelect.push(objectId);
-        var it = self.viewer.model.getData().instanceTree;
+        material = self.addMaterial(self.ticketToZoom[objectId]);
+        setTimeout(function() {
 
-        it.enumNodeFragments(objectId, function (fragId) {
+          self.arrayOfSelect.push(objectId);
+          var it = self.viewer.model.getData().instanceTree;
 
-        var renderProxy = self.viewer.impl.getRenderProxy(self.viewer.model, fragId);
-        renderProxy.meshProxy = new THREE.Mesh(renderProxy.geometry, renderProxy.material);
+          it.enumNodeFragments(objectId, function (fragId) {
 
-        renderProxy.meshProxy.matrix.copy(renderProxy.matrixWorld);
-        renderProxy.meshProxy.matrixWorldNeedsUpdate = true;
-        renderProxy.meshProxy.matrixAutoUpdate = false;
-        renderProxy.meshProxy.frustumCulled = false;
-        self.viewer.impl.addOverlay("temperary-colored-overlay", renderProxy.meshProxy);
-        self.viewer.impl.invalidate(true);
+          var renderProxy = self.viewer.impl.getRenderProxy(self.viewer.model, fragId);
+          renderProxy.meshProxy = new THREE.Mesh(renderProxy.geometry, renderProxy.material);
+
+          renderProxy.meshProxy.matrix.copy(renderProxy.matrixWorld);
+          renderProxy.meshProxy.matrixWorldNeedsUpdate = true;
+          renderProxy.meshProxy.matrixAutoUpdate = false;
+          renderProxy.meshProxy.frustumCulled = false;
+          self.viewer.impl.addOverlay("temperary-colored-overlay", renderProxy.meshProxy);
+          self.viewer.impl.invalidate(true);
+
+        }, 30);
 
         }, false);
       }
     },
     restoreColorMaterial: function(objectids) {
-
       let self = this;
       for (var i=0; i<objectids.length; i++ ) {
         let objectid = objectids[i];
@@ -328,7 +334,6 @@ export default {
   watch: {
     thisProcess: {
       handler: function(value) {
-      console.log("call wathc", value)
     //  this.thisProcess = value;
       this.selectProcess(value);
     },
