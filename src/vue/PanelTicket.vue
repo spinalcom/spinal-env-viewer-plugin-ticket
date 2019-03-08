@@ -48,7 +48,7 @@ with this file. If not, see
 
   </div>
 
-  <md-button v-if="selected==1" class="md-raised" style="margin-left:10px; margin-top:19px" v-on:click="selected=0">Retour</md-button>
+  <md-button v-if="selected==1" class="md-raised unique-button-for-close-diag" style="margin-left:10px; margin-top:19px" v-on:click="selected=0">Retour</md-button>
   <updateticket v-if="selected==1"
                 :updateticketObj="updateticketObj"
                 :listOfSteps="stepsList"

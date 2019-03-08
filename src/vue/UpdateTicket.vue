@@ -29,9 +29,10 @@ with this file. If not, see
 	</select>
 	</p>
 	<p class="lineDataForTicket">Changer la note du ticket
-	<input class="dataElement" type="text" v-model="note">
 	</p>
-	<md-button class="md-raised md-primary button-valid-modif-ticket" style="position:absolute; margin-top:15px" v-on:click="changeTicket">Valider</md-button>
+	<textarea  class="dataElement" id="textarea_for_note" v-model="note"></textarea>		
+	<md-button class="md-raised md-primary" style="display: block;" v-on:click="changeTicket">Valider</md-button>
+	<md-button class="md-raised md-accent" style="display: inline-block;" v-on:click="deleteTicket">Supprimer</md-button>
 	</div>
 </template>
 
@@ -69,6 +70,13 @@ export default {
 
 			SpinalServiceTicket.moveTicket(this.updateticketObj.id.get(), this.stepNode[this.currentSelect].info.id.get(), this.stepNode[this.select].info.id.get())
 		}
+    },
+    deleteTicket: function () {
+		let node = SpinalGraphService.getRealNode(this.updateticketObj.id.get());
+        node.removeFromGraph();
+
+        let close = document.getElementsByClassName("unique-button-for-close-diag");
+		close[0].click();
     }
   },
   mounted: function() {
@@ -91,8 +99,9 @@ export default {
 #modifyPanelTicket {
 	margin-left: 10px;
 }
-#button-valid-modif-ticket {
-	margin-top: 1px;
+#textarea_for_note {
+	width: 350px;
+	height: 60px;
 }
 .dataElement {
 	background: #505254;
@@ -102,4 +111,5 @@ export default {
 .dataElement:hover {
   background-color: #262728;
 }
+
 </style>
