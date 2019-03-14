@@ -24,7 +24,7 @@ with this file. If not, see
 	<p class="lineDataForTicket">Changer l'état du ticket 
 	<select class="dataElement" v-model="select">
 		<option v-for="steps in listOfSteps">
-			{{ steps }}	
+			{{ steps }}
 		</option>
 	</select>
 	</p>
@@ -51,12 +51,8 @@ export default {
     };
   },
   methods: {
-    opened: function() {
-     //console.log("update open");
-    },
-    closed: function() {
-      //console.log("closed ticketpanel");
-    },
+    opened: function() { },
+    closed: function() { },
     changeTicket: function() {
 		let realNode = SpinalGraphService.getRealNode(this.updateticketObj.id.get());
 		if (this.newAttrNote === true) {
