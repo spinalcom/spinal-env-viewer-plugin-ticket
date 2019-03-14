@@ -24,6 +24,7 @@
 
 import vue from 'vue';
 import store from './store';
+import "./forgeExtension.js";
 
 import { SpinalMountExtention } from 'spinal-env-viewer-panel-manager-service';
 import { spinalContextMenuService } from 'spinal-env-viewer-context-menu-service';
