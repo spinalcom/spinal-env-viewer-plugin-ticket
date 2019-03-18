@@ -47,7 +47,8 @@ export default {
 		stepsSelected: "",
 		note: "",
 		ticketName: "",
-		select: ""
+		select: "",
+		str: ""
     };
   },
   methods: {
@@ -61,10 +62,8 @@ export default {
 		} else
 			realNode.info.note.set(this.note);
 
-		if (this.currentSelect !== this.select) {
-			console.log(this.stepNode);
-
-			SpinalServiceTicket.moveTicket(this.updateticketObj.id.get(), this.stepNode[this.currentSelect].info.id.get(), this.stepNode[this.select].info.id.get())
+		if (this.currentSelect !== this.select && this.select !== undefined) {
+			SpinalServiceTicket.moveTicket(this.updateticketObj.id.get(), this.stepNode[this.str].info.id.get(), this.stepNode[Object.keys(this.stepNode)[this.select]].info.id.get())
 		}
 
 		let close = document.getElementsByClassName("unique-button-for-close-diag");
@@ -81,6 +80,8 @@ export default {
   mounted: function() {
 	this.select = this.listOfSteps[0];
 	this.currentSelect = this.select;
+	this.str = this.stepFrom.charAt(0) + this.stepFrom.slice(1).toLowerCase();
+
 	if (this.updateticketObj.note === undefined) {
 		this.note = "";
 		this.newAttrNote = true;
