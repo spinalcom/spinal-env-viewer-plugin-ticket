@@ -21,7 +21,7 @@
  *  with this file. If not, see
  *  <http://resources.spinalcom.com/licenses.pdf>.
  */
- 
+
 import aComponent from '../vue/PanelTicket.vue';
 import Vue from 'vue';
 
@@ -58,7 +58,11 @@ class TiketPanelBtn extends SpinalContextApp {
 const extensionTiketPanel = SpinalForgeExtention.createExtention({
   name: "TiketPanel",
   vueMountComponent: Vue.extend(aComponent),
-  // toolbar is optional
+   toolbar: {
+   icon: "event",
+   label: "Ticket Panel",
+   subToolbarName: "spinalcom"
+  },
   panel: {
     title: "Panel Ticket",
     classname: "spinal-pannel",

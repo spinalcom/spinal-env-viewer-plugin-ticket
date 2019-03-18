@@ -24,6 +24,7 @@
 
 import vue from 'vue';
 import store from './store';
+import "./forgeExtension.js";
 
 import { SpinalMountExtention } from 'spinal-env-viewer-panel-manager-service';
 import { spinalContextMenuService } from 'spinal-env-viewer-context-menu-service';
@@ -57,7 +58,6 @@ import { DisplayRoomTicketsButton } from "./buttons/DisplayRoomTicketsButton";
 import Toasted from "vue-toasted"
 
 vue.use(Toasted);
-const TOP_BAR_HOOK_NAME = 'GraphManagerTopBar';
 const SIDE_BAR_HOOK_NAME = 'GraphManagerSideBar';
 if (typeof SpinalServiceTicket.contextId === "undefined") {
   const interval = setInterval( () => {
@@ -91,7 +91,7 @@ SpinalMountExtention.mount( {
       },
     } ),
   parentContainer: document.body
-  
+
 } );
 
 
@@ -134,12 +134,12 @@ SpinalMountExtention.mount( {
         removed() {
         },
         closeDialog() {
-  
+
         },
       }
     } ),
   parentContainer: document.body
-  
+
 } );
 
 
@@ -187,7 +187,7 @@ SpinalMountExtention.mount( {
       }
     } ),
   parentContainer: document.body
-  
+
 } );
 
 
@@ -240,7 +240,7 @@ SpinalMountExtention.mount( {
 } );
 
 
-spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new ShowQRButton(), [7] );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new ShowQRButton() );
 SpinalMountExtention.mount( {
   name: 'Show_QR',
   vueMountComponent: vue.extend(
@@ -268,5 +268,5 @@ SpinalMountExtention.mount({
   name: 'DisplayRoomTicket',
   vueMountComponent: vue.extend(DisplayRoomTicketModal),
   parentContainer: document.body
-  
+
 });

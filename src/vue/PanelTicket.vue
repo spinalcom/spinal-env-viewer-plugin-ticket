@@ -24,6 +24,7 @@ with this file. If not, see
   <div v-if="selected==0">
 
   <div id="selectStepDiv">
+  <p v-if="patchBug" style="position:absolute; margin-top:23px;" id="patchMdSelectBugDefaultValue"></p>
   <md-field>
    <md-select id="selectStepDivId" v-model="thisProcess" @md-selected="selectProcess">
     <md-option v-for="ticket in tickets" :value="ticket" class="optionForSelect">
@@ -85,8 +86,10 @@ export default {
       ticketsList: [],
       nodes: {},
       displayNodes: [],
-      ticketToZoom: {},
+      ticketToZoom: [],
+      patchBug: 1,
       activeNodesId: [],
+      lol: ['1', '2', '3'],
       selected: 0
     };
   },
@@ -101,17 +104,19 @@ export default {
       .then(k => k.forEach(function(el){
         self.tickets.push(el.name.get());
         self.thisProcess = self.tickets[0];
+
+        if (self.listOfStepsForProcess === undefined) {
+          let p = window.document.getElementById("patchMdSelectBugDefaultValue");
+          p.innerHTML = self.thisProcess;
+        }
       })
 
       );
-      if (this.stepList !== "")
         this.selectProcess(this.thisProcess);
     },
     closed: function() {
       this.nodes = {};
       this.displayNodes = [];
-      //this.stepsList = [];
-      //this.ticketsList = [];
       this.ticketNode = [];
     },
     hasChildInContext: function (id, contextId) {
@@ -162,14 +167,15 @@ export default {
     zoomAllTickets: function(event) {
       let self = this;
       let realNode;
-      let arrToColor = [];
-
+      this.ticketToZoom = [];
+      this.colors = {}
+      let iterator = 0;
       for (var index in this.listOfStepsForProcess) {
 
           this.listOfStepsForProcess[index].getChildren().then((tickets) => {
             for (var node in tickets) {
               realNode = SpinalGraphService.getRealNode(tickets[node].info.id.get());
-              // this.viewer.impl.setSelectionColor(new THREE.Color(realNode.info.color.get()))
+              self.colors[iterator] = realNode.info.color.get();
               realNode.find( [
                 SPINAL_TICKET_SERVICE_TARGET_RELATION_NAME,
                 "hasBIMObject",
@@ -178,23 +184,24 @@ export default {
               this.predicat
               )
               .then( lst => {
-                let result = lst.map( function(x) { self.ticketToZoom[x.info.dbid.get()] = realNode.info.color.get(); return (x.info.dbid.get()) });
-                arrToColor = arrToColor.concat(result);
-                //self.viewer.select( result );
-                //this.setColorMaterial(result, realNode.info.color.get());
+                let result = lst.map( function(x) { return (x.info.dbid.get()) });
+                self.ticketToZoom.push(result);
               } );
+              iterator++
             }
         });
       }
 
       setTimeout(function() {
-        self.setColorMaterial(arrToColor);
+        self.setColorMaterial()
       }, 500);
        window.addEventListener("click", this.eventForColor, true);
 
     },
     eventForColor: function(event) {
-      this.restoreColorMaterial(this.arrayOfSelect);
+      for (var i in this.ticketToZoom) {
+        window.spinal.ForgeViewer.viewer.restoreColorMaterial(this.ticketToZoom[i])
+      }
       window.removeEventListener("click", this.eventForColor, true);
       event.preventDefault();
     },
@@ -216,66 +223,25 @@ export default {
         }
       })
     },
-    addMaterial: function(color) {
-      let material = new THREE.MeshPhongMaterial({
-        color: color
-      });
-      this.viewer.impl.createOverlayScene("temperary-colored-overlay", material, material);
-      return material;
-    },
-    setColorMaterial: function(objectids) {
+    setColorMaterial: function() {
       let self = this;
-      let material;
+      var iterator = 0;
+      let color;
+      let loop = 0;
 
-      for (var i=0; i<objectids.length; i++ ) {
+      var x = setInterval(function() {
+        color = self.colors[iterator].replace(/#/g, "0x");
+        window.spinal.ForgeViewer.viewer.setColorMaterial(self.ticketToZoom[iterator], color)
+        iterator++;
 
-        let objectId = objectids[i];
-        material = self.addMaterial(self.ticketToZoom[objectId]);
-        setTimeout(function() {
+        if (self.ticketToZoom[iterator] === undefined && loop === 0) {
+          iterator = 0;
+          loop = 1;
+        } else if (self.ticketToZoom[iterator] === undefined && loop === 1) {
+          clearInterval(x);
+        }
+      }, 1);
 
-          self.arrayOfSelect.push(objectId);
-          var it = self.viewer.model.getData().instanceTree;
-
-          it.enumNodeFragments(objectId, function (fragId) {
-
-          var renderProxy = self.viewer.impl.getRenderProxy(self.viewer.model, fragId);
-          renderProxy.meshProxy = new THREE.Mesh(renderProxy.geometry, renderProxy.material);
-
-          renderProxy.meshProxy.matrix.copy(renderProxy.matrixWorld);
-          renderProxy.meshProxy.matrixWorldNeedsUpdate = true;
-          renderProxy.meshProxy.matrixAutoUpdate = false;
-          renderProxy.meshProxy.frustumCulled = false;
-          self.viewer.impl.addOverlay("temperary-colored-overlay", renderProxy.meshProxy);
-          self.viewer.impl.invalidate(true);
-
-        }, 30);
-
-        }, false);
-      }
-    },
-    restoreColorMaterial: function(objectids) {
-      let self = this;
-      for (var i=0; i<objectids.length; i++ ) {
-        let objectid = objectids[i];
-
-        var it = self.viewer.model.getData().instanceTree;
-
-        it.enumNodeFragments(objectid, function (fragId) {
-
-        var renderProxy = self.viewer.impl.getRenderProxy(self.viewer.model, fragId);
-
-        if(renderProxy.meshProxy){
-
-          self.viewer.impl.clearOverlay("temperary-colored-overlay");
-
-          delete renderProxy.meshProxy;
-
-          self.viewer.impl.invalidate(true);
-
-          }
-        }, true);
-      }
-      self.arrayOfSelect = [];
     },
     selectProcess: function(value) {
       let processName;
@@ -287,6 +253,8 @@ export default {
       this.ticketsList = [];
       this.ticketNode = [];
 
+      if (this.listOfStepsForProcess !== undefined && this.thisProcess !== value)
+        this.patchBug = 0;
       SpinalServiceTicket.getAllProcessAsync().then((process) => {
 
       let ite = 0;
@@ -334,7 +302,6 @@ export default {
   watch: {
     thisProcess: {
       handler: function(value) {
-    //  this.thisProcess = value;
       this.selectProcess(value);
     },
     immediate: true,

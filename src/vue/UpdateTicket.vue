@@ -24,7 +24,7 @@ with this file. If not, see
 	<p class="lineDataForTicket">Changer l'état du ticket 
 	<select class="dataElement" v-model="select">
 		<option v-for="steps in listOfSteps">
-			{{ steps }}	
+			{{ steps }}
 		</option>
 	</select>
 	</p>
@@ -51,12 +51,8 @@ export default {
     };
   },
   methods: {
-    opened: function() {
-     //console.log("update open");
-    },
-    closed: function() {
-      //console.log("closed ticketpanel");
-    },
+    opened: function() { },
+    closed: function() { },
     changeTicket: function() {
 		let realNode = SpinalGraphService.getRealNode(this.updateticketObj.id.get());
 		if (this.newAttrNote === true) {
@@ -70,6 +66,9 @@ export default {
 
 			SpinalServiceTicket.moveTicket(this.updateticketObj.id.get(), this.stepNode[this.currentSelect].info.id.get(), this.stepNode[this.select].info.id.get())
 		}
+
+		let close = document.getElementsByClassName("unique-button-for-close-diag");
+		close[0].click();
     },
     deleteTicket: function () {
 		let node = SpinalGraphService.getRealNode(this.updateticketObj.id.get());
@@ -97,7 +96,7 @@ export default {
 
 <style scoped>
 #modifyPanelTicket {
-	margin-left: 10px;
+	/*margin-left: 10px;*/
 }
 #textarea_for_note {
 	width: 350px;
