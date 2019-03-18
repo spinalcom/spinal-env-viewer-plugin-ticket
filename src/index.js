@@ -68,11 +68,11 @@ if (typeof SpinalServiceTicket.contextId === "undefined") {
   } );
 }
 
-spinalContextMenuService.registerApp(SIDE_BAR_HOOK_NAME , new GenerateQR() );
+spinalContextMenuService.registerApp(SIDE_BAR_HOOK_NAME , new GenerateQR(), [3]);
 
-spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new ShowRoom() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new ShowRoom(), [7]);
 
-spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddProcessButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddProcessButton(), [3] );
 SpinalMountExtention.mount( {
   name: 'AddProcess',
   vueMountComponent: vue.extend(
@@ -95,7 +95,7 @@ SpinalMountExtention.mount( {
 } );
 
 
-spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddCategoyButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddCategoyButton() , [3]);
 SpinalMountExtention.mount( {
   name: 'AddCategory',
   vueMountComponent: vue.extend(
@@ -110,16 +110,16 @@ SpinalMountExtention.mount( {
         removed() {
         },
         closeDialog() {
-
+  
         },
       }
     } ),
   parentContainer: document.body
-
+  
 } );
 
 
-spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddSubCategoryButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddSubCategoryButton(), [3] );
 SpinalMountExtention.mount( {
   name: 'AddSubCategory',
   vueMountComponent: vue.extend(
@@ -143,7 +143,7 @@ SpinalMountExtention.mount( {
 } );
 
 
-spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddStepButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddStepButton(), [3]);
 SpinalMountExtention.mount( {
   name: 'AddStep',
   vueMountComponent: vue.extend(
@@ -167,7 +167,7 @@ SpinalMountExtention.mount( {
 } );
 
 
-spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddTicketButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddTicketButton(), [7] );
 SpinalMountExtention.mount( {
   name: 'AddTicket',
   vueMountComponent: vue.extend(
@@ -191,7 +191,7 @@ SpinalMountExtention.mount( {
 } );
 
 
-spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new ModifyTicketButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new ModifyTicketButton(), [3] );
 SpinalMountExtention.mount( {
   name: 'ModifyTicket',
   vueMountComponent: vue.extend(
@@ -216,7 +216,7 @@ SpinalMountExtention.mount( {
 } );
 
 
-spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new ConfigProcessButton() );
+spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new ConfigProcessButton(), [3] );
 SpinalMountExtention.mount( {
   name: 'ConfigProcess',
   vueMountComponent: vue.extend(
@@ -261,8 +261,9 @@ SpinalMountExtention.mount( {
 
 } );
 
+spinalContextMenuService.registerApp(TOP_BAR_HOOK_NAME, new TiketPanelBtn(), [7]);
 
-spinalContextMenuService.registerApp(SIDE_BAR_HOOK_NAME, new DisplayRoomTicketsButton());
+spinalContextMenuService.registerApp(SIDE_BAR_HOOK_NAME, new DisplayRoomTicketsButton(), [15]);
 SpinalMountExtention.mount({
   name: 'DisplayRoomTicket',
   vueMountComponent: vue.extend(DisplayRoomTicketModal),
