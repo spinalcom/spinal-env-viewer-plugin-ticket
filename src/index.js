@@ -58,7 +58,6 @@ import { DisplayRoomTicketsButton } from "./buttons/DisplayRoomTicketsButton";
 import Toasted from "vue-toasted"
 
 vue.use(Toasted);
-const TOP_BAR_HOOK_NAME = 'GraphManagerTopBar';
 const SIDE_BAR_HOOK_NAME = 'GraphManagerSideBar';
 if (typeof SpinalServiceTicket.contextId === "undefined") {
   const interval = setInterval( () => {
@@ -92,7 +91,7 @@ SpinalMountExtention.mount( {
       },
     } ),
   parentContainer: document.body
-  
+
 } );
 
 
@@ -111,12 +110,12 @@ SpinalMountExtention.mount( {
         removed() {
         },
         closeDialog() {
-  
+
         },
       }
     } ),
   parentContainer: document.body
-  
+
 } );
 
 
@@ -135,12 +134,12 @@ SpinalMountExtention.mount( {
         removed() {
         },
         closeDialog() {
-  
+
         },
       }
     } ),
   parentContainer: document.body
-  
+
 } );
 
 
@@ -188,7 +187,7 @@ SpinalMountExtention.mount( {
       }
     } ),
   parentContainer: document.body
-  
+
 } );
 
 
@@ -262,12 +261,11 @@ SpinalMountExtention.mount( {
 
 } );
 
-spinalContextMenuService.registerApp(TOP_BAR_HOOK_NAME, new TiketPanelBtn());
 
 spinalContextMenuService.registerApp(SIDE_BAR_HOOK_NAME, new DisplayRoomTicketsButton());
 SpinalMountExtention.mount({
   name: 'DisplayRoomTicket',
   vueMountComponent: vue.extend(DisplayRoomTicketModal),
   parentContainer: document.body
-  
+
 });
