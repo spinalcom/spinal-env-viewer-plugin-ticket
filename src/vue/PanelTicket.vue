@@ -82,7 +82,7 @@ export default {
       stepsList: [],
       stepList: '',
       ticketNode: [],
-      steps: [],
+      steps: '',
       ticketsList: [],
       nodes: {},
       displayNodes: [],
@@ -213,6 +213,7 @@ export default {
       SpinalGraphService.getChildren(this.selectedProcess.info.id.get()).then((childrens) => {
         for ( var i in childrens ) {
           if ( childrens[i].name.get().toUpperCase() === str.toUpperCase() ) {
+            this.steps = str;
             SpinalGraphService.getChildren(childrens[i].id.get()).then((tickets) => {
               for ( var node in tickets ) {
                 self.ticketNode.push(tickets[node]);
@@ -279,6 +280,7 @@ export default {
                 this.listOfStepsForProcess[name] = stepNode;
 
                 if (name == "Déclarer") {
+                  self.steps = name;
                   let realnode = SpinalGraphService.getRealNode(k[i].id.get());
 
                   realnode.getChildren().then((tickets) => {
