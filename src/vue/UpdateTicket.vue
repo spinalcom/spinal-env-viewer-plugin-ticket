@@ -81,13 +81,32 @@ export default {
   mounted: function() {
 	this.select = this.listOfSteps[0];
 	this.currentSelect = this.select;
-	console.log(this.listOfSteps, this.select);
 	if (this.updateticketObj.note === undefined) {
 		this.note = "";
 		this.newAttrNote = true;
 	} else
 		this.note = this.updateticketObj.note.get();
-	console.log(this.updateticketObj);
+	let el = document.getElementsByClassName("dataElement")[0];
+	let node;
+
+	for (var i in el.childNodes) {
+		node = el.childNodes[i].innerText;
+		if (node !== undefined) {
+			el.childNodes[i].setAttribute("value", i);
+		}
+	}
+	let ite;
+	for (var i in el.childNodes) {
+		node = el.childNodes[i].innerText;
+		if (node !== undefined) {
+			if (node.trim().toUpperCase() === this.stepFrom.toUpperCase()) {
+				ite = i;
+				setTimeout(function() {
+					el.value = ite;
+				}, 20)
+			}
+		}
+	}
 	this.ticketName = this.updateticketObj.name.get();
   }
 };
