@@ -126,7 +126,6 @@ export default {
       this.activeNodesId = [ event.nodeId ];
     },
     zoomRoom: function(event) {
-
       let str = event.target.parentElement.firstElementChild.innerText;
 
       for (var i in this.ticketNode) {
@@ -153,7 +152,6 @@ export default {
       return node.info.type.get() === "BIMObject";
     },
     modifyTicket: function(event) {
-
       let nodeValue = event.target.previousSibling.previousElementSibling.innerText;
 
       for (var i in this.ticketNode) {
@@ -247,12 +245,17 @@ export default {
     selectProcess: function(value) {
       let processName;
       let iterator_value;
+      let goodStep = "Déclarer";
 
       let self = this;
 
       this.stepsList = [];
       this.ticketsList = [];
       this.ticketNode = [];
+
+      if (this.steps !== "") {
+        goodStep = this.steps
+      }
 
       if (this.listOfStepsForProcess !== undefined && this.thisProcess !== value)
         this.patchBug = 0;
@@ -279,7 +282,7 @@ export default {
                 stepsName.push(name);
                 this.listOfStepsForProcess[name] = stepNode;
 
-                if (name == "Déclarer") {
+                if (name.toUpperCase() === goodStep.toUpperCase()) {
                   self.steps = name;
                   let realnode = SpinalGraphService.getRealNode(k[i].id.get());
 
