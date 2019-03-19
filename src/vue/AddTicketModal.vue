@@ -134,13 +134,16 @@
         return [];
       },
       onConfirm: function () {
-        const selectedIncident = this.incidents.filter(incident =>
-          incident.id === this.selectedCategory);
-       const ticket = {
+        const selectedIncident = this.incidents.filter( incident =>
+          incident.id === this.selectedCategory );
+        const ticket = {
           name: selectedIncident[0].name,
           note: this.note,
           categories: selectedIncident[0].id,
-          processId: this.selectedProcess
+          processId: this.selectedProcess,
+          bimId: this.selectedNode.id.get(),
+          username: window.spinal.spinalSystem.getUser().username,
+          creationDate: Date.now()
         };
 
         const ticketId = SpinalServiceTicket.createTicket( ticket );
@@ -157,7 +160,7 @@
           } )
           .catch( ( e ) => {
             console.error( e )
-          })
+          } )
         ;
       },
       onCancel: function () {
@@ -167,13 +170,13 @@
     watch: {
       'selectedProcess': {
         handler: function ( value ) {
-            this.$store.getters.getCategories( value ).then(incidents => {
-              this.incidents = [];
-              for (let i = 0; i < incidents.length; i++) {
-                this.incidents.push( incidents[i][0]  );
-              }
-              this.incidents.push({name: 'autre', id: 'autre'});
-            });
+          this.$store.getters.getCategories( value ).then( incidents => {
+            this.incidents = [];
+            for (let i = 0; i < incidents.length; i++) {
+              this.incidents.push( incidents[i][0] );
+            }
+            this.incidents.push( { name: 'autre', id: 'autre' } );
+          } );
         }
       },
       'selectedCategory': {
@@ -190,7 +193,7 @@
 </script>
 
 <style scoped>
-    .add-ticket-modal-body{
+    .add-ticket-modal-body {
         padding: 8px;
     }
 </style>
