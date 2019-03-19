@@ -261,7 +261,7 @@ SpinalMountExtention.mount( {
 
 } );
 
-spinalContextMenuService.registerApp(TOP_BAR_HOOK_NAME, new TiketPanelBtn(), [7]);
+
 
 spinalContextMenuService.registerApp(SIDE_BAR_HOOK_NAME, new DisplayRoomTicketsButton(), [15]);
 SpinalMountExtention.mount({
