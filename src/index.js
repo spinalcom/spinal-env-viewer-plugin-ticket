@@ -40,6 +40,7 @@ import ConfigProcessModal from "./vue/ConfigProcessModal.vue";
 import AddSubCategoryModal from "./vue/AddSubCategoryModal.vue";
 import ShowQR from "./vue/ShowQR.vue";
 import DisplayRoomTicketModal from "./vue/DisplayRoomTicketModal.vue";
+import ShowInfo from "./vue/ShowInfo.vue";
 
 
 import { AddProcessButton } from './buttons/AddProcessButton';
@@ -93,7 +94,6 @@ SpinalMountExtention.mount( {
   parentContainer: document.body
 
 } );
-
 
 spinalContextMenuService.registerApp( SIDE_BAR_HOOK_NAME, new AddCategoyButton() , [3]);
 SpinalMountExtention.mount( {

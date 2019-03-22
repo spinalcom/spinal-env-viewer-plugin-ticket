@@ -19,7 +19,7 @@ with this file. If not, see
 -->
 
 <template>
-  <div>
+  <div id="myCustomTicketPanel">
 
   <div v-if="selected==0">
 
@@ -36,7 +36,9 @@ with this file. If not, see
   </div>
 
   <div class="stepbox" v-for="step in stepsList">
-      <md-button type="button" v-on:click="selectSteps">{{ step }} </md-button>
+      <div class="badgeForStep"></div>
+      <md-button class="ticketButton" :title="step" type="button" v-on:click="selectSteps">{{ step }} </md-button>
+      <div class="selectedstepbox"></div>
   </div>
 
   <div class="divDisplayTickets">
@@ -67,20 +69,28 @@ import {
   SPINAL_TICKET_SERVICE_TARGET_RELATION_NAME
 } from "spinal-service-ticket/dist/Constants";
 
+import {
+  spinalPanelManagerService,
+} from "spinal-env-viewer-panel-manager-service";
+
 export default {
   name: "PanelTicket",
   components: {
       updateticket
-  },
+    },
   data() {
     return {
       stepper: 1,
       selectedProcess: "",
+      currentTab: 'tab1',
       updateticketObj: {},
+      processId: "",
       tickets: [],
       thisProcess: {},
       stepsList: [],
+      tmpinteval: 0,
       stepList: '',
+      underline: '',
       ticketNode: [],
       steps: '',
       ticketsList: [],
@@ -148,6 +158,23 @@ export default {
         }
       }
     },
+    updateBadge: function() {
+      let el = document.getElementsByClassName("badgeForStep");
+      this.tmpinteval = 0;
+      self = this;
+      SpinalServiceTicket.getStepsFromProcessAsync(this.processId)
+          .then((k) => {
+            for (var i in k) {
+                let realnode = SpinalGraphService.getRealNode(k[i].id.get());
+                realnode.getChildren().then((tickets) => {
+                  let badges = document.getElementsByClassName("badgeForStep");
+                  badges[self.tmpinteval].style.backgroundColor = k[self.tmpinteval].color.get();
+                  badges[self.tmpinteval].innerText = tickets.length;
+                  self.tmpinteval++;
+                });
+            }
+          });
+    },
     predicat: function( node ) {
       return node.info.type.get() === "BIMObject";
     },
@@ -169,8 +196,9 @@ export default {
       this.colors = {}
       let iterator = 0;
       for (var index in this.listOfStepsForProcess) {
-
-          this.listOfStepsForProcess[index].getChildren().then((tickets) => {
+          this.listOfStepsForProcess[ Object.keys(this.listOfStepsForProcess)[
+          (Object.keys(this.listOfStepsForProcess).length - 1 ) - Object.keys(this.listOfStepsForProcess).indexOf(index)]]
+          .getChildren().then((tickets) => {
             for (var node in tickets) {
               realNode = SpinalGraphService.getRealNode(tickets[node].info.id.get());
               self.colors[iterator] = realNode.info.color.get();
@@ -208,10 +236,22 @@ export default {
       this.ticketNode = [];
       this.ticketsList = [];
       let self = this;
+
+      this.underline.remove();
+      let el = document.getElementsByClassName("selectedstepbox");
+      var newDiv = document.createElement("div");
+      newDiv.style.width = "88px";
+      newDiv.style.height = "2px";
+      newDiv.style.marginLeft = "15px";
+      newDiv.style.backgroundColor = "white";
+      this.underline = newDiv;
       SpinalGraphService.getChildren(this.selectedProcess.info.id.get()).then((childrens) => {
         for ( var i in childrens ) {
           if ( childrens[i].name.get().toUpperCase() === str.toUpperCase() ) {
             this.steps = str;
+
+            let parentDiv = el[i].parentNode;
+            parentDiv.insertBefore(newDiv, el[i]);
             SpinalGraphService.getChildren(childrens[i].id.get()).then((tickets) => {
               for ( var node in tickets ) {
                 self.ticketNode.push(tickets[node]);
@@ -247,6 +287,10 @@ export default {
       let iterator_value;
       let goodStep = "Déclarer";
 
+      setTimeout(function() {
+        spinalPanelManagerService.openPanel("ShowInfo");
+      }, 100);
+
       let self = this;
 
       this.stepsList = [];
@@ -269,6 +313,7 @@ export default {
         processName = SpinalGraphService.getRealNode(iterator_value);
         if (processName.info.name.get() === value) {
           self.selectedProcess = processName;
+          self.processId = iterator_value;
           SpinalServiceTicket.getStepsFromProcessAsync(iterator_value)
           .then((k) => {
              let stepsName = [];
@@ -283,6 +328,22 @@ export default {
                 this.listOfStepsForProcess[name] = stepNode;
 
                 if (name.toUpperCase() === goodStep.toUpperCase()) {
+
+
+                  let el = document.getElementsByClassName("selectedstepbox");
+                  var newDiv = document.createElement("div");
+                  newDiv.style.width = "88px";
+                  newDiv.style.height = "2px";
+                  newDiv.style.marginLeft = "15px";
+                  newDiv.style.backgroundColor = "white";
+                  self.underline = newDiv;
+                  let ite = i;
+                  setTimeout(function() {
+                    let parentDiv = el[ite].parentNode;
+                    parentDiv.insertBefore(newDiv, el[ite]);
+                    self.updateBadge();
+                  }, 100)
+
                   self.steps = name;
                   let realnode = SpinalGraphService.getRealNode(k[i].id.get());
 
@@ -328,9 +389,14 @@ export default {
 
 <style>
 
+#myCustomTicketPanel * {
+  box-sizing: border-box !important;
+  justify-content: flex-start !important;
+}
+
 .graph-viewer-ticket * {
-    margin: 0;
-    box-sizing: border-box;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .stepbox {
@@ -345,6 +411,10 @@ export default {
 
 .divDisplayTickets {
   display: block;
+}
+
+.ticketButton {
+  margin-left: 20px;
 }
 
 .divTicketsWithButton {
@@ -365,12 +435,20 @@ export default {
 
 .ButtonShowAllTicket {
   display: inline-block;
+  margin-top: 11px;
   float: right;
   margin-right: 20px;
 }
 
-.lolkekos {
-  height: 10px;
-  width: 10px;
+.badgeForStep {
+  background-color: red;
+  height: 24px;
+  color: black;
+  width: 24px;
+  border-radius: 100%;
+  text-align: center;
+  position: absolute;
+  margin-top: 13px;
 }
+
 </style>

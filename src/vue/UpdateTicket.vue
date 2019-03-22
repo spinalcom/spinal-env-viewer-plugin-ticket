@@ -81,7 +81,7 @@ export default {
 	this.select = this.listOfSteps[0];
 	this.currentSelect = this.select;
 	this.str = this.stepFrom.charAt(0) + this.stepFrom.slice(1).toLowerCase();
-
+	console.log("----", this.updateticketObj )
 	if (this.updateticketObj.note === undefined) {
 		this.note = "";
 		this.newAttrNote = true;
