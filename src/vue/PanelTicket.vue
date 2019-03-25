@@ -237,7 +237,8 @@ export default {
       this.ticketsList = [];
       let self = this;
 
-      this.underline.remove();
+      if (this.underline.remove === "function")
+        this.underline.remove();
       let el = document.getElementsByClassName("selectedstepbox");
       var newDiv = document.createElement("div");
       newDiv.style.width = "88px";
