@@ -26,7 +26,7 @@ with this file. If not, see
   <div id="selectStepDiv">
   <p v-if="patchBug" style="position:absolute; margin-top:23px;" id="patchMdSelectBugDefaultValue"></p>
   <md-field>
-   <md-select id="selectStepDivId" v-model="thisProcess" @md-selected="selectProcess">
+   <md-select id="selectStepDivId" v-model="thisProcess" @md-selected="searchProcess">
     <md-option v-for="ticket in tickets" :value="ticket" class="optionForSelect">
       {{ ticket }}
     </md-option>
@@ -131,6 +131,9 @@ export default {
     },
     hasChildInContext: function (id, contextId) {
       return SpinalGraphService.hasChildInContext(id, contextId);
+    },
+      searchProcess: function () {
+      this.selectProcess();
     },
     onNodeSelected: function(event) {
       this.activeNodesId = [ event.nodeId ];
