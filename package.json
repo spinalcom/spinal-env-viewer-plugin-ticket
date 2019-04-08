@@ -20,7 +20,6 @@
     "spinal-env-viewer-panel-manager-service_spinalforgeextention" : "https://github.com/spinalcom/spinal-env-viewer-panel-manager-service_spinalforgeextention.git",
     "vue": "^2.5.21",
     "vue-color": "^2.7.0",
-    "vue-toasted": "^1.1.26",
     "vuex": "^3.0.1"
   },
   "browserify": {

@@ -56,9 +56,6 @@ import { ShowRoom } from "./buttons/ShowRoom";
 import { TiketPanelBtn } from "./buttons/PanelTicketButton";
 import { DisplayRoomTicketsButton } from "./buttons/DisplayRoomTicketsButton";
 
-import Toasted from "vue-toasted"
-
-vue.use(Toasted);
 const SIDE_BAR_HOOK_NAME = 'GraphManagerSideBar';
 if (typeof SpinalServiceTicket.contextId === "undefined") {
   const interval = setInterval( () => {

@@ -85,8 +85,8 @@ export class GenerateQR extends SpinalContextApp {
               }
             }
           }
-          const toast = Vue.toasted.success(`${count} QRcode generated`);
-          toast.goAway(1500);
+          
+          console.log(`${count} QRcode generated`)
         }
       } )
       .catch( ( e ) => {console.log( e );} );
