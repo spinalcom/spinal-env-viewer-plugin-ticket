@@ -82,13 +82,11 @@ export default {
     return {
       stepper: 1,
       selectedProcess: "",
-      currentTab: 'tab1',
       updateticketObj: {},
       processId: "",
       tickets: [],
       thisProcess: {},
       stepsList: [],
-      tmpinteval: 0,
       stepList: '',
       underline: '',
       ticketNode: [],
@@ -99,6 +97,8 @@ export default {
       ticketToZoom: [],
       patchBug: 1,
       activeNodesId: [],
+      binding: false,
+      nodeBinded: {},
       lol: ['1', '2', '3'],
       selected: 0
     };
@@ -122,12 +122,14 @@ export default {
       })
 
       );
-        this.selectProcess(this.thisProcess);
+        this.selectProcess(this.thisProcess, true);
     },
     closed: function() {
       this.nodes = {};
+      this.underline.remove();
       this.displayNodes = [];
       this.ticketNode = [];
+
     },
     hasChildInContext: function (id, contextId) {
       return SpinalGraphService.hasChildInContext(id, contextId);
@@ -151,7 +153,7 @@ export default {
             "hasBIMObject",
             'hasReferenceObject'
           ],
-          this.predicat
+          self.predicat
           )
           .then( lst => {
             self.viewer.clearSelection();
@@ -162,19 +164,18 @@ export default {
       }
     },
     updateBadge: function() {
-      let el = document.getElementsByClassName("badgeForStep");
-      this.tmpinteval = 0;
-      self = this;
       SpinalServiceTicket.getStepsFromProcessAsync(this.processId)
           .then((k) => {
             for (var i in k) {
-                let realnode = SpinalGraphService.getRealNode(k[i].id.get());
-                realnode.getChildren().then((tickets) => {
-                  let badges = document.getElementsByClassName("badgeForStep");
-                  badges[self.tmpinteval].style.backgroundColor = k[self.tmpinteval].color.get();
-                  badges[self.tmpinteval].innerText = tickets.length;
-                  self.tmpinteval++;
+                (function(k, i) {
+                  setTimeout(function() {
+                  SpinalGraphService.getChildren(k[i].id.get()).then((tickets) => {
+                    let badges = document.getElementsByClassName("badgeForStep");
+                    badges[i].style.backgroundColor = k[i].color.get();
+                    badges[i].innerText = tickets.length;
                 });
+                }, 30 * i)
+              })(k, i)
             }
           });
     },
@@ -198,9 +199,9 @@ export default {
       this.ticketToZoom = [];
       this.colors = {}
       let iterator = 0;
-      for (var index in this.listOfStepsForProcess) {
-          this.listOfStepsForProcess[ Object.keys(this.listOfStepsForProcess)[
-          (Object.keys(this.listOfStepsForProcess).length - 1 ) - Object.keys(this.listOfStepsForProcess).indexOf(index)]]
+      for (var index in self.listOfStepsForProcess) {
+          self.listOfStepsForProcess[ Object.keys(self.listOfStepsForProcess)[
+          (Object.keys(self.listOfStepsForProcess).length - 1 ) - Object.keys(self.listOfStepsForProcess).indexOf(index)]]
           .getChildren().then((tickets) => {
             for (var node in tickets) {
               realNode = SpinalGraphService.getRealNode(tickets[node].info.id.get());
@@ -210,7 +211,7 @@ export default {
                 "hasBIMObject",
                 'hasReferenceObject'
               ],
-              this.predicat
+              self.predicat
               )
               .then( lst => {
                 let result = lst.map( function(x) { return (x.info.dbid.get()) });
@@ -249,10 +250,10 @@ export default {
       newDiv.style.marginLeft = "15px";
       newDiv.style.backgroundColor = "white";
       this.underline = newDiv;
-      SpinalGraphService.getChildren(this.selectedProcess.info.id.get()).then((childrens) => {
+      SpinalGraphService.getChildren(self.selectedProcess.info.id.get()).then((childrens) => {
         for ( var i in childrens ) {
           if ( childrens[i].name.get().toUpperCase() === str.toUpperCase() ) {
-            this.steps = str;
+            self.steps = str;
 
             let parentDiv = el[i].parentNode;
             parentDiv.insertBefore(newDiv, el[i]);
@@ -286,54 +287,63 @@ export default {
       }, 1);
 
     },
-    selectProcess: function(value) {
+  selectProcess: function(value, bool) {
       let processName;
       let iterator_value;
       let goodStep = "Déclarer";
-
       setTimeout(function() {
         spinalPanelManagerService.openPanel("ShowInfo");
       }, 100);
-
       let self = this;
+
+      if (this.binding == true && bool == false) {
+        this.binding = false;
+        return 0;
+      } else if (bool == false) {
+        value = this.thisProcess;
+      }
+
+            if (value == undefined)
+         return 0;
+
+      if (this.steps !== "")
+        goodStep = this.steps
 
       this.stepsList = [];
       this.ticketsList = [];
       this.ticketNode = [];
 
-      if (this.steps !== "") {
-        goodStep = this.steps
-      }
-
-      if (this.listOfStepsForProcess !== undefined && this.thisProcess !== value)
+      if (this.listOfStepsForProcess !== undefined && this.thisProcess === value)
         this.patchBug = 0;
-      SpinalServiceTicket.getAllProcessAsync().then((process) => {
 
+      SpinalServiceTicket.getAllProcessAsync().then((process) => {
       let ite = 0;
       let iterator1 = process.values();
-
       while ( ite < process.size ) {
         iterator_value = iterator1.next().value;
         processName = SpinalGraphService.getRealNode(iterator_value);
         if (processName.info.name.get() === value) {
+
+          if (self.selectedProcess !== "")
+            self.selectedProcess.unbind(self.nodeBinded);
+
           self.selectedProcess = processName;
           self.processId = iterator_value;
+
+          self.nodeBinded = processName.bind(() => self.selectProcess.call(self, self.processName, false));
+          self.binding = true;
           SpinalServiceTicket.getStepsFromProcessAsync(iterator_value)
           .then((k) => {
              let stepsName = [];
              let name;
              let stepNode;
-             this.listOfStepsForProcess = {};
-
+             self.listOfStepsForProcess = {};
              for (var i in k) {
                 stepNode = SpinalGraphService.getRealNode(k[i].id.get());
                 name = stepNode.info.name.get();
                 stepsName.push(name);
-                this.listOfStepsForProcess[name] = stepNode;
-
+                self.listOfStepsForProcess[name] = stepNode;
                 if (name.toUpperCase() === goodStep.toUpperCase()) {
-
-
                   let el = document.getElementsByClassName("selectedstepbox");
                   var newDiv = document.createElement("div");
                   newDiv.style.width = "88px";
@@ -347,12 +357,9 @@ export default {
                     parentDiv.insertBefore(newDiv, el[ite]);
                     self.updateBadge();
                   }, 100)
-
                   self.steps = name;
                   let realnode = SpinalGraphService.getRealNode(k[i].id.get());
-
                   realnode.getChildren().then((tickets) => {
-
                        for (var node in tickets) {
                           self.ticketNode.push(tickets[node].info);
                           self.ticketsList.push(tickets[node].info.name.get());
@@ -372,7 +379,7 @@ export default {
   watch: {
     thisProcess: {
       handler: function(value) {
-      this.selectProcess(value);
+      this.selectProcess(value, true);
     },
     immediate: true,
     },
@@ -384,8 +391,6 @@ export default {
   mounted: function() {
     this.nodes = SpinalGraphService.getNodesInfo();
     this.displayNodes.push(SpinalGraphService.getContext("Ticket Service").info.id.get());
-    //let self = this;
-    //SpinalGraphService.getChildren(parent.info.id.get()).then(k => k.forEach(function(el){ self.displayNodes.push(el.id.get()); } ) )
   }
 };
 
@@ -445,7 +450,7 @@ export default {
 }
 
 .badgeForStep {
-  background-color: red;
+  background-color: #262728;
   height: 24px;
   color: black;
   width: 24px;
