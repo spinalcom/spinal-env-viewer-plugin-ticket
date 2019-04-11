@@ -87,19 +87,14 @@ export default {
       tickets: [],
       thisProcess: {},
       stepsList: [],
-      stepList: '',
       underline: '',
       ticketNode: [],
       steps: '',
       ticketsList: [],
-      nodes: {},
-      displayNodes: [],
       ticketToZoom: [],
       patchBug: 1,
-      activeNodesId: [],
       binding: false,
       nodeBinded: {},
-      lol: ['1', '2', '3'],
       selected: 0
     };
   },
@@ -125,9 +120,7 @@ export default {
         this.selectProcess(this.thisProcess, true);
     },
     closed: function() {
-      this.nodes = {};
       this.underline.remove();
-      this.displayNodes = [];
       this.ticketNode = [];
 
     },
@@ -136,9 +129,6 @@ export default {
     },
       searchProcess: function () {
       this.selectProcess();
-    },
-    onNodeSelected: function(event) {
-      this.activeNodesId = [ event.nodeId ];
     },
     zoomRoom: function(event) {
       let str = event.target.parentElement.firstElementChild.innerText;
@@ -290,7 +280,7 @@ export default {
   selectProcess: function(value, bool) {
       let processName;
       let iterator_value;
-      let goodStep = "Déclarer";
+      let goodStep = "Déclaré";
       setTimeout(function() {
         spinalPanelManagerService.openPanel("ShowInfo");
       }, 100);
@@ -303,7 +293,7 @@ export default {
         value = this.thisProcess;
       }
 
-            if (value == undefined)
+      if (value == undefined)
          return 0;
 
       if (this.steps !== "")
@@ -388,10 +378,6 @@ export default {
         this.selectProcess(this.thisProcess);
     }
   },
-  mounted: function() {
-    this.nodes = SpinalGraphService.getNodesInfo();
-    this.displayNodes.push(SpinalGraphService.getContext("Ticket Service").info.id.get());
-  }
 };
 
 </script>
