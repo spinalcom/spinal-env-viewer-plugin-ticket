@@ -474,7 +474,6 @@ export default {
 }
 
 .badgeForStep {
-  background-color: #262728;
   height: 24px;
   color: black;
   width: 24px;
