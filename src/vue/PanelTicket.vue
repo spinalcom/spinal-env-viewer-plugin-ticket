@@ -95,6 +95,8 @@ export default {
       patchBug: 1,
       binding: false,
       nodeBinded: {},
+      contextBind: {},
+      ticketContext: {},
       selected: 0
     };
   },
@@ -104,8 +106,11 @@ export default {
       this.viewer = window.spinal.ForgeViewer.viewer;
       this.tickets = [];
       this.arrayOfSelect = [];
-      this.doc = document;
-      SpinalGraphService.getChildren(SpinalGraphService.getContext("Ticket Service").info.id.get())
+
+      let contextTicket = SpinalGraphService.getContext("Ticket Service");
+      this.ticketContext = contextTicket;
+      this.contextBind = contextTicket.bind(() => self.updateProcessList.call());
+      SpinalGraphService.getChildren(contextTicket.info.id.get())
       .then(k => k.forEach(function(el){
         self.tickets.push(el.name.get());
         self.thisProcess = self.tickets[0];
@@ -122,10 +127,35 @@ export default {
     closed: function() {
       this.underline.remove();
       this.ticketNode = [];
-
+      this.listOfStepsForProcess = undefined;
+      this.ticketContext.unbind(self.contextBind);
     },
     hasChildInContext: function (id, contextId) {
       return SpinalGraphService.hasChildInContext(id, contextId);
+    },
+    updateProcessList: function () {
+      let self = this;
+
+      SpinalGraphService.getChildren(SpinalGraphService.getContext("Ticket Service").info.id.get())
+        .then(k => {
+        let tmp = self.tickets.slice(0);
+        k.forEach(function(el){
+
+          if (self.tickets.indexOf(el.name.get()) == -1)
+            self.tickets.push(el.name.get());
+          else
+            tmp.splice(tmp.indexOf(el.name.get()), 1);
+          })
+        if (self.thisProcess === tmp[0])
+        {
+          self.thisProcess = self.tickets[0];
+          self.underline.remove();
+        //  self.selectProcess(self.thisProcess, true);
+        }
+        if (self.tickets.indexOf(tmp[0]) !== -1)
+          self.tickets.splice(self.tickets.indexOf(tmp[0]), 1);
+        }
+      );
     },
       searchProcess: function () {
       this.selectProcess();
@@ -139,7 +169,7 @@ export default {
 
           let self = this;
           realNode.find( [
-            SPINAL_TICKET_SERVICE_TARGET_RELATION_NAME,
+           "SpinalSystemServiceTicketHasLocation",
             "hasBIMObject",
             'hasReferenceObject'
           ],
@@ -239,6 +269,7 @@ export default {
       newDiv.style.height = "2px";
       newDiv.style.marginLeft = "15px";
       newDiv.style.backgroundColor = "white";
+      newDiv.classList.add("underlineForStep");
       this.underline = newDiv;
       SpinalGraphService.getChildren(self.selectedProcess.info.id.get()).then((childrens) => {
         for ( var i in childrens ) {
@@ -262,7 +293,6 @@ export default {
       var iterator = 0;
       let color;
       let loop = 0;
-
       var x = setInterval(function() {
         color = self.colors[iterator].replace(/#/g, "0x");
         window.spinal.ForgeViewer.viewer.setColorMaterial(self.ticketToZoom[iterator], color)
@@ -274,16 +304,22 @@ export default {
         } else if (self.ticketToZoom[iterator] === undefined && loop === 1) {
           clearInterval(x);
         }
-      }, 1);
+      }, 100);
 
     },
-  selectProcess: function(value, bool) {
+    clearUnderline: function() {
+      let el = document.getElementsByClassName('underlineForStep');
+      for (var i in el)
+      {
+        if (typeof parseInt(i) === 'number' && (parseInt(i) + 1) !== el.length)
+          if (typeof el[i].remove === 'function')
+            el[i].remove();
+      }
+    },
+    selectProcess: function(value, bool) {
       let processName;
       let iterator_value;
       let goodStep = "Déclaré";
-      setTimeout(function() {
-        spinalPanelManagerService.openPanel("ShowInfo");
-      }, 100);
       let self = this;
 
       if (this.binding == true && bool == false) {
@@ -340,12 +376,14 @@ export default {
                   newDiv.style.height = "2px";
                   newDiv.style.marginLeft = "15px";
                   newDiv.style.backgroundColor = "white";
+                  newDiv.classList.add("underlineForStep");
                   self.underline = newDiv;
                   let ite = i;
                   setTimeout(function() {
                     let parentDiv = el[ite].parentNode;
                     parentDiv.insertBefore(newDiv, el[ite]);
                     self.updateBadge();
+                    self.clearUnderline();
                   }, 100)
                   self.steps = name;
                   let realnode = SpinalGraphService.getRealNode(k[i].id.get());
