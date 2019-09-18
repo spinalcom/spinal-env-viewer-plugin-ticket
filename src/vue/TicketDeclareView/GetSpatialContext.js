@@ -74,16 +74,13 @@ async function spinalNodeGetParent(node, relationNames) {
   const res = relations.map((relation) => {
     return relation.parent.load();
   });
-
   return Promise.all(res);
 }
 
 export const GetSpatialContext = {
   getStart() {
     return new Promise((resolve) => {
-
       const context = SpinalGraphService.getContextWithType(CONTEXT_TYPE)[0];
-
       return SpinalGraphService.getChildren(context.getId(), GEO_RELATIONS_NAMES).then(
         (contextChildren) => {
           contextChildren = contextChildren.map(modelToObjet);
@@ -105,7 +102,6 @@ export const GetSpatialContext = {
     }
   },
 
-
   getNext(nodeId) {
     return SpinalGraphService.getChildren(nodeId, GEO_RELATIONS_NAMES).then(
       (contextChildren) => {
@@ -113,7 +109,6 @@ export const GetSpatialContext = {
       }
     );
   },
-
 
   async hasAttributes(node, attrToCheck) {
     const attrs = await serviceDocumentation.getAllAttributes(node);
@@ -147,18 +142,5 @@ export const GetSpatialContext = {
       }
       return acc;
     }, []);
-
-
-    // {/* return SpinalGraphService.getChildren(local.id, GEO_FIND_BIMOBJ_RELATION).then(
-    //   (contextChildren) => {
-    //     return contextChildren.map(modelToObjet);
-    //   }
-    // ); */}
-
-
-
-    // {/* console.log("getMaterial : " ,local);
-    // GEO_FIND_BIMOBJ_RELATION
-    // return Promise.resolve(["test", "test2"]); */}
   }
 };

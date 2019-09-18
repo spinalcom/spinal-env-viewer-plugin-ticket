@@ -15,7 +15,21 @@
       <div class="hr-sect">
         <md-icon>location_on</md-icon>Localisation
       </div>
-      <md-field>
+      <md-button class="md-raised"
+                 @click="openModalLocal = true"
+                 style="width:100%; margin: 8px 0;">
+        <span v-if="local === ''">Selectionnez un Local</span>
+        <span v-else>{{local}}</span>
+      </md-button>
+      <md-button v-if="local !== ''"
+                 class="md-raised"
+                 @click="openModalMaterial = true"
+                 style="width:100%; margin: 8px 0;">
+        <span v-if="materiel.name === ''">Selectionnez un
+          Matériel - <i>optionnel</i></span>
+        <span v-else>{{materiel.name}}</span>
+      </md-button>
+      <!-- <md-field>
         <label for="local">Local</label>
         <md-input name="local"
                   id="local"
@@ -26,8 +40,8 @@
                    @click="openModalLocal = true">
           <md-icon>location_searching</md-icon>
         </md-button>
-      </md-field>
-      <md-field v-if="local !== ''">
+      </md-field> -->
+      <!-- <md-field v-if="local !== ''">
         <label for="Materiel">Matériel <i>optionnel</i></label>
         <md-input name="Materiel"
                   id="Materiel"
@@ -37,7 +51,7 @@
                    @click="openModalMaterial = true">
           <md-icon>location_searching</md-icon>
         </md-button>
-      </md-field>
+      </md-field> -->
       <div>
         <div class="hr-sect">
           <md-icon>priority_high</md-icon>Priorité
@@ -99,7 +113,7 @@ export default {
     return {
       comment: "",
       local: "",
-      materiel: {},
+      materiel: { name: "" },
       priority: 2,
       openModalLocal: false,
       openModalMaterial: false,
@@ -124,6 +138,7 @@ export default {
       console.log("onLocalSelected", path);
       this.local = path.map(el => el.name).join("/");
       this.localNode = path[path.length - 1];
+      this.materiel = { name: "" };
     },
     // async sendClick() {
     async sendClick() {
@@ -239,6 +254,7 @@ export default {
 
 .ticket-panel-container-content {
   padding: 0 8px;
+  position: relative;
 }
 </style>
 

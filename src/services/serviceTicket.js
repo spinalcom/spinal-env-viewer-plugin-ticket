@@ -5,6 +5,7 @@ const SPINAL_TICKET_SERVICE_STEP_RELATION_NAME = 'SpinalSystemServiceTicketHasSt
 const SPINAL_TICKET_SERVICE_INCIDENT_SECTION_RELATION_NAME = 'Spinal_Service_Ticket_Process_has_categories_section';
 const SPINAL_TICKET_SERVICE_INCIDENT_RELATION_NAME = 'Spinal_Service_Ticket_Process_has_category';
 const SPINAL_RELATION_HAS_BIMOBJ = "hasBimObject";
+import { getPrev } from "../vue/TicketDeclareView/GetSpatialContext";
 // const RELATION_TICKET_STEP = [
 //   SPINAL_TICKET_SERVICE_STEP_RELATION_NAME,
 //   SPINAL_TICKET_SERVICE_INCIDENT_SECTION_RELATION_NAME
@@ -182,19 +183,21 @@ export async function getTicketByDomaineAndStep(domaine, step, onChange) {
   const context = SpinalGraphService.getContext(CONTEXT_TICKET_NAME);
   const stepId = step.id;
   const children = await SpinalGraphService.getChildrenInContext(stepId, context.getId().get());
-  const res = await Promise.all(children.map((el) => {
-    return el.element.load().then((ticket) => {
-      const local = SpinalGraphService.getRealNode(ticket.local.get());
-      return {
-        GMAOTicketId: ticket.GMAOTicketId.get(),
-        creationDate: new Date(ticket.creationDate.get()),
-        equipement: ticket.equipement.get(),
-        historiques: ticket.historiques.get(),
-        local: { name: local.info.name.get(), id: local.info.id.get() },
-        name: ticket.name.get(),
-        note: ticket.note.get()
-      };
-    });
+  const res = await Promise.all(children.map(async (el) => {
+    const ticket = await el.element.load();
+    const local = SpinalGraphService.getRealNode(ticket.local.get());
+    const prev = await getPrev(ticket.local.get());
+    console.log(prev);
+
+    return {
+      GMAOTicketId: ticket.GMAOTicketId.get(),
+      creationDate: new Date(ticket.creationDate.get()),
+      equipement: ticket.equipement.get(),
+      historiques: ticket.historiques.get(),
+      local: { name: local.info.name.get(), id: local.info.id.get() },
+      name: ticket.name.get(),
+      note: ticket.note.get()
+    };
   }));
   onChange(res);
 }

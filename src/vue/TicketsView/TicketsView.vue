@@ -17,11 +17,12 @@
       <table class="ticket-table">
         <thead>
           <tr>
-            <th>Mission ID</th>
+            <th>ID</th>
             <th>Objet</th>
+            <th>Etage</th>
             <th>Local</th>
-            <th>Debut</th>
-            <th>Note</th>
+            <th>Début</th>
+            <th>Notes</th>
           </tr>
         </thead>
         <tbody>
@@ -31,6 +32,7 @@
               @click="onSelectTicket(ticket)">
             <td>{{ticket.GMAOTicketId}}</td>
             <td>{{ticket.name}}</td>
+            <td>{{ticket.local.etage}}</td>
             <td>{{ticket.local.name}}</td>
             <td>{{getTime(ticket.creationDate)}}</td>
             <td>
