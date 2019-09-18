@@ -11,7 +11,7 @@
         </md-list-item>
         <md-list-item @click="$emit('onSelectDeclare')">
           <md-icon>content_paste</md-icon>
-          <span class="md-list-item-text">CREE une demande</span>
+          <span class="md-list-item-text">CREER une demande</span>
         </md-list-item>
         <md-list-item
                       href="https://www.alteva.net/EMIssiON?base=semlrdl" target="_blank">

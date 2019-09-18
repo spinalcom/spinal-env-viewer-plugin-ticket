@@ -61,7 +61,7 @@ export default {
     onSelectDeclare() {
       console.log("onSelectDeclare");
       this.page = 2;
-      this.renameTitlePanel(TICKET_PANEL_TITLE + " : Créé une demande");
+      this.renameTitlePanel(TICKET_PANEL_TITLE + " : Créer une demande");
     }
   },
   mounted() {}

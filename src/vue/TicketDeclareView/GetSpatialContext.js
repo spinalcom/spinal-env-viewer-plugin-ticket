@@ -8,7 +8,7 @@ const BUILDING_TYPE = "geographicBuilding";
 const FLOOR_TYPE = "geographicFloor";
 const ZONE_TYPE = "geographicZone";
 export const ROOM_TYPE = "geographicRoom";
-const EQUIPMENT_RELATION = "hasBIMObject";
+const EQUIPMENT_RELATION = "hasBimObject";
 
 const SITE_RELATION = "hasGeographicSite";
 const BUILDING_RELATION = "hasGeographicBuilding";

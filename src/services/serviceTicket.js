@@ -4,7 +4,7 @@ const CONTEXT_TICKET_NAME = 'Ticket Service';
 const SPINAL_TICKET_SERVICE_STEP_RELATION_NAME = 'SpinalSystemServiceTicketHasStep';
 const SPINAL_TICKET_SERVICE_INCIDENT_SECTION_RELATION_NAME = 'Spinal_Service_Ticket_Process_has_categories_section';
 const SPINAL_TICKET_SERVICE_INCIDENT_RELATION_NAME = 'Spinal_Service_Ticket_Process_has_category';
-
+const SPINAL_RELATION_HAS_BIMOBJ = "hasBimObject";
 // const RELATION_TICKET_STEP = [
 //   SPINAL_TICKET_SERVICE_STEP_RELATION_NAME,
 //   SPINAL_TICKET_SERVICE_INCIDENT_SECTION_RELATION_NAME
@@ -112,7 +112,7 @@ requestCode[requestCode["modifyDI"] = 2] = "modifyDI";
 requestCode[requestCode["consultBP"] = 3] = "consultBP";
 requestCode[requestCode["createBP"] = 4] = "createBP";
 requestCode[requestCode["modifyBP"] = 5] = "modifyBP";
-export {requestCode};
+export { requestCode };
 const rcArr = [
   'consultDI',
   'createDI',
@@ -176,3 +176,62 @@ if (typeof OrganRequestAltevaRequest === 'undefined') {
   spinal_core_connectorjs_type_1.spinalCore.register_models(OrganRequestAltevaRequest);
 }
 export { OrganRequestAltevaRequest };
+
+export async function getTicketByDomaineAndStep(domaine, step, onChange) {
+  console.log("getTicketByDomaineAndStep", domaine, step);
+  const context = SpinalGraphService.getContext(CONTEXT_TICKET_NAME);
+  const stepId = step.id;
+  const children = await SpinalGraphService.getChildrenInContext(stepId, context.getId().get());
+  const res = await Promise.all(children.map((el) => {
+    return el.element.load().then((ticket) => {
+      const local = SpinalGraphService.getRealNode(ticket.local.get());
+      return {
+        GMAOTicketId: ticket.GMAOTicketId.get(),
+        creationDate: new Date(ticket.creationDate.get()),
+        equipement: ticket.equipement.get(),
+        historiques: ticket.historiques.get(),
+        local: { name: local.info.name.get(), id: local.info.id.get() },
+        name: ticket.name.get(),
+        note: ticket.note.get()
+      };
+    });
+  }));
+  onChange(res);
+}
+
+export async function selectTicketLocal(ticket) {
+  const local = SpinalGraphService.getRealNode(ticket.local.id);
+  const children = await local.getChildren([SPINAL_RELATION_HAS_BIMOBJ]);
+  const lstByModel = sortBIMObjectByModel(children);
+  const viewer = spinal.ForgeViewer.viewer;
+  viewer.clearSelection();
+  for (const { model, selection } of lstByModel) {
+    model.selector.setSelection(selection, model, "selectOnly");
+  }
+  viewer.fitToView(lstByModel);
+}
+
+function sortBIMObjectByModel(arrayOfBIMObject) {
+  let arrayModel = [];
+  for (const nodeBIMObject of arrayOfBIMObject) {
+    const bimFileId = nodeBIMObject.info.bimFileId.get();
+    const dbId = nodeBIMObject.info.dbid.get();
+    const model = spinal.BimObjectService.getModelByBimfile(bimFileId);
+    const obj = getOrAddModelIfMissing(arrayModel, model);
+    obj.selection.push(dbId);
+  }
+  return arrayModel;
+}
+function getOrAddModelIfMissing(array, model) {
+  for (const obj of array) {
+    if (obj.model === model) {
+      return obj;
+    }
+  }
+  const obj = {
+    selection: [],
+    model
+  };
+  array.push(obj);
+  return obj;
+}

@@ -5,6 +5,8 @@
                  @click="$emit('onBackClick')">
         <i class="material-icons">arrow_back</i>
       </md-button>
+      <div class="ticket-panel-status-color"
+           :style="{'background-color':selectedStatus.color}"></div>
       <div>
         <h3>Tickets: {{selectedDomaine.name}}</h3>
         <h5>{{selectedStatus.label}}</h5>
@@ -15,11 +17,11 @@
       <table class="ticket-table">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>Mission ID</th>
             <th>Objet</th>
-            <th>Location</th>
+            <th>Local</th>
             <th>Debut</th>
-            <th>Fin</th>
+            <th>Note</th>
           </tr>
         </thead>
         <tbody>
@@ -27,11 +29,13 @@
               v-for="ticket in tickets"
               :key='ticket.id'
               @click="onSelectTicket(ticket)">
-            <td>{{ticket.id}}</td>
+            <td>{{ticket.GMAOTicketId}}</td>
             <td>{{ticket.name}}</td>
-            <td>{{ticket.location}}</td>
-            <td>{{getTime(ticket.start)}}</td>
-            <td>{{getTime(ticket.end)}}</td>
+            <td>{{ticket.local.name}}</td>
+            <td>{{getTime(ticket.creationDate)}}</td>
+            <td>
+              <pre>{{ticket.note}}</pre>
+            </td>
             <!-- <td @click="$emit('onSelect',ticket)">{{ticket.name}}</td>
             <td @click="$emit('onSelect',ticket)">{{ticket.name}}</td>
             <td @click="$emit('onSelect',ticket)">{{getTime(ticket.start)}}</td>
@@ -88,6 +92,10 @@
 <script>
 import { getContrastYIQ } from "../../utils/hexToRgb";
 // import moment from "moment";
+import {
+  selectTicketLocal,
+  getTicketByDomaineAndStep
+} from "../../services/serviceTicket";
 export default {
   name: "ticket-view",
   props: ["selectedDomaine", "selectedStatus"],
@@ -110,38 +118,20 @@ export default {
       return `${date.toLocaleDateString()} - ${date.toLocaleTimeString()}`;
     },
     onSelectTicket(obj) {
-      console.log("onSelectTicket", obj);
+      selectTicketLocal(obj);
+    },
+    onChange(obj) {
+      this.tickets = obj;
     }
   },
   mounted() {
-    let id = 0;
-    function ticket(n) {
-      return {
-        name: `${n}_${id}`,
-        id: id++,
-        location: "location test",
-        start: new Date(),
-        end: new Date()
-      };
-    }
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
-    this.tickets.push(ticket("test"));
+    console.log("this.selectedStatus", this.selectedStatus);
+
+    getTicketByDomaineAndStep(
+      this.selectedDomaine,
+      this.selectedStatus,
+      this.onChange
+    );
   }
 };
 </script>
@@ -181,6 +171,9 @@ export default {
 .ticket-table thead tr th:first-child {
   text-align: center;
 }
-
+.ticket-panel-status-color {
+  height: 60%;
+  width: 10px;
+}
 </style>
 

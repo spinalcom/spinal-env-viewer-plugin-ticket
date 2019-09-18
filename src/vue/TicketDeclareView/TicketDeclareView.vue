@@ -13,7 +13,7 @@
     <md-content class="ticket-panel-container-content md-scrollbar">
 
       <div class="hr-sect">
-        <md-icon>location_on</md-icon>Location
+        <md-icon>location_on</md-icon>Localisation
       </div>
       <md-field>
         <label for="local">Local</label>
@@ -50,11 +50,11 @@
                   :value="3">A l'occasion</md-radio>
       </div>
       <div class="hr-sect">
-        <md-icon>edit</md-icon>Préciser votre demande
+        <md-icon>edit</md-icon>Précisez votre demande
       </div>
 
       <md-field>
-        <label for="Comment">Préciser votre demande</label>
+        <label for="Comment">Précisez votre demande</label>
         <md-textarea class="ticket-area-comment"
                      name="Comment"
                      id="Comment"
@@ -215,6 +215,10 @@ export default {
   font-size: 15px;
   text-transform: uppercase;
   margin: 8px 0px;
+  color: white;
+}
+.hr-sect .md-icon {
+  color: white !important;
 }
 .hr-sect::before,
 .hr-sect::after {
