@@ -59,7 +59,7 @@ import { DisplayRoomTicketsButton } from "./buttons/DisplayRoomTicketsButton";
 const SIDE_BAR_HOOK_NAME = 'GraphManagerSideBar';
 if (typeof SpinalServiceTicket.contextId === "undefined") {
   const interval = setInterval( () => {
-    if (SpinalGraphService.graph.hasOwnProperty( 'info' )) {
+    if (SpinalGraphService.graph && SpinalGraphService.graph.hasOwnProperty( 'info' )) {
       SpinalServiceTicket.init();
       clearInterval( interval );
     }
