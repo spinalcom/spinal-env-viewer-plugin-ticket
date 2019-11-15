@@ -1,6 +1,6 @@
 {
   "name": "spinal-env-viewer-plugin-ticket",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "ticket handler plugin",
   "main": "src/index.js",
   "scripts": {
