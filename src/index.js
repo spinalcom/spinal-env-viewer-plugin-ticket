@@ -1,7 +1,3 @@
-// const {
-//   spinalPanelManagerService,
-//   SpinalMountExtention
-// } = require("spinal-env-viewer-panel-manager-service");
 
 const {
   SpinalForgeExtention
