@@ -1,8 +1,8 @@
 {
   "name": "spinal-env-viewer-plugin-ticket",
-  "version": "0.5.1",
+  "version": "1.0.0",
   "description": "ticket handler plugin",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,10 +17,11 @@
     "spinal-env-viewer-panel-manager-service": "git+https://github.com/spinalcom/spinal-env-viewer-panel-manager-service.git",
     "spinal-env-viewer-vue-components-lib": "git+https://github.com/spinalcom/spinal-env-viewer-vue-components-lib.git",
     "spinal-service-ticket": "https://github.com/spinalcom/spinal-service-ticket.git",
-    "spinal-env-viewer-panel-manager-service_spinalforgeextention" : "https://github.com/spinalcom/spinal-env-viewer-panel-manager-service_spinalforgeextention.git",
+    "spinal-env-viewer-panel-manager-service_spinalforgeextention": "https://github.com/spinalcom/spinal-env-viewer-panel-manager-service_spinalforgeextention.git",
     "vue": "^2.5.21",
     "vue-color": "^2.7.0",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "vuedraggable": "^2.24.0"
   },
   "browserify": {
     "transform": [
