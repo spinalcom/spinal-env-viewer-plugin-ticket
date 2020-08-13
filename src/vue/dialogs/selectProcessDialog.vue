@@ -63,7 +63,7 @@ with this file. If not, see
                  @click="closeDialog(false)">Close</md-button>
 
       <md-button class="md-primary"
-                 :disabled="!contextId || !processId || !incidentId"
+                 :disabled="!contextId || !processId"
                  @click="closeDialog(true)">Save</md-button>
     </md-dialog-actions>
 
@@ -73,7 +73,7 @@ with this file. If not, see
 <script>
 import { serviceTicketPersonalized } from "spinal-service-ticket";
 import { spinalPanelManagerService } from "spinal-env-viewer-panel-manager-service";
-import linkerTemplateVue from "./linkerTemplate.vue";
+import linkerTemplateVue from "./components/linkerTemplate.vue";
 import EventBus from "../../extensions/Event";
 
 export default {
@@ -112,6 +112,7 @@ export default {
         spinalPanelManagerService.openPanel("createTicketDialog", {
           contextId: this.contextId,
           processId: this.processId,
+          incidentId: this.incidentId,
           selectedNode: this.selectedNode,
         });
       }

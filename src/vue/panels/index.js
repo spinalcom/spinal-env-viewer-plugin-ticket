@@ -1,8 +1,5 @@
 import TicketManagerPanel from './ticketManager.vue';
-
-import {
-  SpinalMountExtention
-} from "spinal-env-viewer-panel-manager-service";
+import Vue from "vue";
 
 const {
   SpinalForgeExtention,
@@ -11,7 +8,7 @@ const {
 
 const panels = [{
   name: "ticketManagerPanel",
-  vueMountComponent: vue.extend(TicketManagerPanel),
+  vueMountComponent: Vue.extend(TicketManagerPanel),
   panel: {
     title: "Ticket Manager",
     closeBehaviour: "hide",

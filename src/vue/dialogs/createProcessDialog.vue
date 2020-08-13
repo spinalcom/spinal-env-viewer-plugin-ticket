@@ -27,7 +27,7 @@ with this file. If not, see
              @md-closed="closeDialog(false)">
     <form class="dialogForm"
           @submit.prevent="closeDialog(true)">
-      <md-dialog-title>Create Ticket Process</md-dialog-title>
+      <md-dialog-title>Create Process Context</md-dialog-title>
       <md-dialog-content>
         <md-field>
           <label>Process name</label>

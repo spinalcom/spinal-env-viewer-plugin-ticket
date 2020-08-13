@@ -31,15 +31,21 @@ export class ManageTicketButton extends SpinalContextApp {
 
     if (contextType !== SERVICE_TYPE) return Promise.resolve(-1);
 
-    const displayIt = nodeType === SPINAL_TICKET_SERVICE_TICKET_TYPE ||
-      nodeType === SPINAL_TICKET_SERVICE_STEP_TYPE;
+    // const displayIt = nodeType === SPINAL_TICKET_SERVICE_TICKET_TYPE ||
+    //   nodeType === SPINAL_TICKET_SERVICE_STEP_TYPE;
+
+    const displayIt = nodeType !== SPINAL_TICKET_SERVICE_TICKET_TYPE;
 
     return Promise.resolve(displayIt ? true : -1);
 
   }
 
   action(option) {
-    spinalPanelManagerService.openPanel("createTicketContextDialog")
+    const params = {
+      selectedNode: option.selectedNode.get(),
+      context: option.context.get()
+    }
+    spinalPanelManagerService.openPanel("ticketManagerPanel", params);
   }
 
 }
