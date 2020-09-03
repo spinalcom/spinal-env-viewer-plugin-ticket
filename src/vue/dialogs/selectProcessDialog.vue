@@ -23,38 +23,45 @@ with this file. If not, see
 -->
 
 <template>
-  <md-dialog class="mdDialogContainer"
+  <md-dialog class="ticketMdDialogContainer"
              :md-active.sync="showDialog"
              @md-closed="closeDialog(false)">
-    <md-dialog-title class="dialogTitle">Select Ticket Process</md-dialog-title>
-    <md-dialog-content class="content">
+    <!-- <md-dialog-title class="dialogTitle">Select Ticket Process</md-dialog-title> -->
+    <md-dialog-content class="selectProcessClass">
 
-      <div class="section">
-        <link-template :title="'Contexts'"
-                       :data="data"
-                       :itemSelected="contextId"
-                       @select="selectContext"
-                       :showBtn="false"></link-template>
-      </div>
+      <md-tabs class="md-transparent"
+               md-alignment="fixed"
+               @md-changed="changeActiveTab">
 
-      <div class="section">
-        <link-template :title="'Processes'"
-                       :data="processes"
-                       :itemSelected="processId"
-                       @select="selectProcess"
-                       :showBtn="false"></link-template>
+        <md-tab :id="tabs.linked"
+                md-label="Linked Tickets">
+          <div class="my_content">
+            <tickets-vue class="tickets_class"
+                         :data="tickets"
+                         @reload="reloadData"></tickets-vue>
+          </div>
 
-      </div>
+        </md-tab>
 
-      <div class="section">
-        <link-template :title="'Common Incident'"
-                       :data="incidents"
-                       :itemSelected="incidentId"
-                       @select="selectIncident"
-                       @create="createCommonIncident"
-                       :showBtn="true"></link-template>
+        <md-tab :id="tabs.create"
+                md-label="Create new Ticket">
+          <div class="my_content">
+            <select-process :data="data"
+                            :contextId="contextId"
+                            :processes="processes"
+                            :processId="processId"
+                            :incidents="incidents"
+                            :incidentId="incidentId"
+                            @selectContext="selectContext"
+                            @selectProcess="selectProcess"
+                            @selectIncident="selectIncident"
+                            @createCommonIncident="createCommonIncident">
+            </select-process>
+          </div>
 
-      </div>
+        </md-tab>
+
+      </md-tabs>
 
     </md-dialog-content>
 
@@ -63,7 +70,7 @@ with this file. If not, see
                  @click="closeDialog(false)">Close</md-button>
 
       <md-button class="md-primary"
-                 :disabled="!contextId || !processId"
+                 :disabled="!(selectedTab == tabs.create && contextId && processId)"
                  @click="closeDialog(true)">Save</md-button>
     </md-dialog-actions>
 
@@ -73,16 +80,28 @@ with this file. If not, see
 <script>
 import { serviceTicketPersonalized } from "spinal-service-ticket";
 import { spinalPanelManagerService } from "spinal-env-viewer-panel-manager-service";
-import linkerTemplateVue from "./components/linkerTemplate.vue";
+import { SpinalGraphService } from "spinal-env-viewer-graph-service";
+// import linkerTemplateVue from "./components/linkerTemplate.vue";
+
+import selectProcessVue from "./components/selectProcess.vue";
+
 import EventBus from "../../extensions/Event";
+
+import ticketsVue from "../panels/components/tickets.vue";
 
 export default {
   name: "selectProcessDialog",
   props: ["onFinised"],
   components: {
-    "link-template": linkerTemplateVue,
+    // "link-template": linkerTemplateVue,
+    "select-process": selectProcessVue,
+    "tickets-vue": ticketsVue,
   },
   data() {
+    this.tabs = {
+      create: "createNewTicketTab",
+      linked: "linkedTicketTab",
+    };
     return {
       showDialog: true,
       contextId: undefined,
@@ -92,6 +111,8 @@ export default {
       data: [],
       processes: [],
       incidents: [],
+      tickets: [],
+      selectedTab: this.tabs.linked,
     };
   },
   mounted() {
@@ -105,6 +126,10 @@ export default {
     async opened(option) {
       this.selectedNode = option.selectedNode;
       this.data = await this.getAllData();
+      const contextId = option.selectedNode.getId().get();
+      this.tickets = await this.getNodeTickets(contextId);
+
+      console.log("tickets", this.tickets);
     },
 
     async removed(res) {
@@ -119,6 +144,7 @@ export default {
 
       this.showDialog = false;
     },
+
     closeDialog(closeResult) {
       if (typeof this.onFinised === "function") {
         this.onFinised({ closeResult, process: this.process });
@@ -196,6 +222,37 @@ export default {
 
       spinalPanelManagerService.openPanel("createCommonIncidentDialog", params);
     },
+
+    getNodeTickets(nodeId) {
+      return serviceTicketPersonalized
+        .getTicketsFromNode(nodeId)
+        .then((tickets) => {
+          const promises = tickets.map(async (ticket) => {
+            ticket["step"] = await this.getStep(ticket.stepId);
+            return ticket;
+          });
+
+          return Promise.all(promises);
+        });
+    },
+
+    getStep(id) {
+      const info = SpinalGraphService.getInfo(id);
+      if (info) return Promise.resolve(info.get());
+
+      return SpinalGraphService.getNodeAsync(id).then((result) => {
+        return result.get();
+      });
+    },
+
+    async reloadData() {
+      const id = this.selectedNode.getId().get();
+      this.tickets = await this.getNodeTickets(id);
+    },
+
+    changeActiveTab(tabId) {
+      this.selectedTab = tabId;
+    },
   },
   watch: {
     contextId() {
@@ -214,11 +271,17 @@ export default {
 </script>
 
 <style scoped>
-.mdDialogContainer {
+.ticketMdDialogContainer {
   width: 100%;
   height: 600px;
 }
-.mdDialogContainer .dialogTitle {
+
+.ticketMdDialogContainer .selectProcessClass {
+  /* width: 100%; */
+  padding: 0px;
+}
+
+/* .mdDialogContainer .dialogTitle {
   text-align: center;
 }
 .mdDialogContainer .content {
@@ -231,9 +294,61 @@ export default {
   border: 1px solid grey;
   border-radius: 4% 4% 0 0;
   padding: 15px;
-}
-/* .mdIcon {
-  display: flex;
-  align-items: center;
 } */
+</style>
+
+<style>
+.ticketMdDialogContainer .md-dialog-container {
+  width: 100%;
+  height: 100%;
+}
+
+.ticketMdDialogContainer
+  .selectProcessClass
+  .md-tabs.md-transparent.md-alignment-fixed.md-theme-default {
+  width: 100%;
+  height: 100%;
+}
+
+.ticketMdDialogContainer
+  .selectProcessClass
+  .md-tabs.md-transparent.md-alignment-fixed.md-theme-default
+  .md-tabs-navigation.md-elevation-0 {
+  height: 50px;
+}
+
+.ticketMdDialogContainer
+  .selectProcessClass
+  .md-tabs.md-transparent.md-alignment-fixed.md-theme-default
+  .md-content.md-tabs-content.md-theme-default {
+  height: calc(100% - 50px) !important;
+}
+
+.ticketMdDialogContainer
+  .selectProcessClass
+  .md-tabs.md-transparent.md-alignment-fixed.md-theme-default
+  .md-content.md-tabs-content.md-theme-default
+  .md-tabs-container {
+  height: 100%;
+}
+
+.ticketMdDialogContainer
+  .selectProcessClass
+  .md-tabs.md-transparent.md-alignment-fixed.md-theme-default
+  .md-content.md-tabs-content.md-theme-default
+  .md-tabs-container
+  .md-tab {
+  height: 100%;
+}
+
+.ticketMdDialogContainer
+  .selectProcessClass
+  .md-tabs.md-transparent.md-alignment-fixed.md-theme-default
+  .md-content.md-tabs-content.md-theme-default
+  .md-tabs-container
+  .md-tab
+  .my_content {
+  max-width: 100%;
+  height: 100%;
+}
 </style>

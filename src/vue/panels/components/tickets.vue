@@ -23,8 +23,9 @@ with this file. If not, see
 -->
 
 <template>
-  <md-content class="table_container md-srollbar">
-    <md-table v-model="searched"
+  <md-content class="table_container">
+    <md-table class="mdTable"
+              v-model="searched"
               md-sort="name">
 
       <md-table-toolbar class="myToolbar"
@@ -88,11 +89,28 @@ with this file. If not, see
                 <span>Pass to next step</span>
               </md-menu-item>
 
+              <md-menu-item @click="backToPreviousStep(item)">
+                <md-icon>skip_previous</md-icon>
+                <span>Back to previous step</span>
+              </md-menu-item>
+
               <md-menu-item @click="sendMessage(item)">
                 <md-icon>comment</md-icon>
-                <span>Send Message</span>
+                <span>Add comment</span>
               </md-menu-item>
+
+              <md-menu-item @click="seeDetails(item)">
+                <md-icon>assignment_late</md-icon>
+                <span>See Details</span>
+              </md-menu-item>
+
+              <!-- <md-menu-item @click="seeLogs(item)">
+                <md-icon>receipt_long</md-icon>
+                <span>See Logs</span>
+              </md-menu-item> -->
+
             </md-menu-content>
+
           </md-menu>
         </md-table-cell>
 
@@ -103,9 +121,13 @@ with this file. If not, see
 
 <script>
 import { TICKET_PRIORITIES } from "spinal-service-ticket/dist/Constants";
+
 const {
   spinalPanelManagerService,
 } = require("spinal-env-viewer-panel-manager-service");
+
+import { spinalIO } from "../../../extensions/spinalIO";
+
 import moment from "moment";
 import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 import { serviceTicketPersonalized } from "spinal-service-ticket";
@@ -125,23 +147,44 @@ export default {
   },
   mounted() {
     this.searched = this.data;
-    console.log("this.searched", this.searched);
   },
   methods: {
     onSelect(items) {
       this.selected = items;
     },
+
     searchOnTable() {
-      console.log("this.searchByName", this.searchByName);
+      // console.log("this.searchByName", this.searchByName);
     },
 
-    passToNextStep(item) {
-      const contextId = item.contextId;
+    async passToNextStep(item) {
+      const user = await spinalIO.getUserConnected();
+
+      const contextId = item.contextId
+        ? item.contextId
+        : this.getItemContext(item.id).id;
+
       const processId = item.step.processId;
       const ticketId = item.id;
 
       serviceTicketPersonalized
-        .moveTicketToNextStep(contextId, processId, ticketId)
+        .moveTicketToNextStep(contextId, processId, ticketId, user)
+        .then(() => {
+          this.$emit("reload");
+        });
+    },
+
+    async backToPreviousStep(item) {
+      const user = await spinalIO.getUserConnected();
+
+      const contextId = item.contextId
+        ? item.contextId
+        : this.getItemContext(item.id).id;
+
+      const processId = item.step.processId;
+      const ticketId = item.id;
+      serviceTicketPersonalized
+        .moveTicketToPreviousStep(contextId, processId, ticketId, user)
         .then(() => {
           this.$emit("reload");
         });
@@ -153,6 +196,24 @@ export default {
       };
       spinalPanelManagerService.openPanel("panel-notes", obj);
     },
+
+    seeDetails(item) {
+      const context = SpinalGraphService.getInfo(item.contextId);
+      const params = {
+        selectedNode: SpinalGraphService.getInfo(item.id).get(),
+        context: context ? context.get() : this.getItemContext(item.id),
+      };
+
+      spinalPanelManagerService.openPanel("ticketDetailDialog", params);
+    },
+
+    getItemContext(id) {
+      const realNode = SpinalGraphService.getRealNode(id);
+      const contextId = realNode.contextIds._attribute_names[0];
+      return SpinalGraphService.getInfo(contextId).get();
+    },
+
+    seeLogs(item) {},
   },
   filters: {
     formatCreationDate: function (date) {
@@ -167,6 +228,7 @@ export default {
         }
       }
     },
+
     userName: function (user) {
       if (user && user.name) {
         return user.name;
@@ -189,20 +251,25 @@ export default {
 .table_container {
   width: 100%;
   height: 100%;
-  overflow: auto;
+  /* overflow: auto; */
 }
 
-.table_container .myToolbar {
+.table_container .mdTable {
+  width: 100%;
+  height: calc(100% - 7px);
+}
+
+.table_container .mdTable .myToolbar {
   padding: 0px !important;
 }
 
-.table_container .ticketName .color {
+.table_container .mdTable .ticketName .color {
   width: 5px;
   height: 50px;
   margin-right: 10px;
 }
 
-.table_container .ticketName .name {
+.table_container .mdTable .ticketName .name {
   display: flex;
   align-items: center;
 }

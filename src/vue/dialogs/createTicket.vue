@@ -30,45 +30,15 @@ with this file. If not, see
     </md-dialog-title>
 
     <md-dialog-content class="mdDialogContent">
-      <!-- 
-          <md-field>
-            <label>Ticket name</label>
-            <md-input v-model="ticket.name"
-                      ref="nameTextField"></md-input>
-          </md-field>
-
-        <md-field>
-          <label>Message</label>
-          <md-textarea v-model="ticket.note"></md-textarea>
-        </md-field>
-
-        <md-field>
-          <label>Urls</label>
-          <md-textarea v-model="ticket.urls"></md-textarea>
-          <span class="md-helper-text">Put one URL per line</span>
-        </md-field>
-
-        <div class="addPJ">
-          <input type="file"
-                 @change="addAttachments"
-                 ref="attachments"
-                 multiple
-                 name="addPJ"
-                 placeholder="Add Attachment">
-        </div>
-      -->
-
-      <hr class="hr-text"
-          data-content="Details">
 
       <div class="content details">
-        <div class="left">
 
-          <div class="detail"
-               v-if="nodeInfo">
-            <div class="label">Element</div>
-            <div class="value">{{nodeInfo.name}}</div>
-          </div>
+        <div>
+          <hr class="hr-text"
+              data-content="Details">
+        </div>
+
+        <div class="left">
 
           <div class="detail"
                v-if="commonTicketInfo">
@@ -84,53 +54,42 @@ with this file. If not, see
             </md-field>
           </div>
 
+          <div class="detail"
+               v-if="nodeInfo">
+            <div class="label">Element</div>
+            <div class="value">{{nodeInfo.name}}</div>
+          </div>
+
         </div>
 
-        <!-- <div class="right">
-          <div class="detail">
-            <div class="label">Name</div>
-            <div class="value">{{nodeInfo.name}}</div>
-          </div>
-
-          <div class="detail">
-            <div class="label">Name</div>
-            <div class="value">{{nodeInfo.name}}</div>
-          </div>
-
-        </div> -->
-
       </div>
-
-      <hr class="hr-text"
-          data-content="Priority">
 
       <div class="content priority">
-        <md-radio v-model="ticket.priority"
-                  :value="PRIORITY_DATA.occasionally"
-                  class="md-primary">Occasionally</md-radio>
 
-        <md-radio v-model="ticket.priority"
-                  :value="PRIORITY_DATA.normal"
-                  class="md-primary">Normal</md-radio>
+        <div>
+          <hr class="hr-text"
+              data-content="Priority">
+        </div>
 
-        <md-radio v-model="ticket.priority"
-                  :value="PRIORITY_DATA.urgent"
-                  class="md-primary">Urgent</md-radio>
+        <div class="priorityRadio">
+          <md-radio v-model="ticket.priority"
+                    :value="PRIORITY_DATA.occasionally"
+                    class="md-primary">Occasionally</md-radio>
+
+          <md-radio v-model="ticket.priority"
+                    :value="PRIORITY_DATA.normal"
+                    class="md-primary">Normal</md-radio>
+
+          <md-radio v-model="ticket.priority"
+                    :value="PRIORITY_DATA.urgent"
+                    class="md-primary">Urgent</md-radio>
+        </div>
+
       </div>
 
-      <hr class="hr-text"
-          data-content="Notes">
-
       <div class="content notes">
-        <!-- <md-field>
-            <label>Message</label>
-            <md-textarea v-model="ticket.note"></md-textarea>
-          </md-field> -->
-
-        <!-- <md-button class="icons md-icon-button md-raised md-primary"
-                     @click="addPJ">
-            <md-icon>attach_file</md-icon>
-          </md-button> -->
+        <hr class="hr-text"
+            data-content="Notes">
 
         <div class="pj">
 
@@ -162,17 +121,7 @@ with this file. If not, see
           <md-textarea v-model="messages.note"></md-textarea>
         </md-field>
 
-        <!-- <md-field class="myField">
-              <label>Message</label>
-              <md-input v-model="messages.note"></md-input>
-            </md-field> -->
       </div>
-
-      <!-- <div class="sendBtn">450px
-              Send
-              <md-icon>send</md-icon>
-            </md-button>
-          </div> -->
 
     </md-dialog-content>
 
@@ -234,6 +183,7 @@ export default {
       this.contextId = option.contextId;
       this.processId = option.processId;
       this.nodeInfo = option.selectedNode.info.get();
+
       if (option.incidentId) {
         this.commonTicketInfo = SpinalGraphService.getInfo(
           option.incidentId
@@ -249,7 +199,12 @@ export default {
         // this.ticket.images = new Ptr(this.ticket.images);
 
         serviceTicketPersonalized
-          .addTicket(this.ticket, this.processId, this.contextId, this.nodeId)
+          .addTicket(
+            this.ticket,
+            this.processId,
+            this.contextId,
+            this.nodeInfo.id
+          )
           .then((ticketId) => {
             const node = SpinalGraphService.getRealNode(ticketId);
             if (node) {
@@ -410,13 +365,15 @@ export default {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  padding: 0 24px 0 24px !important;
 }
 
 .mdDialogContainer .mdDialogContent .content.details {
   width: 100%;
-  height: 20%;
+  height: 25%;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  // justify-content: space-between;
 }
 
 .mdDialogContainer .mdDialogContent .content.details .left,
@@ -440,19 +397,27 @@ export default {
 
 .mdDialogContainer .mdDialogContent .content.priority {
   width: 100%;
-  height: 15%;
+  height: 20%;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  // justify-content: center;
+}
+
+.mdDialogContainer .mdDialogContent .content.priority .priorityRadio {
+  height: calc(100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .mdDialogContainer .mdDialogContent .content.notes {
   width: 100%;
-  height: 45%;
+  height: 55%;
 }
 
 .mdDialogContainer .mdDialogContent .content.notes .pj {
   width: 100%;
-  height: calc(100% - 110px);
+  height: 30%;
   margin-top: 10px;
   display: flex;
   justify-content: space-between;
@@ -471,44 +436,6 @@ export default {
   align-items: center;
 }
 
-// .mdDialogContainer  .notes {
-//   width: 100%;
-//   // height: 100%;
-//   display: flex;
-// }
-
-// .mdDialogContainer .dialogForm .notes .icons {
-//   flex: 0 0 25px;
-//   display: flex;
-//   align-items: flex-end;
-//   align-self: flex-end;
-//   border-radius: 20%;
-// }
-// .mdDialogContainer .dialogForm .notes .messageForm {
-//   flex: 1 1 calc(85% - 25px);
-//   display: flex;
-//   flex-direction: column;
-// }
-// .mdDialogContainer .dialogForm .notes .messageForm .pjDiv {
-//   height: 40px;
-//   background: transparent;
-//   overflow: auto;
-// }
-// .mdDialogContainer .dialogForm .notes .messageForm .pjDiv p {
-//   margin: 0px;
-// }
-// .mdDialogContainer .dialogForm .notes .messageForm .myField {
-//   flex: 1 1 auto;
-//   margin: 0px !important;
-//   min-height: unset !important;
-//   height: calc(100% - 40px);
-// }
-// .mdDialogContainer .dialogForm .notes .sendBtn {
-//   flex: 1 1 15%;
-//   display: flex;
-//   align-items: flex-end;
-// }
-
 .hr-text {
   line-height: 1em;
   position: relative;
@@ -517,12 +444,8 @@ export default {
   color: white;
   text-align: center;
   height: 1.5em;
-  // opacity: 0.5;
   &:before {
     content: "";
-    // use the linear-gradient for the fading effect
-    // use a solid background color for a solid bar
-    // background: linear-gradient(to right, transparent, #818078, transparent);
     background: #818078;
     position: absolute;
     left: 0;
@@ -538,13 +461,10 @@ export default {
 
     padding: 0 0.5em;
     line-height: 1.5em;
-    // this is really the only tricky part, you need to specify the background color of the container element...
-    // color: #818078;
     color: #818078;
     text-transform: uppercase;
     font-size: 1em;
     background: #424242;
-    // background-color: #fcfcfa;
   }
 }
 </style>

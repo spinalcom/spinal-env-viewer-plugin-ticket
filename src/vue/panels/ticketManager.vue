@@ -111,8 +111,11 @@ export default {
     await this.updateData();
   },
   methods: {
-    opened(option) {
-      // console.log("hello world", option);
+    async opened(params) {
+      await this.updateData();
+      this.getContextId(params);
+      this.getProcessId(params);
+      this.getStepId(params);
     },
 
     //////////////////////////////////////////
@@ -234,6 +237,26 @@ export default {
 
     async reloadData() {
       await this.updateData();
+    },
+
+    getContextId(params) {
+      this.selectContext(params.context.id);
+    },
+    getProcessId(params) {
+      let nodeId;
+
+      if (params.context.id !== params.selectedNode.id) {
+        nodeId =
+          typeof params.selectedNode.processId === undefined
+            ? params.selectedNode.id
+            : params.selectedNode.processId;
+      }
+
+      this.selectProcess(nodeId);
+    },
+    getStepId(params) {
+      if (typeof params.selectedNode.processId !== "undefined")
+        this.selectStep(params.selectedNode.id);
     },
   },
   watch: {

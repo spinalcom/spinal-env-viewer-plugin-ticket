@@ -21,16 +21,33 @@ with this file. If not, see
 
 <template>
   <div class="subContent">
-    <div class="title">
-      <div>{{title}}</div>
-      <div class="md-layout-item md-size-10 mdIcon">
+    <md-list class="title">
+
+      <!--<md-list-item> 
+          <div class="md-list-item-text">
+          <span>{{title}}</span>
+          <span class="md-caption"
+                v-if="subTitle">{{subTitle}}</span>
+        </div>
+
+        <div class="md-layout-item md-size-10 mdIcon">
+          <md-button class="md-icon-button"
+                     @click="createEvent"
+                     v-if="showBtn">
+            <md-icon>control_point</md-icon>
+          </md-button>
+        </div> 
+        </md-list-item>-->
+      <md-list-item>
+        <span class="md-list-item-text">{{title}}</span>
         <md-button class="md-icon-button"
                    @click="createEvent"
                    v-if="showBtn">
           <md-icon>control_point</md-icon>
         </md-button>
-      </div>
-    </div>
+      </md-list-item>
+
+    </md-list>
 
     <md-content class="container md-scrollbar">
       <md-list>
@@ -52,7 +69,7 @@ with this file. If not, see
 <script>
 export default {
   name: "linkToGroupTemplate",
-  props: ["data", "title", "itemSelected", "showBtn"],
+  props: ["data", "title", "itemSelected", "showBtn", "subTitle"],
   methods: {
     createEvent() {
       this.$emit("create");
@@ -71,7 +88,7 @@ export default {
 }
 .subContent .title {
   width: 100%;
-  height: 10%;
+  /* height: 10%; */
   /* text-align: center; */
   display: flex;
   justify-content: space-between;
@@ -81,7 +98,7 @@ export default {
 }
 .subContent .container {
   width: 100%;
-  height: 90%;
+  height: calc(100% - 50px);
   padding: 0px !important;
   /* border: 1px solid red; */
   overflow: hidden;
