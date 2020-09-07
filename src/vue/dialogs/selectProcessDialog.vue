@@ -29,39 +29,46 @@ with this file. If not, see
     <!-- <md-dialog-title class="dialogTitle">Select Ticket Process</md-dialog-title> -->
     <md-dialog-content class="selectProcessClass">
 
-      <md-tabs class="md-transparent"
-               md-alignment="fixed"
-               @md-changed="changeActiveTab">
+      <div class="cont"
+           v-if="loading === PAGE_STATES.success">
+        <md-tabs class="md-transparent"
+                 md-alignment="fixed"
+                 @md-changed="changeActiveTab">
 
-        <md-tab :id="tabs.linked"
-                md-label="Linked Tickets">
-          <div class="my_content">
-            <tickets-vue class="tickets_class"
-                         :data="tickets"
-                         @reload="reloadData"></tickets-vue>
-          </div>
+          <md-tab :id="tabs.linked"
+                  md-label="Linked Tickets">
+            <div class="my_content">
+              <tickets-vue class="tickets_class"
+                           :data="tickets"
+                           @reload="reloadData"></tickets-vue>
+            </div>
 
-        </md-tab>
+          </md-tab>
 
-        <md-tab :id="tabs.create"
-                md-label="Create new Ticket">
-          <div class="my_content">
-            <select-process :data="data"
-                            :contextId="contextId"
-                            :processes="processes"
-                            :processId="processId"
-                            :incidents="incidents"
-                            :incidentId="incidentId"
-                            @selectContext="selectContext"
-                            @selectProcess="selectProcess"
-                            @selectIncident="selectIncident"
-                            @createCommonIncident="createCommonIncident">
-            </select-process>
-          </div>
+          <md-tab :id="tabs.create"
+                  md-label="Create new Ticket">
+            <div class="my_content">
+              <select-process :data="data"
+                              :contextId="contextId"
+                              :processes="processes"
+                              :processId="processId"
+                              :incidents="incidents"
+                              :incidentId="incidentId"
+                              @selectContext="selectContext"
+                              @selectProcess="selectProcess"
+                              @selectIncident="selectIncident"
+                              @createCommonIncident="createCommonIncident">
+              </select-process>
+            </div>
 
-        </md-tab>
+          </md-tab>
 
-      </md-tabs>
+        </md-tabs>
+      </div>
+      <div class="cont loading"
+           v-else-if="loading === PAGE_STATES.loading">
+        loading...
+      </div>
 
     </md-dialog-content>
 
@@ -98,6 +105,10 @@ export default {
     "tickets-vue": ticketsVue,
   },
   data() {
+    this.PAGE_STATES = {
+      success: 0,
+      loading: 1,
+    };
     this.tabs = {
       create: "createNewTicketTab",
       linked: "linkedTicketTab",
@@ -113,6 +124,7 @@ export default {
       incidents: [],
       tickets: [],
       selectedTab: this.tabs.linked,
+      loading: this.PAGE_STATES.loading,
     };
   },
   mounted() {
@@ -124,12 +136,14 @@ export default {
   },
   methods: {
     async opened(option) {
+      this.loading = this.PAGE_STATES.loading;
       this.selectedNode = option.selectedNode;
-      this.data = await this.getAllData();
-      const contextId = option.selectedNode.getId().get();
-      this.tickets = await this.getNodeTickets(contextId);
+      const nodeId = option.selectedNode.getId().get();
 
-      console.log("tickets", this.tickets);
+      this.data = await this.getAllData();
+      this.tickets = await this.getNodeTickets(nodeId);
+
+      this.loading = this.PAGE_STATES.success;
     },
 
     async removed(res) {
@@ -279,6 +293,11 @@ export default {
 .ticketMdDialogContainer .selectProcessClass {
   /* width: 100%; */
   padding: 0px;
+}
+
+.ticketMdDialogContainer .selectProcessClass .cont {
+  width: 100%;
+  height: 100%;
 }
 
 /* .mdDialogContainer .dialogTitle {

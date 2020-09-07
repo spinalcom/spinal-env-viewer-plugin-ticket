@@ -238,7 +238,7 @@ export default {
   },
   watch: {
     data() {
-      console.log("update Data");
+      // console.log("update Data");
       if (this.data) {
         this.searched = this.data;
       }

@@ -165,9 +165,7 @@ export default {
       commonTicketInfo: undefined,
       ticket: {
         name: "",
-        objet: null,
-        images: [],
-        urls: "",
+        elementSelected: null,
         priority: this.PRIORITY_DATA.occasionally,
         user: window.spinal.spinalSystem.getUser(),
       },
@@ -189,7 +187,7 @@ export default {
           option.incidentId
         ).get();
       }
-      this.ticket.objet = new Ptr(option.selectedNode);
+      this.ticket.elementSelected = new Ptr(option.selectedNode);
       this.ticket.user = await spinalIO.getUserConnected();
     },
 
@@ -247,10 +245,10 @@ export default {
         : MESSAGE_TYPES.file;
     },
 
-    addAttachments(event) {
-      const files = event.target.files;
-      this.ticket.images = files;
-    },
+    // addAttachments(event) {
+    //   const files = event.target.files;
+    //   this.ticket.images = files;
+    // },
 
     addPJ() {
       const maxSize = 25000000;

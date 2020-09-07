@@ -12,8 +12,11 @@ import {
 } from "spinal-service-ticket/dist/Constants";
 
 import {
-  SpinalGraphService
+  SpinalGraphService,
+  SpinalNode
 } from "spinal-env-viewer-graph-service";
+
+
 
 export class CreateTicket extends SpinalContextApp {
   constructor() {
@@ -40,12 +43,51 @@ export class CreateTicket extends SpinalContextApp {
 
   }
 
-  action(option) {
-    const realNode = SpinalGraphService.getRealNode(option.selectedNode.id
-      .get());
+  async action(option) {
+    let info = option.selectedNode;
+
+    if (typeof info === "undefined")
+      info = await createBimObjectNode(option);
+
+    const realNode = getSelectedNode(info);
+
     spinalPanelManagerService.openPanel("selectProcessDialog", {
       selectedNode: realNode
     });
   }
 
+}
+
+
+const getSelectedNode = (selectedNode) => {
+  if (typeof selectedNode === "undefined") return;
+
+  if (selectedNode instanceof SpinalNode)
+    return selectedNode;
+
+  return SpinalGraphService.getRealNode(selectedNode.id.get());
+}
+
+
+const createBimObjectNode = (params) => {
+
+  const viewer = spinal.ForgeViewer.viewer;
+
+  // const aggregateSelection = viewer.getAggregateSelection()[0];
+
+
+  if (typeof params.dbid !== "undefined" && params.model3d) {
+    const dbid = params.dbid;
+    const model = params.model3d;
+
+
+    return new Promise((resolve) => {
+      viewer.model.getProperties(dbid, async res => {
+        const node = await window.spinal.BimObjectService
+          .createBIMObject(dbid, res.name, model)
+        resolve(node);
+      })
+
+    });
+  }
 }

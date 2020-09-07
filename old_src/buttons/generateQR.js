@@ -22,14 +22,18 @@
  *  <http://resources.spinalcom.com/licenses.pdf>.
  */
 
-import { SpinalContextApp } from 'spinal-env-viewer-context-menu-service';
+import {
+  SpinalContextApp
+} from 'spinal-env-viewer-context-menu-service';
 import GeographicContextService
-  from "spinal-env-viewer-context-geographic-service";
+from "spinal-env-viewer-context-geographic-service";
 import {
   SPINAL_RELATION_PTR_LST_TYPE,
   SpinalGraphService
 } from "spinal-env-viewer-graph-service";
-import { createContext } from "../utils";
+import {
+  createContext
+} from "../utils";
 import {
   QR_CODE_RELATION_NAME,
   QRCODE
@@ -38,59 +42,66 @@ import Vue from "vue";
 export class GenerateQR extends SpinalContextApp {
 
   constructor() {
-    super( 'Generer les QrCodes', 'Qrcode', {
+    super('Generer les QrCodes', 'Qrcode', {
       icon: 'nfc',
       icon_type: 'in',
       backgroundColor: '#000000',
-    } );
+    });
   }
 
-  isShown( option ) {
+  isShown(option) {
 
-    if (option.selectedNode.type.get() === GeographicContextService.constants.CONTEXT_TYPE) {
-      return Promise.resolve( true );
+    if (option.selectedNode.type.get() === GeographicContextService.constants
+      .CONTEXT_TYPE) {
+      return Promise.resolve(true);
     } else {
-      return Promise.resolve( -1 );
+      return Promise.resolve(-1);
     }
   }
-  
+
   action() {
 
     const nodes = SpinalGraphService.getNodes();
-    
+
     createContext()
-      .then( contextId => {
+      .then(contextId => {
         if (contextId) {
           let count = 0;
           for (const id in nodes) {
-            if (nodes.hasOwnProperty( id )) {
+            if (nodes.hasOwnProperty(id)) {
               const node = nodes[id];
               const relationName = SpinalGraphService.getRelationNames(id);
-              if (node.info.type.get() === GeographicContextService.constants.ROOM_TYPE
-                && !relationName.includes(QR_CODE_RELATION_NAME) ) {
-                const qrcode = SpinalGraphService.generateQRcode( id );
-                const qrNode = SpinalGraphService.createNode( { qrcode , type: QRCODE} );
+              if (node.info.type.get() === GeographicContextService
+                .constants.ROOM_TYPE &&
+                !relationName.includes(QR_CODE_RELATION_NAME)) {
+                const qrcode = SpinalGraphService.generateQRcode(id);
+                const qrNode = SpinalGraphService.createNode({
+                  qrcode,
+                  type: QRCODE
+                });
                 count++;
                 SpinalGraphService
-                  .addChildInContext( id,
+                  .addChildInContext(id,
                     qrNode, contextId,
-                    QR_CODE_RELATION_NAME, SPINAL_RELATION_PTR_LST_TYPE )
-                  .then( ( e ) => {
-                  
-                  } )
-                  .catch( e => {
-                    console.error( e );
-                  } );
+                    QR_CODE_RELATION_NAME, SPINAL_RELATION_PTR_LST_TYPE)
+                  .then((e) => {
+
+                  })
+                  .catch(e => {
+                    console.error(e);
+                  });
 
               }
             }
           }
-          
-          console.log(`${count} QRcode generated`)
+
+
         }
-      } )
-      .catch( ( e ) => {console.log( e );} );
-    
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+
   }
 
 

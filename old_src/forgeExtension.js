@@ -1,4 +1,3 @@
-
 ///////////////////////////////////////////////////////////////////////////////
 // Autodesk.ADN.Viewing.Extension.Color
 //
@@ -31,7 +30,6 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
   }
   _self.load = function() {
     initialize();
-    console.log("Autodesk.ADN.Viewing.Extension.Color loaded");
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -107,12 +105,14 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
                   material
                 );
 
-                renderProxy[dbid].matrix.copy(renderProxy.matrixWorld);
+                renderProxy[dbid].matrix.copy(renderProxy
+                  .matrixWorld);
                 renderProxy[dbid].matrixWorldNeedsUpdate = true;
                 renderProxy[dbid].matrixAutoUpdate = false;
                 renderProxy[dbid].frustumCulled = false;
 
-                _self.viewer.impl.addOverlay(dbid, renderProxy[dbid]);
+                _self.viewer.impl.addOverlay(dbid, renderProxy[
+                  dbid]);
                 _self.viewer.impl.invalidate(true);
               },
               false
@@ -175,7 +175,7 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
     };
 
     _self.unload = function() {
-      console.log("Autodesk.ADN.Viewing.Extension.Color unloaded");
+
       return true;
     };
 

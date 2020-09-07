@@ -64,7 +64,20 @@ with this file. If not, see
       <div class="content">
         <div class="ticketsNotes">
           <div class="title">Comments</div>
-          <div class="events"></div>
+
+          <md-content class="events md-scrollbar">
+
+            <ul class="message_content">
+              <message-component v-for="note in messages"
+                                 :key="note.id"
+                                 :date="note.date"
+                                 :username="note.username"
+                                 :message="note.message"
+                                 :type="note.type"
+                                 :file="note.file"></message-component>
+            </ul>
+
+          </md-content>
         </div>
         <div class="ticketsLogs">
           <div class="title">Events</div>
@@ -88,16 +101,21 @@ with this file. If not, see
 
 <script>
 import moment from "moment";
+
+import messageVue from "spinal-env-viewer-plugin-documentation/view/notes/components/message.vue";
+
 import { TICKET_PRIORITIES } from "spinal-service-ticket/dist/Constants";
 import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 import { serviceTicketPersonalized } from "spinal-service-ticket";
 import logsTemplateVue from "./components/logsTemplate.vue";
+import { serviceDocumentation } from "spinal-env-viewer-plugin-documentation-service";
 
 export default {
   name: "ticketDetailDialog",
   props: ["onFinised"],
   components: {
     "logs-template": logsTemplateVue,
+    "message-component": messageVue,
   },
   data() {
     return {
@@ -105,13 +123,21 @@ export default {
       ticket: {},
       step: {},
       logs: [],
+      messages: [],
     };
   },
   methods: {
     async opened(option) {
       this.ticket = option.selectedNode;
-      this.step = await this.getStep(option.selectedNode.stepId);
-      this.logs = await this.getLogs(option.selectedNode.id);
+      await Promise.all([
+        this.getStep(option.selectedNode.stepId),
+        this.getLogs(option.selectedNode.id),
+        this.getNotes(option.selectedNode.id),
+      ]).then((values) => {
+        this.step = values[0];
+        this.logs = values[1];
+        this.messages = values[2];
+      });
     },
 
     async removed(res) {
@@ -129,6 +155,30 @@ export default {
 
     getLogs(id) {
       return serviceTicketPersonalized.getLogs(id);
+    },
+
+    getNotes(id) {
+      const realNode = SpinalGraphService.getRealNode(id);
+      if (typeof realNode === "undefined") return Promise.resolve([]);
+
+      return serviceDocumentation.getNotes(realNode).then((result) => {
+        return result.map((note, index) => {
+          return {
+            id: index,
+            username: note.element.username.get(),
+            message: note.element.message.get(),
+            date: this.toDate(note.element.date.get()),
+            type: note.element.type ? note.element.type.get() : undefined,
+            file: note.element.file,
+            selectedNode: note.selectedNode,
+            element: note.element,
+          };
+        });
+      });
+    },
+
+    toDate: function (date) {
+      return moment(date).format("MMMM Do YYYY, h:mm:ss a");
     },
 
     getStep(id) {
@@ -231,5 +281,16 @@ export default {
   width: 100%;
   height: calc(100% - 50px);
   overflow: auto;
+}
+
+.mdDialogContainer
+  .mdDialogContent
+  .content
+  .ticketsNotes
+  .events
+  .message_content {
+  width: 100%;
+  height: 100%;
+  padding-right: 20px;
 }
 </style>

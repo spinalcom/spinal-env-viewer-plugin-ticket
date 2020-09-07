@@ -82,39 +82,43 @@ class SpinalIO {
   }
 
   connect() {
-    if (this.connectPromise !== null) {
-      return this.connectPromise;
-    }
+    // if (this.connectPromise !== null) {
+    //   return this.connectPromise;
+    // }
 
-    this.connectPromise = new Promise((resolve, reject) => {
-      $(document).ready(() => {
+    // this.connectPromise = new Promise((resolve, reject) => {
+    //   $(document).ready(() => {
 
-        FileSystem.CONNECTOR_TYPE = "Browser"
+    //     FileSystem.CONNECTOR_TYPE = "Browser"
 
-        const user = this.getauth();
-        if (this.user.username) {
-          SpinalUserManager.get_user_id(
-            'http://' + window.location.host, user.username, user
-            .password,
-            response => {
-              this.spinalUserId = parseInt(response);
-              this.conn =
-                window.spinalCore.connect(`http://${this.spinalUserId}:${
-                  user.password}@${window.location.host}/`);
-              resolve(this.conn);
-            },
-            () => {
-              window.location = '/html/drive/';
-              reject('Authentication Connection Error');
-            });
-        } else {
-          window.location = '/html/drive/';
-          reject('Authentication Connection Error');
-        }
-      });
+    //     const user = this.getauth();
+    //     if (this.user.username) {
+    //       SpinalUserManager.get_user_id(
+    //         'http://' + window.location.host, user.username, user
+    //         .password,
+    //         response => {
+    //           this.spinalUserId = parseInt(response);
+    //           this.conn =
+    //             window.spinalCore.connect(`http://${this.spinalUserId}:${
+    //               user.password}@${window.location.host}/`);
+    //           resolve(this.conn);
+    //         },
+    //         () => {
+    //           window.location = '/html/drive/';
+    //           reject('Authentication Connection Error');
+    //         });
+    //     } else {
+    //       window.location = '/html/drive/';
+    //       reject('Authentication Connection Error');
+    //     }
+    //   });
 
-    })
-    return this.connectPromise;
+    // })
+    // return this.connectPromise;
+
+    this.conn = FileSystem.get_inst();
+    return Promise.resolve(this.conn);
+
   }
   getModelPath() {
     const cryptedPath = getParameterByName('path');
