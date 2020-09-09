@@ -286,7 +286,7 @@ export default {
 
 <style scoped>
 .ticketMdDialogContainer {
-  width: 100%;
+  width: 60%;
   height: 600px;
 }
 

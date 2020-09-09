@@ -7,6 +7,7 @@ import CreateTicketDialog from "./createTicket.vue";
 import SelectProcessDialog from "./selectProcessDialog.vue";
 import CreateCommonIncidentDialog from "./createCommonIncidentDialog.vue";
 import TicketDetailDialog from "./ticketDetailDialog.vue";
+import ConfirmDialog from './confirmDialog.vue';
 
 const {
   SpinalMountExtention
@@ -41,6 +42,10 @@ const dialogs = [{
   {
     name: "ticketDetailDialog",
     vueMountComponent: vue.extend(TicketDetailDialog),
+    parentContainer: document.body
+  }, {
+    name: "confirmationDialog",
+    vueMountComponent: vue.extend(ConfirmDialog),
     parentContainer: document.body
   }
 ];
