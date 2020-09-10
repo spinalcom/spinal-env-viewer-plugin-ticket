@@ -1,6 +1,10 @@
-import { SpinalContextApp } from "spinal-env-viewer-context-menu-service";
+import {
+  SpinalContextApp
+} from "spinal-env-viewer-context-menu-service";
 
-import { spinalPanelManagerService } from "spinal-env-viewer-panel-manager-service";
+import {
+  spinalPanelManagerService
+} from "spinal-env-viewer-panel-manager-service";
 
 import {
   SERVICE_TYPE,
@@ -9,13 +13,24 @@ import {
   SPINAL_TICKET_SERVICE_STEP_TYPE,
 } from "spinal-service-ticket/dist/Constants";
 
-import { SpinalGraphService } from "spinal-env-viewer-graph-service";
+import {
+  SpinalGraphService
+} from "spinal-env-viewer-graph-service";
 
-import { GEOGRAPHIC_TYPES_ORDER } from "spinal-env-viewer-context-geographic-service/build/constants";
+import {
+  GEOGRAPHIC_TYPES_ORDER
+} from "spinal-env-viewer-context-geographic-service/build/constants";
 
-import { SpinalContextSelectBIMObject } from "spinal-env-viewer-plugin-standard_button/js/selectBIMObjectButton";
+import {
+  SpinalContextSelectBIMObject,
+} from "spinal-env-viewer-plugin-standard_button/js/selectBIMObjectButton";
+import {
+  SpinalContextFitToViewer
+} from "spinal-env-viewer-plugin-standard_button/js/fitToViewerButton";
 
-import { isShownParam } from "spinal-env-viewer-plugin-standard_button/js/utilities";
+import {
+  isShownParam
+} from "spinal-env-viewer-plugin-standard_button/js/utilities";
 
 export class SelectElementOnMaquette extends SpinalContextApp {
   constructor() {
@@ -48,13 +63,15 @@ export class SelectElementOnMaquette extends SpinalContextApp {
       return;
     }
 
-    const button = new SpinalContextSelectBIMObject();
+    const selectButton = new SpinalContextSelectBIMObject();
+    const zoomButton = new SpinalContextFitToViewer();
 
     parents.forEach((element) => {
       const params = {
         selectedNode: element,
       };
-      button.action(params);
+      selectButton.action(params);
+      zoomButton.action(params);
     });
   }
 }
