@@ -26,12 +26,12 @@ with this file. If not, see
   <md-dialog class="ticketMdDialogContainer"
              :md-active.sync="showDialog"
              @md-closed="closeDialog(false)">
-    <!-- <md-dialog-title class="dialogTitle">Select Ticket Process</md-dialog-title> -->
+    <md-dialog-title class="dialogTitle">Select Ticket Process</md-dialog-title>
     <md-dialog-content class="selectProcessClass">
 
-      <div class="cont"
-           v-if="loading === PAGE_STATES.success">
-        <md-tabs class="md-transparent"
+      <!-- <div class="cont"
+           v-if="loading === PAGE_STATES.success"> -->
+      <!-- <md-tabs class="md-transparent"
                  md-alignment="fixed"
                  @md-changed="changeActiveTab">
 
@@ -43,28 +43,29 @@ with this file. If not, see
                            @reload="reloadData"></tickets-vue>
             </div>
 
-          </md-tab>
+          </md-tab> -->
 
-          <md-tab :id="tabs.create"
-                  md-label="Create new Ticket">
-            <div class="my_content">
-              <select-process :data="data"
-                              :contextId="contextId"
-                              :processes="processes"
-                              :processId="processId"
-                              :incidents="incidents"
-                              :incidentId="incidentId"
-                              @selectContext="selectContext"
-                              @selectProcess="selectProcess"
-                              @selectIncident="selectIncident"
-                              @createCommonIncident="createCommonIncident">
-              </select-process>
-            </div>
-
-          </md-tab>
-
-        </md-tabs>
+      <!-- <md-tab :id="tabs.create"
+                  md-label="Create new Ticket"> -->
+      <div class="my_content"
+           v-if="loading === PAGE_STATES.success">
+        <select-process :data="data"
+                        :contextId="contextId"
+                        :processes="processes"
+                        :processId="processId"
+                        :incidents="incidents"
+                        :incidentId="incidentId"
+                        @selectContext="selectContext"
+                        @selectProcess="selectProcess"
+                        @selectIncident="selectIncident"
+                        @createCommonIncident="createCommonIncident">
+        </select-process>
       </div>
+
+      <!-- </md-tab>
+
+        </md-tabs> -->
+      <!-- </div> -->
       <div class="cont loading"
            v-else-if="loading === PAGE_STATES.loading">
         loading...
@@ -77,7 +78,7 @@ with this file. If not, see
                  @click="closeDialog(false)">Close</md-button>
 
       <md-button class="md-primary"
-                 :disabled="!(selectedTab == tabs.create && contextId && processId)"
+                 :disabled="!(contextId && processId)"
                  @click="closeDialog(true)">Save</md-button>
     </md-dialog-actions>
 
@@ -102,7 +103,7 @@ export default {
   components: {
     // "link-template": linkerTemplateVue,
     "select-process": selectProcessVue,
-    "tickets-vue": ticketsVue,
+    // "tickets-vue": ticketsVue,
   },
   data() {
     this.PAGE_STATES = {
@@ -122,7 +123,7 @@ export default {
       data: [],
       processes: [],
       incidents: [],
-      tickets: [],
+      // tickets: [],
       selectedTab: this.tabs.linked,
       loading: this.PAGE_STATES.loading,
     };
@@ -141,7 +142,7 @@ export default {
       const nodeId = option.selectedNode.getId().get();
 
       this.data = await this.getAllData();
-      this.tickets = await this.getNodeTickets(nodeId);
+      // this.tickets = await this.getNodeTickets(nodeId);
 
       this.loading = this.PAGE_STATES.success;
     },
@@ -237,27 +238,27 @@ export default {
       spinalPanelManagerService.openPanel("createCommonIncidentDialog", params);
     },
 
-    getNodeTickets(nodeId) {
-      return serviceTicketPersonalized
-        .getTicketsFromNode(nodeId)
-        .then((tickets) => {
-          const promises = tickets.map(async (ticket) => {
-            ticket["step"] = await this.getStep(ticket.stepId);
-            return ticket;
-          });
+    // getNodeTickets(nodeId) {
+    //   return serviceTicketPersonalized
+    //     .getTicketsFromNode(nodeId)
+    //     .then((tickets) => {
+    //       const promises = tickets.map(async (ticket) => {
+    //         ticket["step"] = await this.getStep(ticket.stepId);
+    //         return ticket;
+    //       });
 
-          return Promise.all(promises);
-        });
-    },
+    //       return Promise.all(promises);
+    //     });
+    // },
 
-    getStep(id) {
-      const info = SpinalGraphService.getInfo(id);
-      if (info) return Promise.resolve(info.get());
+    // getStep(id) {
+    //   const info = SpinalGraphService.getInfo(id);
+    //   if (info) return Promise.resolve(info.get());
 
-      return SpinalGraphService.getNodeAsync(id).then((result) => {
-        return result.get();
-      });
-    },
+    //   return SpinalGraphService.getNodeAsync(id).then((result) => {
+    //     return result.get();
+    //   });
+    // },
 
     async reloadData() {
       const id = this.selectedNode.getId().get();
@@ -286,37 +287,32 @@ export default {
 
 <style scoped>
 .ticketMdDialogContainer {
-  width: 60%;
-  height: 600px;
+  width: 900px;
+  height: 500px;
+}
+
+.ticketMdDialogContainer .dialogTitle {
+  text-align: center;
 }
 
 .ticketMdDialogContainer .selectProcessClass {
-  /* width: 100%; */
   padding: 0px;
 }
 
-.ticketMdDialogContainer .selectProcessClass .cont {
+.ticketMdDialogContainer .selectProcessClass .my_content {
   width: 100%;
   height: 100%;
 }
 
-/* .mdDialogContainer .dialogTitle {
-  text-align: center;
-}
-.mdDialogContainer .content {
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch;
-}
-.mdDialogContainer .content .section {
-  width: 33%;
-  border: 1px solid grey;
-  border-radius: 4% 4% 0 0;
-  padding: 15px;
+/* .ticketMdDialogContainer .selectProcessClass .cont {
+  width: 100%;
+  height: 100%;
 } */
 </style>
 
+
 <style>
+/*
 .ticketMdDialogContainer .md-dialog-container {
   width: 100%;
   height: 100%;
@@ -369,5 +365,5 @@ export default {
   .my_content {
   max-width: 100%;
   height: 100%;
-}
+}*/
 </style>

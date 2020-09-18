@@ -145,8 +145,9 @@ import { serviceDocumentation } from "spinal-env-viewer-plugin-documentation-ser
 import { FileExplorer } from "spinal-env-viewer-plugin-documentation/service/fileSystemExplorer";
 import { MESSAGE_TYPES } from "spinal-models-documentation";
 import { SpinalServiceUser } from "spinal-service-user";
-
 import { spinalIO } from "../../extensions/spinalIO";
+import { TICKET_EVENTS } from "../../extensions/ticketsEvents";
+import EventBus from "../../extensions/Event";
 
 export default {
   name: "createTicketDialog",
@@ -206,6 +207,7 @@ export default {
           .then((ticketId) => {
             const node = SpinalGraphService.getRealNode(ticketId);
             if (node) {
+              EventBus.$emit(TICKET_EVENTS.created, node.info.get());
               this.addNote(node);
             }
           });

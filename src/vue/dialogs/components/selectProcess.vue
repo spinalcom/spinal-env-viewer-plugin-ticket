@@ -25,7 +25,7 @@ with this file. If not, see
 
 <template>
   <div class="select_container">
-    <div class="dialogTitle">Select Ticket Process</div>
+    <!-- <div class="dialogTitle">Select Ticket Process</div> -->
     <div class="content">
       <div class="section">
         <link-template :title="'Select Context'"
@@ -109,13 +109,13 @@ export default {
   width: 100%;
   height: 100%;
 }
-.select_container .dialogTitle {
+/* .select_container .dialogTitle {
   height: 50px;
   text-align: center;
-}
+} */
 .select_container .content {
   width: 100%;
-  height: calc(100% - 50px);
+  height: 100%;
   display: flex;
   justify-content: space-between;
   align-items: stretch;

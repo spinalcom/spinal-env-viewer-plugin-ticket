@@ -51,7 +51,9 @@ export class CreateTicket extends SpinalContextApp {
 
     const realNode = getSelectedNode(info);
 
-    spinalPanelManagerService.openPanel("selectProcessDialog", {
+    // manageTicketPanel
+
+    spinalPanelManagerService.openPanel("manageTicketPanel", {
       selectedNode: realNode
     });
   }

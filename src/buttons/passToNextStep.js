@@ -25,6 +25,11 @@ import {
   serviceTicketPersonalized
 } from "spinal-service-ticket";
 
+import EventBUS from '../extensions/Event'
+import {
+  TICKET_EVENTS
+} from '../extensions/ticketsEvents'
+
 export class PassToNextStepButton extends SpinalContextApp {
   constructor() {
     super("Pass to next step", "Pass the ticket to next step", {
@@ -65,7 +70,13 @@ export class PassToNextStepButton extends SpinalContextApp {
             processId,
             ticketId,
             user
-          );
+          ).then((step) => {
+            const info = SpinalGraphService.getInfo(ticketId).get();
+            EventBUS.$emit(TICKET_EVENTS.changeStep, {
+              ticket: info,
+              step: step
+            });
+          });
         },
       });
     }

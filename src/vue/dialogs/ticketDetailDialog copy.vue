@@ -82,7 +82,7 @@ with this file. If not, see
         <div class="ticketsNotes">
           <div class="title">Comments</div>
           <div class="events">
-            <md-content class="message_content md-scrollbar"
+            <!-- <md-content class="message_content md-scrollbar"
                         ref="message_content">
               <ul>
                 <message-component v-for="note in messages"
@@ -99,11 +99,19 @@ with this file. If not, see
 
               <form @submit.prevent="addNote"
                     class="noteForm">
+                <div class="icons">
 
-                <md-button class="icons md-icon-button md-raised md-primary"
-                           @click="addPJ">
-                  <md-icon>attach_file</md-icon>
-                </md-button>
+                  <md-button class="icons md-icon-button md-raised md-primary"
+                             @click="addPJ">
+                    <md-icon>attach_file</md-icon>
+                  </md-button>
+
+                  <md-button class="icons md-icon-button md-raised md-primary"
+                             @click="TakeScreenShot"
+                             :title="'Take a screenshot'">
+                    <md-icon>add_a_photo</md-icon>
+                  </md-button>
+                </div>
 
                 <div class="messageForm">
                   <md-content class="pjDiv md-scrollbar"
@@ -131,8 +139,8 @@ with this file. If not, see
 
               </form>
 
-            </div>
-
+            </div> -->
+            <message-component :nodeInfo="nodeInfo"></message-component>
           </div>
         </div>
         <div class="ticketsLogs">
@@ -163,10 +171,11 @@ import { serviceDocumentation } from "spinal-env-viewer-plugin-documentation-ser
 import { FileExplorer } from "spinal-env-viewer-plugin-documentation/service/fileSystemExplorer.js";
 import { MESSAGE_TYPES } from "spinal-models-documentation";
 import { spinalIO } from "../../extensions/spinalIO";
+import messageComponentVue from "spinal-env-viewer-plugin-documentation/view/notes/components/messageComponent.vue";
 
-import attachmentVue from "./components/attachment.vue";
+// import attachmentVue from "./components/attachment.vue";
 import logsTemplateVue from "./components/logsTemplate.vue";
-import messageVue from "spinal-env-viewer-plugin-documentation/view/notes/components/message.vue";
+// import messageVue from "spinal-env-viewer-plugin-documentation/view/notes/components/message.vue";
 import moment from "moment";
 
 export default {
@@ -174,12 +183,13 @@ export default {
   props: ["onFinised"],
   components: {
     "logs-template": logsTemplateVue,
-    "message-component": messageVue,
-    "attachment-component": attachmentVue,
+    "message-component": messageComponentVue,
+    // "attachment-component": attachmentVue,
   },
   data() {
     return {
       showDialog: true,
+      nodeInfo: undefined,
       ticket: {},
       step: {},
       logs: [],
@@ -193,6 +203,10 @@ export default {
   methods: {
     async opened(option) {
       this.ticket = option.selectedNode;
+      this.nodeInfo = {
+        selectedNode: SpinalGraphService.getRealNode(option.selectedNode.id),
+      };
+
       await Promise.all([
         this.getStep(option.selectedNode.stepId),
         this.getLogs(option.selectedNode.id),
@@ -255,16 +269,20 @@ export default {
     },
 
     _sendNote(node, message, type, path) {
-      serviceDocumentation.addNote(
-        node,
-        {
-          username: window.spinal.spinalSystem.getUser().username,
-          userId: FileSystem._user_id,
-        },
-        message,
-        type,
-        path
-      );
+      serviceDocumentation
+        .addNote(
+          node,
+          {
+            username: window.spinal.spinalSystem.getUser().username,
+            userId: FileSystem._user_id,
+          },
+          message,
+          type,
+          path
+        )
+        .then(async () => {
+          this.messages = await this.getNotes(this.ticket.id);
+        });
       // .then((result) => {
       //   serviceDocumentation.linkNoteToGroup(
       //     this.noteContextSelected.id,
@@ -283,8 +301,6 @@ export default {
       const realNode = SpinalGraphService.getRealNode(this.ticket.id);
 
       await this._sendNote(realNode, this.note.messageUser);
-
-      this.messages = await this.getNotes(this.ticket.id);
 
       this.note.messageUser = "";
     },
@@ -415,6 +431,31 @@ export default {
       const realNode = SpinalGraphService.getRealNode(id);
       const contextId = realNode.contextIds._attribute_names[0];
       return SpinalGraphService.getInfo(contextId).get();
+    },
+
+    TakeScreenShot() {
+      const image = window.spinal.ForgeViewer.viewer.getScreenShot(
+        0,
+        0,
+        async (url) => {
+          let blob = await fetch(url).then((r) => r.blob());
+          let realNode = SpinalGraphService.getRealNode(this.ticket.id);
+
+          const name = realNode.getName().get();
+
+          let file = this.blobToFile(
+            blob,
+            `screenshot of ${name} from ${moment().format("L")}.jpg`
+          );
+          this.note.pj.push(file);
+        }
+      );
+    },
+
+    blobToFile(theBlob, fileName) {
+      theBlob.lastModifiedDate = new Date();
+      theBlob.name = fileName;
+      return theBlob;
     },
   },
   watch: {
@@ -586,12 +627,51 @@ export default {
   .events
   .message_form
   .noteForm {
-  display: flex;
+  /* display: flex;
   justify-content: space-between;
   align-items: flex-end;
   width: 100%;
   height: 100%;
-  padding-bottom: 5px;
+  padding-bottom: 5px; */
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.mdDialogContainer
+  .mdDialogContent
+  .content
+  .ticketsNotes
+  .events
+  .message_form
+  .noteForm
+  .icons {
+  /* width: 30%;
+  display: flex; */
+  flex: 0 0 25px;
+  display: flex;
+  align-items: flex-end;
+  align-self: flex-end;
+  border-radius: 20%;
+}
+
+.mdDialogContainer
+  .mdDialogContent
+  .content
+  .ticketsNotes
+  .events
+  .message_form
+  .noteForm
+  .messageForm {
+  /* flex: 0 0 25px;
+  display: flex;
+  align-items: flex-end;
+  align-self: flex-end;
+  border-radius: 20%; */
+  flex: 1 1 calc(85% - 25px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .mdDialogContainer
@@ -603,7 +683,7 @@ export default {
   .noteForm
   .messageForm
   .pjDiv {
-  height: 30px;
+  height: 40px;
   background: transparent;
   overflow: auto;
 }
@@ -630,9 +710,22 @@ export default {
   .noteForm
   .messageForm
   .myField {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   margin: 0px !important;
-  min-height: unset !important;
-  height: calc(100% - 40px);
+  /* min-height: unset !important; */
+  height: calc(100% - 50px);
+}
+
+.mdDialogContainer
+  .mdDialogContent
+  .content
+  .ticketsNotes
+  .events
+  .message_form
+  .noteForm
+  .sendBtn {
+  flex: 1 1 15%;
+  display: flex;
+  align-items: flex-end;
 }
 </style>

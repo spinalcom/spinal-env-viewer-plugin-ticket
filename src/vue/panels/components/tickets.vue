@@ -132,6 +132,9 @@ import moment from "moment";
 import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 import { serviceTicketPersonalized } from "spinal-service-ticket";
 
+import { TICKET_EVENTS } from "../../../extensions/ticketsEvents";
+import EventBUS from "../../../extensions/Event";
+
 export default {
   name: "ticketsVue",
   props: {
@@ -146,6 +149,11 @@ export default {
     };
   },
   mounted() {
+    EventBUS.$on(TICKET_EVENTS.created, (data) => this.$emit("reload", data));
+    EventBUS.$on(TICKET_EVENTS.changeStep, (data) =>
+      this.$emit("reload", data)
+    );
+
     this.searched = this.data;
   },
   methods: {
@@ -154,6 +162,10 @@ export default {
     },
 
     searchOnTable() {
+      this.searched = this.data.filter((el) =>
+        el.name.toLowerCase().includes(this.searchByName.toLowerCase())
+      );
+
       // console.log("this.searchByName", this.searchByName);
     },
 
@@ -169,8 +181,12 @@ export default {
 
       serviceTicketPersonalized
         .moveTicketToNextStep(contextId, processId, ticketId, user)
-        .then(() => {
-          this.$emit("reload");
+        .then((step) => {
+          const info = SpinalGraphService.getInfo(ticketId).get();
+          EventBUS.$emit(TICKET_EVENTS.changeStep, {
+            ticket: info,
+            step: step,
+          });
         });
     },
 
@@ -185,8 +201,12 @@ export default {
       const ticketId = item.id;
       serviceTicketPersonalized
         .moveTicketToPreviousStep(contextId, processId, ticketId, user)
-        .then(() => {
-          this.$emit("reload");
+        .then((step) => {
+          const info = SpinalGraphService.getInfo(ticketId).get();
+          EventBUS.$emit(TICKET_EVENTS.changeStep, {
+            ticket: info,
+            step: step,
+          });
         });
     },
 

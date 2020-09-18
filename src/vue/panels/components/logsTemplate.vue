@@ -25,7 +25,7 @@ with this file. If not, see
 <template>
   <md-content class="logs_container md-scrollbar">
 
-    <md-table>
+    <md-table class="logs_table md-scrollbar">
       <md-table-row>
         <md-table-head>Date</md-table-head>
         <md-table-head>User</md-table-head>
@@ -63,6 +63,11 @@ export default {
 .logs_container {
   width: 100%;
   height: 100%;
+  background-color: transparent;
   overflow: auto;
+}
+
+.logs_container .logs_table {
+  background-color: transparent;
 }
 </style>
