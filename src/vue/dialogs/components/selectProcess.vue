@@ -31,16 +31,19 @@ with this file. If not, see
         <link-template :title="'Select Context'"
                        :data="data"
                        :itemSelected="contextId"
+                       @create="createContext"
                        @select="selectContext"
-                       :showBtn="false"></link-template>
+                       :showBtn="true"></link-template>
       </div>
 
       <div class="section">
         <link-template :title="'Select Process'"
                        :data="processes"
                        :itemSelected="processId"
+                       @create="createProcess"
                        @select="selectProcess"
-                       :showBtn="false"></link-template>
+                       :showBtn="contextId && contextId.length > 0">
+        </link-template>
 
       </div>
 
@@ -99,6 +102,14 @@ export default {
 
     createCommonIncident() {
       this.$emit("createCommonIncident");
+    },
+
+    createContext() {
+      this.$emit("createContext");
+    },
+
+    createProcess() {
+      this.$emit("createProcess");
     },
   },
 };

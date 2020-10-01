@@ -61,6 +61,10 @@ export default {
 
       if (this.log.event == LOGS_EVENTS.creation) {
         this.texte = "created";
+      } else if (this.log.event == LOGS_EVENTS.archived) {
+        this.texte = "archived";
+      } else if (this.log.event == LOGS_EVENTS.unarchive) {
+        this.texte = "unarchived";
       } else {
         const promises = this.log.steps.map((el) =>
           SpinalGraphService.getNodeAsync(el)

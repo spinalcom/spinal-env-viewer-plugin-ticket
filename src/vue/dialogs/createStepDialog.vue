@@ -60,13 +60,49 @@ with this file. If not, see
                     v-model="step.name"></md-input>
         </md-field>
 
-        <md-field>
+        <!-- <md-field>
           <label>Step Order</label>
           <md-input v-model="step.order"
                     type="number"></md-input>
           <span class="md-helper-text md-primary">The first step index is
             0</span>
-        </md-field>
+        </md-field> -->
+
+        <div class="order_div md-layout md-gutter">
+          <span class="md-layout-item md-size-20 md-caption insert_div">Insert
+            it</span>
+
+          <div class="md-layout-item md-size-30">
+            <md-field>
+              <md-select v-model="place"
+                         name="Place"
+                         id="Place"
+                         placeholder="Place">
+                <!-- <md-option disabled
+                           :value="-1">Place</md-option> -->
+                <md-option :value="PLACEMENT.before">Before</md-option>
+                <md-option :value="PLACEMENT.after">After</md-option>
+              </md-select>
+            </md-field>
+          </div>
+
+          <div class="md-layout-item md-size-50">
+            <md-field>
+              <md-select v-model="orderSelected"
+                         name="step"
+                         id="step"
+                         placeholder="Steps">
+                <!-- <md-option disabled
+                           :value="-1">Steps</md-option> -->
+                <md-option v-for="s in steps"
+                           :key="s.order"
+                           :value="s.order">{{s.name}}</md-option>
+
+              </md-select>
+            </md-field>
+          </div>
+
+        </div>
 
         <chrome-picker class="stepChromePicker"
                        v-model="step.color" />
@@ -78,7 +114,7 @@ with this file. If not, see
                    @click="closeDialog(false)">Close</md-button>
         <md-button class="md-primary"
                    type="submit"
-                   :disabled="!(step.name.trim().length > 0)">Save
+                   :disabled="disabled()">Save
         </md-button>
       </md-dialog-actions>
 
@@ -98,10 +134,17 @@ export default {
     "chrome-picker": Chrome,
   },
   data() {
+    this.PLACEMENT = {
+      before: 0,
+      after: 1,
+    };
     return {
       showDialog: true,
       processId: undefined,
       contextId: undefined,
+      place: undefined,
+      orderSelected: undefined,
+      steps: [],
       step: {
         name: "",
         color: "#000000",
@@ -110,10 +153,11 @@ export default {
     };
   },
   methods: {
-    opened(option) {
+    async opened(option) {
       this.autoFocusNameInput();
       this.processId = option.processId;
       this.contextId = option.contextId;
+      this.steps = await this.getSteps(this.processId, this.contextId);
     },
 
     async removed(res) {
@@ -123,23 +167,32 @@ export default {
         this.processId &&
         this.contextId
       ) {
-        serviceTicketPersonalized.addStep(
-          res.step.name,
-          res.step.color,
-          res.step.order,
+        serviceTicketPersonalized.insertStep(
+          this.contextId,
           this.processId,
-          this.contextId
+          res.step
         );
+
+        // serviceTicketPersonalized.addStep(
+        //   res.step.name,
+        //   res.step.color,
+        //   res.step.order,
+        //   this.processId,
+        //   this.contextId
+        // );
       }
 
       this.showDialog = false;
     },
+
     closeDialog(closeResult) {
       if (typeof this.onFinised === "function") {
         this.step.color =
           typeof this.step.color === "string"
             ? this.step.color
             : this.step.color.hex;
+
+        this.step.order = this.orderSelected + this.place;
 
         this.onFinised({ closeResult, step: this.step });
       }
@@ -150,13 +203,29 @@ export default {
         this.$refs["nameTextField"].$el.focus();
       }, 200);
     },
+
+    disabled() {
+      return !(
+        this.step.name.trim().length > 0 &&
+        typeof this.place !== "undefined" &&
+        typeof this.orderSelected !== "undefined"
+      );
+    },
+
+    getSteps(processId, contextId) {
+      return serviceTicketPersonalized
+        .getStepsFromProcess(processId, contextId)
+        .then((result) => {
+          return result.map((el) => el.get()).filter((el) => el.order !== -1);
+        });
+    },
   },
 };
 </script>
 
 <style scoped>
 .stepDialogContainer {
-  width: 400px;
+  width: 450px;
 }
 
 .stepChromePicker {
@@ -166,5 +235,10 @@ export default {
 .dialogForm {
   display: flex;
   flex-direction: column;
+}
+
+.dialogForm .insert_div {
+  display: flex;
+  align-items: center;
 }
 </style>

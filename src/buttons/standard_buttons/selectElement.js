@@ -2,28 +2,22 @@ import {
   SpinalContextApp
 } from "spinal-env-viewer-context-menu-service";
 
-import {
-  spinalPanelManagerService
-} from "spinal-env-viewer-panel-manager-service";
 
 import {
   SERVICE_TYPE,
   SPINAL_TICKET_SERVICE_TICKET_TYPE,
   SPINAL_TICKET_SERVICE_TICKET_RELATION_NAME,
-  SPINAL_TICKET_SERVICE_STEP_TYPE,
 } from "spinal-service-ticket/dist/Constants";
 
 import {
   SpinalGraphService
 } from "spinal-env-viewer-graph-service";
 
-import {
-  GEOGRAPHIC_TYPES_ORDER
-} from "spinal-env-viewer-context-geographic-service/build/constants";
 
 import {
   SpinalContextSelectBIMObject,
 } from "spinal-env-viewer-plugin-standard_button/js/selectBIMObjectButton";
+
 import {
   SpinalContextFitToViewer
 } from "spinal-env-viewer-plugin-standard_button/js/fitToViewerButton";
@@ -31,6 +25,8 @@ import {
 import {
   isShownParam
 } from "spinal-env-viewer-plugin-standard_button/js/utilities";
+
+import ColorElementExtension from "../../extensions/colorElementExtension";
 
 export class SelectElementOnMaquette extends SpinalContextApp {
   constructor() {
@@ -47,49 +43,42 @@ export class SelectElementOnMaquette extends SpinalContextApp {
     const nodeType = option.selectedNode.type.get();
 
     if (
-      contextType === SERVICE_TYPE &&
-      nodeType === SPINAL_TICKET_SERVICE_TICKET_TYPE
+      contextType === SERVICE_TYPE
+      // &&
+      // nodeType === SPINAL_TICKET_SERVICE_TICKET_TYPE
     )
       return Promise.resolve(true);
     return Promise.resolve(-1);
   }
 
   async action(option) {
-    const ticketId = option.selectedNode.id.get();
-    const parents = await getGeographicElement(ticketId);
+    const nodeId = option.selectedNode.id.get();
+    const contextId = option.context.id.get();
+
+    const parents = await ColorElementExtension.getTicketParentsBim(nodeId,
+      contextId);
+
 
     if (!parents || (parents && parents.length === 0)) {
       window.alert("No parent on bimMaquette");
       return;
     }
 
-    const selectButton = new SpinalContextSelectBIMObject();
-    const zoomButton = new SpinalContextFitToViewer();
+    parents.forEach((el) => {
+      el.model.selector.setSelection(el.ids, el.model, "selectOnly");
+    })
 
-    parents.forEach((element) => {
-      const params = {
-        selectedNode: element,
-      };
-      selectButton.action(params);
-      zoomButton.action(params);
-    });
+
+
+    // const selectButton = new SpinalContextSelectBIMObject();
+    // // const zoomButton = new SpinalContextFitToViewer();
+
+    // parents.forEach((element) => {
+    //   const params = {
+    //     selectedNode: element,
+    //   };
+    //   selectButton.action(params);
+    //   // zoomButton.action(params);
+    // });
   }
 }
-
-const getGeographicElement = async (ticketId) => {
-  //   const parents = await SpinalGraphService.getParents(ticketId, [
-  //     SPINAL_TICKET_SERVICE_TICKET_RELATION_NAME,
-  //   ]);
-
-  const realNode = SpinalGraphService.getRealNode(ticketId);
-  const parents = await realNode.getParents(
-    SPINAL_TICKET_SERVICE_TICKET_RELATION_NAME
-  );
-
-  return parents
-    .filter((el) => {
-      SpinalGraphService._addNode(el);
-      return isShownParam.indexOf(el.getType().get()) !== -1;
-    })
-    .map((el) => el.info);
-};

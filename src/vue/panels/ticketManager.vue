@@ -243,14 +243,12 @@ export default {
       this.selectContext(params.context.id);
     },
     getProcessId(params) {
-      let nodeId;
+      if (params.context.id === params.selectedNode.id) return;
 
-      if (params.context.id !== params.selectedNode.id) {
-        nodeId =
-          typeof params.selectedNode.processId === undefined
-            ? params.selectedNode.id
-            : params.selectedNode.processId;
-      }
+      let nodeId =
+        typeof params.selectedNode.processId === "undefined"
+          ? params.selectedNode.id
+          : params.selectedNode.processId;
 
       this.selectProcess(nodeId);
     },

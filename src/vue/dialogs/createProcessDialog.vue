@@ -53,6 +53,7 @@ with this file. If not, see
 
 <script>
 import { serviceTicketPersonalized } from "spinal-service-ticket";
+import EventBus from "../../extensions/Event";
 
 export default {
   name: "createProcessDialog",
@@ -74,7 +75,11 @@ export default {
 
     async removed(res) {
       if (res.closeResult && res.process.name.length > 0 && this.contextId) {
-        serviceTicketPersonalized.createProcess(res.process, this.contextId);
+        const process = await serviceTicketPersonalized.createProcess(
+          res.process,
+          this.contextId
+        );
+        EventBus.$emit("ticketProcessCreated", process);
       }
 
       this.showDialog = false;

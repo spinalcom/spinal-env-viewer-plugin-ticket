@@ -34,12 +34,35 @@ with this file. If not, see
           <h1 class="md-title">Tickets</h1>
         </div>
 
-        <md-field md-clearable
-                  class="md-toolbar-section-end">
-          <md-input placeholder="Search by name..."
-                    v-model="searchByName"
-                    @input="searchOnTable" />
-        </md-field>
+        <div class="filters md-toolbar-section-end">
+          <!-- <div class="_fields">
+            <md-field>
+              <label for="movies">Steps</label>
+              <md-select v-model="selectedMovies"
+                         name="movies"
+                         id="movies"
+                         multiple>
+                <md-option value="fight-club">Fight Club</md-option>
+                <md-option value="godfather">Godfather</md-option>
+                <md-option value="godfather-ii">Godfather II</md-option>
+                <md-option value="godfather-iii">Godfather III</md-option>
+                <md-option value="godfellas">Godfellas</md-option>
+                <md-option value="pulp-fiction">Pulp Fiction</md-option>
+                <md-option value="scarface">Scarface</md-option>
+              </md-select>
+            </md-field>
+          </div> -->
+
+          <div class="_fields">
+            <md-field md-clearable>
+              <md-input placeholder="Search by name..."
+                        v-model="searchByName"
+                        @input="searchOnTable" />
+            </md-field>
+          </div>
+
+        </div>
+
       </md-table-toolbar>
 
       <md-table-empty-state md-label="No Ticket found"
@@ -47,7 +70,10 @@ with this file. If not, see
       </md-table-empty-state>
 
       <md-table-row slot="md-table-row"
-                    slot-scope="{ item }">
+                    slot-scope="{ item }"
+                    @mouseover="selectOnMaquette(item)"
+                    @click="isolateOnMaquette(item)"
+                    @mouseleave="deselectOnMaquette">
         <md-table-cell md-label="Name"
                        md-sort-by="name">
           {{ item.name }}
@@ -84,12 +110,14 @@ with this file. If not, see
             </md-button>
 
             <md-menu-content class="ticket_menu_content">
-              <md-menu-item @click="passToNextStep(item)">
+              <md-menu-item v-if="item.step.order >= 0"
+                            @click="passToNextStep(item)">
                 <md-icon>skip_next</md-icon>
                 <span>Pass to next step</span>
               </md-menu-item>
 
-              <md-menu-item @click="backToPreviousStep(item)">
+              <md-menu-item v-if="item.step.order > 0"
+                            @click="backToPreviousStep(item)">
                 <md-icon>skip_previous</md-icon>
                 <span>Back to previous step</span>
               </md-menu-item>
@@ -97,6 +125,18 @@ with this file. If not, see
               <md-menu-item @click="sendMessage(item)">
                 <md-icon>comment</md-icon>
                 <span>Add comment</span>
+              </md-menu-item>
+
+              <md-menu-item v-if="!isArchived(item)"
+                            @click="archiveTicket(item)">
+                <md-icon>archive</md-icon>
+                <span>Archive</span>
+              </md-menu-item>
+
+              <md-menu-item v-if="isArchived(item)"
+                            @click="unarchiveTicket(item)">
+                <md-icon>unarchive</md-icon>
+                <span>Unarchive</span>
               </md-menu-item>
 
               <md-menu-item @click="seeDetails(item)">
@@ -134,6 +174,12 @@ import { serviceTicketPersonalized } from "spinal-service-ticket";
 
 import { TICKET_EVENTS } from "../../../extensions/ticketsEvents";
 import EventBUS from "../../../extensions/Event";
+import { SelectElementOnMaquette } from "../../../buttons/standard_buttons/selectElement";
+import { IsolateElementOnMaquette } from "../../../buttons/standard_buttons/isolate";
+import { ARCHIVED_STEP } from "spinal-service-ticket/dist/Constants";
+
+const selectBtn = new SelectElementOnMaquette();
+const isolateBtn = new IsolateElementOnMaquette();
 
 export default {
   name: "ticketsVue",
@@ -174,7 +220,7 @@ export default {
 
       const contextId = item.contextId
         ? item.contextId
-        : this.getItemContext(item.id).id;
+        : this.getItemContext(item.id).id.get();
 
       const processId = item.step.processId;
       const ticketId = item.id;
@@ -195,7 +241,7 @@ export default {
 
       const contextId = item.contextId
         ? item.contextId
-        : this.getItemContext(item.id).id;
+        : this.getItemContext(item.id).id.get();
 
       const processId = item.step.processId;
       const ticketId = item.id;
@@ -221,7 +267,7 @@ export default {
       const context = SpinalGraphService.getInfo(item.contextId);
       const params = {
         selectedNode: SpinalGraphService.getInfo(item.id).get(),
-        context: context ? context.get() : this.getItemContext(item.id),
+        context: context ? context.get() : this.getItemContext(item.id).get(),
       };
 
       spinalPanelManagerService.openPanel("ticketDetailDialog", params);
@@ -230,11 +276,77 @@ export default {
     getItemContext(id) {
       const realNode = SpinalGraphService.getRealNode(id);
       const contextId = realNode.contextIds._attribute_names[0];
-      return SpinalGraphService.getInfo(contextId).get();
+      return SpinalGraphService.getInfo(contextId);
     },
 
     seeLogs(item) {},
+
+    selectOnMaquette(item) {
+      const params = {
+        selectedNode: SpinalGraphService.getInfo(item.id),
+        context: item.contextId
+          ? SpinalGraphService.getInfo(item.contextId)
+          : this.getItemContext(item.id),
+      };
+
+      selectBtn.action(params);
+    },
+
+    isolateOnMaquette(item) {
+      const params = {
+        selectedNode: SpinalGraphService.getInfo(item.id),
+        context: item.contextId
+          ? SpinalGraphService.getInfo(item.contextId)
+          : this.getItemContext(item.id),
+      };
+
+      isolateBtn.action(params);
+    },
+
+    deselectOnMaquette() {
+      window.spinal.ForgeViewer.viewer.select();
+    },
+
+    async archiveTicket(item) {
+      const contextId = item.contextId
+        ? item.contextId
+        : this.getItemContext(item.id).id.get();
+
+      const user = await spinalIO.getUserConnected();
+
+      serviceTicketPersonalized
+        .ArchiveTickets(contextId, item.step.processId, item.id, user)
+        .then((step) => {
+          const info = SpinalGraphService.getInfo(item.id).get();
+          EventBUS.$emit(TICKET_EVENTS.changeStep, {
+            ticket: info,
+            step: step,
+          });
+        });
+    },
+
+    async unarchiveTicket(item) {
+      const contextId = item.contextId
+        ? item.contextId
+        : this.getItemContext(item.id).id.get();
+
+      const user = await spinalIO.getUserConnected();
+      serviceTicketPersonalized
+        .unarchiveTicket(contextId, item.step.processId, item.id, user)
+        .then((step) => {
+          const info = SpinalGraphService.getInfo(item.id).get();
+          EventBUS.$emit(TICKET_EVENTS.changeStep, {
+            ticket: info,
+            step: step,
+          });
+        });
+    },
+
+    isArchived(item) {
+      return item.step.order === ARCHIVED_STEP.order;
+    },
   },
+
   filters: {
     formatCreationDate: function (date) {
       return moment(date).fromNow();
@@ -283,6 +395,15 @@ export default {
   padding: 0px !important;
 }
 
+.table_container .mdTable .myToolbar .filters {
+  /* width: 99%; */
+  justify-content: space-between;
+}
+
+.table_container .mdTable .myToolbar .filters ._fields {
+  width: 98%;
+}
+
 .table_container .mdTable .ticketName .color {
   width: 5px;
   height: 50px;
@@ -310,5 +431,11 @@ export default {
 
 .ticket_menu_content .md-menu-content-container .md-list-item-content {
   justify-content: flex-start;
+}
+</style>
+
+<style>
+.table_container .mdTable .myToolbar .filters ._fields .md-input {
+  padding: 0px;
 }
 </style>

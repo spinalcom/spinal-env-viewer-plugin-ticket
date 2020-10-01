@@ -64,6 +64,30 @@ with this file. If not, see
 
         <div class="ticketActions">
           <md-list class="actionList">
+            <md-list-item class="actions">
+              <div class="maquette_icons">
+
+                <md-button class="md-icon-button md-primary"
+                           @click="selectOnMaquette"
+                           title="Select on 3D Model">
+                  <md-icon>find_in_page</md-icon>
+                </md-button>
+
+                <md-button class="md-icon-button md-primary"
+                           @click="zoomOnMaquette"
+                           title="Zoom on 3D Model">
+                  <md-icon>zoom_in</md-icon>
+                </md-button>
+
+                <md-button class="md-icon-button md-primary"
+                           @click="isolateOnMaquette"
+                           title="Isolate on 3D Model">
+                  <md-icon>settings_overscan</md-icon>
+                </md-button>
+
+              </div>
+            </md-list-item>
+
             <md-list-item class="actions"
                           @click="passToNext">
               <md-icon>skip_next</md-icon>
@@ -126,6 +150,10 @@ import moment from "moment";
 import { TICKET_EVENTS } from "../../extensions/ticketsEvents";
 import EventBUS from "../../extensions/Event";
 
+import { IsolateElementOnMaquette } from "../../buttons/standard_buttons/isolate";
+import { SelectElementOnMaquette } from "../../buttons/standard_buttons/selectElement";
+import { ZoomElementOnMaquette } from "../../buttons/standard_buttons/zoom";
+
 export default {
   name: "ticketDetailDialog",
   // props: ["onFinised"],
@@ -135,6 +163,8 @@ export default {
     // "attachment-component": attachmentVue,
   },
   data() {
+    this.params = undefined;
+
     return {
       showDialog: true,
       nodeInfo: undefined,
@@ -170,8 +200,18 @@ export default {
         this.getStep(option.selectedNode.stepId),
         this.getLogs(option.selectedNode.id),
       ]).then((values) => {
+        const contextId = this.ticket.contextId
+          ? this.ticket.contextId
+          : this.getItemContext(this.ticket.id).id;
+
         this.step = values[0];
         this.logs = values[1];
+
+        this.params = {
+          selectedNode: SpinalGraphService.getInfo(this.ticket.id),
+          context: SpinalGraphService.getInfo(contextId),
+        };
+
         // this.messages = values[2];
       });
     },
@@ -246,6 +286,21 @@ export default {
       const contextId = realNode.contextIds._attribute_names[0];
       return SpinalGraphService.getInfo(contextId).get();
     },
+
+    selectOnMaquette() {
+      const button = new SelectElementOnMaquette();
+      button.action(this.params);
+    },
+
+    zoomOnMaquette() {
+      const button = new ZoomElementOnMaquette();
+      button.action(this.params);
+    },
+
+    isolateOnMaquette() {
+      const button = new IsolateElementOnMaquette();
+      button.action(this.params);
+    },
   },
   watch: {
     step() {
@@ -319,6 +374,17 @@ export default {
   margin-bottom: 10px;
 }
 
+.mdDialogContainer
+  .mdDialogContent
+  .ticketDetail
+  .ticketActions
+  .actionList
+  .maquette_icons {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .mdDialogContainer .mdDialogContent .ticketDetail .details {
   width: 49%;
   height: 100%;
@@ -377,5 +443,18 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+</style>
+
+<style>
+.mdDialogContainer
+  .mdDialogContent
+  .ticketDetail
+  .ticketActions
+  .actionList
+  .maquette_icons
+  .md-button
+  .md-ripple {
+  padding: 0px !important;
 }
 </style>

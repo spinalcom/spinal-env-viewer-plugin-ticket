@@ -277,6 +277,63 @@ class ColorElementExtension {
     }
   }
 
+  ////////////////////////////////////////////////////////////////////
+  //                    Standard Buttons functions                  //
+  ////////////////////////////////////////////////////////////////////
+
+  async getGeographicElement(ticketId) {
+
+    const realNode = SpinalGraphService.getRealNode(ticketId);
+    const parents = await realNode.getParents(
+      SPINAL_TICKET_SERVICE_TICKET_RELATION_NAME
+    );
+
+    return parents
+      .filter((el) => {
+        SpinalGraphService._addNode(el);
+        return isShownParam.indexOf(el.getType().get()) !== -1;
+      })
+      .map((el) => el.info);
+  };
+
+  async getTicketParentsBim(nodeId, contextId) {
+    const tickets = await this._getTickets(nodeId, contextId);
+
+    const promises = tickets.map(el => this.getGeographicElement(el.id));
+
+    return Promise.all(promises).then(async ticketsParentNode => {
+      const el = ticketsParentNode.flat();
+      const promises = el.map(v => this._getItemsBim(v));
+      let bims = await Promise.all(promises);
+      bims = bims.flat();
+
+      const bimMap = new Map();
+
+      for (const bimObject of bims) {
+        const bimFileId = bimObject.bimFileId;
+        const dbid = bimObject.dbid;
+
+        if (typeof bimMap.get(bimFileId) === "undefined") {
+          bimMap.set(bimFileId, new Set());
+        }
+
+        bimMap.get(bimFileId).add(dbid);
+      }
+      const res = []
+
+      for (const [key, value] of bimMap.entries()) {
+        res.push({
+          model: window.spinal.BimObjectService
+            .getModelByBimfile(key),
+          ids: Array.from(value)
+        })
+      }
+
+      return res;
+
+    });
+  }
+
 }
 
 

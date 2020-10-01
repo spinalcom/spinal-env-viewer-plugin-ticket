@@ -1,26 +1,58 @@
-import { CreateContextButton } from "./createContext";
+import {
+  CreateContextButton
+} from "./createContext";
 
-import { CreateProcess } from "./createProcess";
+import {
+  CreateProcess
+} from "./createProcess";
 
-import { CreateStep } from "./createStep";
+import {
+  CreateStep
+} from "./createStep";
 
-import { CreateTicket } from "./createTicket";
+import {
+  CreateTicket
+} from "./createTicket";
 
-import { ManageTicketButton } from "./manageTicket";
+import {
+  ManageTicketButton
+} from "./manageTicket";
 
-import { CreateCommonIncident } from "./createCommonIncident";
+import {
+  CreateCommonIncident
+} from "./createCommonIncident";
 
-import { spinalContextMenuService } from "spinal-env-viewer-context-menu-service";
+import {
+  spinalContextMenuService
+} from "spinal-env-viewer-context-menu-service";
 
-import { SeeTicketDetailButton } from "./seeTicketDetail";
+import {
+  SeeTicketDetailButton
+} from "./seeTicketDetail";
 
-import { PassToNextStepButton } from "./passToNextStep";
+import {
+  PassToNextStepButton
+} from "./passToNextStep";
 
-import { BackToPreviousStepButton } from "./backToPreviousStep";
+import {
+  BackToPreviousStepButton
+} from "./backToPreviousStep";
 
-import { SelectElementOnMaquette } from "./selectElement";
+import {
+  SelectElementOnMaquette
+} from "./standard_buttons/selectElement";
 
-import { ColorElementButton } from "./colorElement";
+import {
+  IsolateElementOnMaquette
+} from "./standard_buttons/isolate";
+
+import {
+  ZoomElementOnMaquette
+} from "./standard_buttons/zoom";
+
+import {
+  ColorElementButton
+} from "./colorElement";
 
 /* Constants */
 const HEADER_HOOK_NAME = "GraphManagerTopBar";
@@ -56,6 +88,7 @@ spinalContextMenuService.registerApp(SIDEBAR_HOOK_NAME, new CreateStep(), [3]);
 spinalContextMenuService.registerApp(SIDEBAR_HOOK_NAME, new CreateTicket(), [
   3,
 ]);
+
 spinalContextMenuService.registerApp(
   SIDEBAR_HOOK_NAME,
   new PassToNextStepButton(),
@@ -77,6 +110,18 @@ spinalContextMenuService.registerApp(
 spinalContextMenuService.registerApp(
   SIDEBAR_HOOK_NAME,
   new SelectElementOnMaquette(),
+  [3]
+);
+
+spinalContextMenuService.registerApp(
+  SIDEBAR_HOOK_NAME,
+  new IsolateElementOnMaquette(),
+  [3]
+);
+
+spinalContextMenuService.registerApp(
+  SIDEBAR_HOOK_NAME,
+  new ZoomElementOnMaquette(),
   [3]
 );
 

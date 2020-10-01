@@ -102,6 +102,7 @@ with this file. If not, see
 import { serviceTicketPersonalized } from "spinal-service-ticket";
 
 import SortableList from "./components/sortable-list.vue";
+import EventBus from "../../extensions/Event";
 
 export default {
   name: "createTicketContextDialog",
@@ -134,7 +135,11 @@ export default {
       const value = res.inputValue.trim();
 
       if (res.closeResult && value.length > 0) {
-        serviceTicketPersonalized.createContext(value, res.steps);
+        const context = await serviceTicketPersonalized.createContext(
+          value,
+          res.steps
+        );
+        EventBus.$emit("ticketContextCreated", context.getId().get());
       }
 
       this.showDialog = false;

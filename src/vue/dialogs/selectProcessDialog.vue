@@ -58,7 +58,9 @@ with this file. If not, see
                         @selectContext="selectContext"
                         @selectProcess="selectProcess"
                         @selectIncident="selectIncident"
-                        @createCommonIncident="createCommonIncident">
+                        @createCommonIncident="createCommonIncident"
+                        @createContext="createContext"
+                        @createProcess="createProcess">
         </select-process>
       </div>
 
@@ -133,6 +135,17 @@ export default {
       this.data = await this.getAllData();
       this.updateIncidents();
       this.incidentId = id;
+    });
+
+    EventBus.$on("ticketContextCreated", async (context) => {
+      this.data = await this.getAllData();
+      this.contextId = context;
+    });
+
+    EventBus.$on("ticketProcessCreated", async (process) => {
+      this.data = await this.getAllData();
+      this.updateProcesses();
+      this.processId = process;
     });
   },
   methods: {
@@ -238,6 +251,15 @@ export default {
       spinalPanelManagerService.openPanel("createCommonIncidentDialog", params);
     },
 
+    createContext() {
+      spinalPanelManagerService.openPanel("createTicketContextDialog");
+    },
+
+    createProcess() {
+      const params = { contextId: this.contextId };
+      spinalPanelManagerService.openPanel("createProcessDialog", params);
+    },
+
     // getNodeTickets(nodeId) {
     //   return serviceTicketPersonalized
     //     .getTicketsFromNode(nodeId)
@@ -275,7 +297,7 @@ export default {
       this.incidentId = undefined;
 
       this.updateProcesses();
-      this.updateProcesses();
+      // this.updateProcesses();
     },
     processId() {
       this.incidentId = undefined;
@@ -296,7 +318,7 @@ export default {
 }
 
 .ticketMdDialogContainer .selectProcessClass {
-  padding: 0px;
+  padding: 0 20px 10px 20px;
 }
 
 .ticketMdDialogContainer .selectProcessClass .my_content {

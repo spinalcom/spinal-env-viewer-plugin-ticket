@@ -29,7 +29,8 @@ class Utilities {
   }
 
   getSteps(contextId, processId) {
-    return serviceTicketPersonalized.getStepsFromProcess(processId);
+    return serviceTicketPersonalized.getStepsFromProcess(processId,
+    contextId);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////
