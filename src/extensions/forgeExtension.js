@@ -1,4 +1,3 @@
-
 ///////////////////////////////////////////////////////////////////////////////
 // Autodesk.ADN.Viewing.Extension.Color
 //
@@ -107,12 +106,14 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
                   material
                 );
 
-                renderProxy[dbid].matrix.copy(renderProxy.matrixWorld);
+                renderProxy[dbid].matrix.copy(renderProxy
+                  .matrixWorld);
                 renderProxy[dbid].matrixWorldNeedsUpdate = true;
                 renderProxy[dbid].matrixAutoUpdate = false;
                 renderProxy[dbid].frustumCulled = false;
 
-                _self.viewer.impl.addOverlay(dbid, renderProxy[dbid]);
+                _self.viewer.impl.addOverlay(dbid, renderProxy[
+                  dbid]);
                 _self.viewer.impl.invalidate(true);
               },
               false
