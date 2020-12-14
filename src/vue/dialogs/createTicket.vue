@@ -166,7 +166,7 @@ export default {
       commonTicketInfo: undefined,
       ticket: {
         name: "",
-        elementSelected: null,
+        // elementSelected: null,
         priority: this.PRIORITY_DATA.occasionally,
         user: window.spinal.spinalSystem.getUser(),
       },
@@ -188,7 +188,7 @@ export default {
           option.incidentId
         ).get();
       }
-      this.ticket.elementSelected = new Ptr(option.selectedNode);
+      // this.ticket.elementSelected = new Ptr(option.selectedNode);
       this.ticket.user = await spinalIO.getUserConnected();
     },
 
