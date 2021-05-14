@@ -20,10 +20,10 @@ with this file. If not, see
 
 
 <template>
-  <div class="subContent">
-    <md-list class="title">
+   <div class="subContent">
+      <md-list class="title">
 
-      <!--<md-list-item> 
+         <!--<md-list-item> 
           <div class="md-list-item-text">
           <span>{{title}}</span>
           <span class="md-caption"
@@ -38,76 +38,90 @@ with this file. If not, see
           </md-button>
         </div> 
         </md-list-item>-->
-      <md-list-item>
-        <span class="md-list-item-text">{{title}}</span>
-        <md-button class="md-icon-button"
-                   @click="createEvent"
-                   v-if="showBtn">
-          <md-icon>control_point</md-icon>
-        </md-button>
-      </md-list-item>
+         <md-list-item>
+            <span class="md-list-item-text">{{title}}</span>
+            <md-button
+               class="md-icon-button"
+               @click="createEvent"
+               v-if="showBtn"
+            >
+               <md-icon>control_point</md-icon>
+            </md-button>
+         </md-list-item>
 
-    </md-list>
-
-    <md-content class="container md-scrollbar">
-      <md-list>
-        <md-list-item class="list-item"
-                      v-for="(item,index) in data"
-                      :key="index"
-                      @click="selectItem(item.id)"
-                      :class="{'selected' : item.id === itemSelected}">
-
-          {{item.name}}
-
-        </md-list-item>
       </md-list>
-    </md-content>
 
-  </div>
+      <md-content class="container md-scrollbar">
+         <md-list>
+            <md-list-item
+               class="list-item"
+               v-for="(item,index) in data"
+               :key="index"
+               @click="selectItem(item.id)"
+               :class="{'selected' : item.id === itemSelected}"
+               v-tooltip="item.name"
+            >
+
+               <span class="md-list-item-text">{{item.name}}</span>
+
+            </md-list-item>
+         </md-list>
+      </md-content>
+
+   </div>
 </template>
 
 <script>
 export default {
-  name: "linkToGroupTemplate",
-  props: ["data", "title", "itemSelected", "showBtn", "subTitle"],
-  methods: {
-    createEvent() {
-      this.$emit("create");
-    },
-    selectItem(id) {
-      this.$emit("select", id);
-    },
-  },
+   name: "linkToGroupTemplate",
+   props: ["data", "title", "itemSelected", "showBtn", "subTitle"],
+   methods: {
+      createEvent() {
+         this.$emit("create");
+      },
+      selectItem(id) {
+         this.$emit("select", id);
+      },
+   },
 };
 </script>
 
 <style scoped>
 .subContent {
-  width: 100%;
-  height: 100%;
+   width: 100%;
+   height: 100%;
 }
 .subContent .title {
-  width: 100%;
-  /* height: 10%; */
-  /* text-align: center; */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 15px 0 15px;
-  border-bottom: 1px dashed grey;
+   width: 100%;
+   /* height: 10%; */
+   /* text-align: center; */
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 0 15px 0 15px;
+   border-bottom: 1px dashed grey;
 }
 .subContent .container {
-  width: 100%;
-  height: calc(100% - 50px);
-  padding: 0px !important;
-  /* border: 1px solid red; */
-  overflow: hidden;
-  overflow-y: auto;
+   width: 100%;
+   height: calc(100% - 50px);
+   padding: 0px !important;
+   /* border: 1px solid red; */
+   overflow: hidden;
+   overflow-y: auto;
 }
 .subContent .container .list-item {
-  border-bottom: 1px solid grey;
+   border-bottom: 1px solid grey;
 }
+
+.subContent .container .list-item .md-list-item-text {
+   width: 100%;
+   display: block;
+   overflow: hidden;
+   white-space: nowrap;
+   text-overflow: ellipsis;
+}
+
 .subContent .container .list-item.selected {
-  background-color: #448aff;
+   background-color: #448aff;
 }
 </style>

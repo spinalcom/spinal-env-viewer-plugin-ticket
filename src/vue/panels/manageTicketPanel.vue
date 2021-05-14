@@ -23,17 +23,21 @@ with this file. If not, see
 -->
 
 <template>
-  <div class="my_content">
-    <md-button class="md-fab md-mini md-primary md-fab-bottom-right"
-               title="create ticket"
-               @click="createTicket">
-      <md-icon>add</md-icon>
-    </md-button>
+   <div class="my_content">
+      <md-button
+         class="md-fab md-mini md-primary md-fab-bottom-right"
+         title="create ticket"
+         @click="createTicket"
+      >
+         <md-icon>add</md-icon>
+      </md-button>
 
-    <tickets-vue class="tickets_class"
-                 :data="tickets"
-                 @reload="reloadData"></tickets-vue>
-  </div>
+      <tickets-vue
+         class="tickets_class"
+         :data="tickets"
+         @reload="reloadData"
+      ></tickets-vue>
+   </div>
 </template>
 
 <script>
@@ -45,65 +49,74 @@ import EventBus from "../../extensions/Event";
 import ticketsVue from "./components/tickets.vue";
 
 export default {
-  name: "manageTicketPanel",
-  components: {
-    "tickets-vue": ticketsVue,
-  },
-  data() {
-    return {
-      tickets: [],
-      selectedNode: undefined,
-    };
-  },
-  methods: {
-    async opened(option) {
-      this.selectedNode = option.selectedNode;
-      const nodeId = option.selectedNode.getId().get();
+   name: "manageTicketPanel",
+   components: {
+      "tickets-vue": ticketsVue,
+   },
+   data() {
+      return {
+         tickets: [],
+         selectedNode: undefined,
+      };
+   },
+   methods: {
+      async opened(option) {
+         this.selectedNode = option.selectedNode;
+         const nodeId = option.selectedNode.getId().get();
 
-      this.tickets = await this.getNodeTickets(nodeId);
-    },
+         this.tickets = await this.getNodeTickets(nodeId);
+      },
 
-    closed() {},
+      closed() {},
 
-    getNodeTickets(nodeId) {
-      return serviceTicketPersonalized
-        .getTicketsFromNode(nodeId)
-        .then((tickets) => {
-          const promises = tickets.map(async (ticket) => {
-            ticket.step = await this.getStep(ticket.stepId);
-            return ticket;
-          });
+      getNodeTickets(nodeId) {
+         return serviceTicketPersonalized
+            .getTicketsFromNode(nodeId)
+            .then((tickets) => {
+               const promises = tickets.map(async (ticket) => {
+                  ticket.step = await this.getStep(ticket);
+                  return ticket;
+               });
 
-          return Promise.all(promises);
-        });
-    },
+               return Promise.all(promises).then((result) => {
+                  return result.filter((el) => el.step);
+               });
+            });
+      },
 
-    getStep(id) {
-      const info = SpinalGraphService.getInfo(id);
-      if (info) return Promise.resolve(info.get());
+      async getStep(ticketInfo) {
+         const stepId = ticketInfo.stepId;
 
-      return SpinalGraphService.getNodeAsync(id).then((result) => {
-        return result.get();
-      });
-    },
+         const info = SpinalGraphService.getInfo(stepId);
+         if (info) return info.get();
 
-    async reloadData() {
-      const id = this.selectedNode.getId().get();
-      this.tickets = await this.getNodeTickets(id);
-    },
+         const parents = await SpinalGraphService.getParents(ticketInfo.id);
+         console.log(parents);
 
-    createTicket() {
-      spinalPanelManagerService.openPanel("selectProcessDialog", {
-        selectedNode: this.selectedNode,
-      });
-    },
-  },
+         const found = parents.find((el) => el.id.get() === stepId);
+         if (found) return found.get();
+         //  return SpinalGraphService.getNodeAsync(id).then((result) => {
+         //     return result.get();
+         //  });
+      },
+
+      async reloadData() {
+         const id = this.selectedNode.getId().get();
+         this.tickets = await this.getNodeTickets(id);
+      },
+
+      createTicket() {
+         spinalPanelManagerService.openPanel("selectProcessDialog", {
+            selectedNode: this.selectedNode,
+         });
+      },
+   },
 };
 </script>
 
 <style scoped>
 .my_content {
-  width: 100%;
-  height: calc(100% - 15px);
+   width: 100%;
+   height: calc(100% - 15px);
 }
 </style>
