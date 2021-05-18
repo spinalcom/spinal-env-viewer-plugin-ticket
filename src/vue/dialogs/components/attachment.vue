@@ -23,40 +23,59 @@ with this file. If not, see
 -->
 
 <template>
-  <div class="content">
-    <div class="md-caption">{{file.name}}</div>
-    <div class="md-caption delete"
-         @click="remove">X</div>
-  </div>
+   <div class="content">
+      <div
+         class="md-caption name"
+         v-tooltip="file.name"
+      >{{file.name}}</div>
+
+      <div
+         class="md-caption delete"
+         @click="remove"
+      >X</div>
+   </div>
 </template>
 
 <script>
 export default {
-  name: "attachment",
-  props: ["file"],
-  data() {
-    return {};
-  },
-  methods: {
-    remove() {
-      this.$emit("remove", this.file);
-    },
-  },
+   name: "attachment",
+   props: ["file"],
+   data() {
+      return {};
+   },
+   methods: {
+      remove() {
+         this.$emit("remove", this.file);
+      },
+   },
 };
 </script>
 
 <style scoped>
 .content {
-  display: flex;
-  font-weight: bold;
-  justify-content: space-between;
+   width: 95%;
+   margin: auto;
+   display: flex;
+   font-weight: bold;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.content .name {
+   width: calc(100% - 30px);
+   display: block;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
 }
 
 .content .delete {
-  margin-right: 30px;
+   width: 30px;
+   text-align: center;
+   color: #ff0000;
 }
 
 .content .delete:hover {
-  cursor: pointer;
+   cursor: pointer;
 }
 </style>

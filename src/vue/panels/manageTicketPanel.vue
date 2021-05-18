@@ -61,7 +61,9 @@ export default {
    },
    methods: {
       async opened(option) {
+         // console.log("option", option);
          this.selectedNode = option.selectedNode;
+         SpinalGraphService._addNode(option.selectedNode);
          const nodeId = option.selectedNode.getId().get();
 
          this.tickets = await this.getNodeTickets(nodeId);
@@ -73,6 +75,7 @@ export default {
          return serviceTicketPersonalized
             .getTicketsFromNode(nodeId)
             .then((tickets) => {
+               // console.log(tickets);
                const promises = tickets.map(async (ticket) => {
                   ticket.step = await this.getStep(ticket);
                   return ticket;
@@ -90,14 +93,15 @@ export default {
          const info = SpinalGraphService.getInfo(stepId);
          if (info) return info.get();
 
-         const parents = await SpinalGraphService.getParents(ticketInfo.id);
-         console.log(parents);
+         const parents = await SpinalGraphService.getParents(ticketInfo.id, []);
+         // console.log(parents);
 
          const found = parents.find((el) => el.id.get() === stepId);
          if (found) return found.get();
-         //  return SpinalGraphService.getNodeAsync(id).then((result) => {
-         //     return result.get();
-         //  });
+
+         // //  return SpinalGraphService.getNodeAsync(id).then((result) => {
+         // //     return result.get();
+         // //  });
       },
 
       async reloadData() {

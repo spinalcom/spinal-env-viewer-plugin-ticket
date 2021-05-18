@@ -23,18 +23,18 @@ with this file. If not, see
 -->
 
 <template>
-  <!-- <div class="logs">
+   <!-- <div class="logs">
     <div class="date">{{log.creationDate | formatDate}}</div>
     <div class="username">{{username.length > 0 ? username : "unknown"}}</div>
     <div class="content">{{texte}}</div>
   </div> -->
 
-  <md-table-row>
-    <md-table-cell>{{log.creationDate | formatDate}}</md-table-cell>
-    <md-table-cell>{{username.length > 0 ? username : "unknown"}}
-    </md-table-cell>
-    <md-table-cell>{{texte}}</md-table-cell>
-  </md-table-row>
+   <md-table-row>
+      <md-table-cell>{{log.creationDate | formatDate}}</md-table-cell>
+      <md-table-cell>{{username.length > 0 ? username : "unknown"}}
+      </md-table-cell>
+      <md-table-cell>{{texte}}</md-table-cell>
+   </md-table-row>
 </template>
 
 <script>
@@ -43,86 +43,96 @@ import moment from "moment";
 import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 
 export default {
-  name: "logVue",
-  props: ["log"],
-  data() {
-    return {
-      texte: "",
-      username: "",
-    };
-  },
-  mounted() {
-    this.formatEvent();
-  },
-  methods: {
-    async formatEvent() {
-      this.username =
-        this.log.user && this.log.user.name ? this.log.user.name : "";
+   name: "logVue",
+   props: ["log"],
+   data() {
+      return {
+         texte: "",
+         username: "",
+      };
+   },
+   mounted() {
+      this.formatEvent();
+   },
+   methods: {
+      async formatEvent() {
+         // this.username =
+         //    this.log.user && this.log.user.name ? this.log.user.name : "";
 
-      if (this.log.event == LOGS_EVENTS.creation) {
-        this.texte = "created";
-      } else if (this.log.event == LOGS_EVENTS.archived) {
-        this.texte = "archived";
-      } else if (this.log.event == LOGS_EVENTS.unarchive) {
-        this.texte = "unarchived";
-      } else {
-        const promises = this.log.steps.map((el) =>
-          SpinalGraphService.getNodeAsync(el)
-        );
+         if (this.log.user && this.log.user.name) {
+            this.username = this.log.user.name;
+         } else if (this.log.user && this.log.user.username) {
+            this.username = this.log.user.username;
+         } else {
+            this.username = "";
+         }
 
-        Promise.all(promises).then((result) => {
-          const step1 = result[0].name.get();
-          const step2 = result[1].name.get();
-          const pre = this.log.event == LOGS_EVENTS.moveToNext ? true : false;
-          // this.log.event == LOGS_EVENTS.moveToNext
-          //   ? "moving forward"
-          //   : "move back";
+         if (this.log.event == LOGS_EVENTS.creation) {
+            this.texte = "created";
+         } else if (this.log.event == LOGS_EVENTS.archived) {
+            this.texte = "archived";
+         } else if (this.log.event == LOGS_EVENTS.unarchive) {
+            this.texte = "unarchived";
+         } else {
+            const promises = this.log.steps.map((el) =>
+               SpinalGraphService.getNodeAsync(el)
+            );
 
-          this.texte = pre
-            ? `Passed from ${step1} to ${step2}`
-            : `Backward from ${step1} to ${step2}`;
-        });
-      }
-    },
-  },
-  filters: {
-    formatDate(data) {
-      // return moment(parseInt(data)).format("MMM Do YYYY");
-      return moment(data).fromNow();
-    },
-  },
+            Promise.all(promises).then((result) => {
+               const step1 = result[0].name.get();
+               const step2 = result[1].name.get();
+               // const pre = this.log.event == LOGS_EVENTS.moveToNext ? true : false;
+               // // this.log.event == LOGS_EVENTS.moveToNext
+               // //   ? "moving forward"
+               // //   : "move back";
+
+               // this.texte = pre
+               //   ? `Passed from ${step1} to ${step2}`
+               //   : `Backward from ${step1} to ${step2}`;
+
+               this.texte = `moved from ${step1} to ${step2}`;
+            });
+         }
+      },
+   },
+   filters: {
+      formatDate(data) {
+         // return moment(parseInt(data)).format("MMM Do YYYY");
+         return moment(data).fromNow();
+      },
+   },
 };
 </script>
 
 <style scoped>
 .logs {
-  width: 100%;
-  height: 50px;
-  display: flex;
-  justify-content: space-between;
+   width: 100%;
+   height: 50px;
+   display: flex;
+   justify-content: space-between;
 }
 
 .logs .date {
-  width: 30%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* color: #448aff; */
+   width: 30%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   /* color: #448aff; */
 }
 
 .logs .username {
-  width: 30%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* color: #448aff; */
+   width: 30%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   /* color: #448aff; */
 }
 
 .logs .content {
-  width: 39%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* color: #448aff; */
+   width: 39%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   /* color: #448aff; */
 }
 </style>

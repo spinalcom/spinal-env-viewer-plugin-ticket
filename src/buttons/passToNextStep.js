@@ -59,7 +59,7 @@ export class PassToNextStepButton extends SpinalContextApp {
     const ticketId = option.selectedNode.id.get();
     const processId = await getProcessId(ticketId);
 
-    console.log(contextId, ticketId, processId)
+    // console.log(contextId, ticketId, processId)
 
     if (contextId && ticketId && processId) {
       spinalPanelManagerService.openPanel("confirmationDialog", {

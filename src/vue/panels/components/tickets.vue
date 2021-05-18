@@ -81,10 +81,11 @@ with this file. If not, see
          <md-table-row
             slot="md-table-row"
             slot-scope="{ item }"
-            @click="isolateOnMaquette(item)"
+            @dblclick="isolateOnMaquette(item)"
             @mouseleave="deselectOnMaquette"
          >
             <md-table-cell
+               class="tableName"
                md-label="Name"
                md-sort-by="name"
             >
@@ -398,8 +399,10 @@ export default {
       userName: function (user) {
          if (user && user.name) {
             return user.name;
+         } else if (user && user.username) {
+            return user.username;
          }
-         return "";
+         return "unknow";
       },
    },
    watch: {
@@ -423,6 +426,10 @@ export default {
 .table_container .mdTable {
    width: 100%;
    height: calc(100% - 7px);
+}
+
+.table_container .mdTable .tableName {
+   cursor: pointer;
 }
 
 .table_container .mdTable .myToolbar {

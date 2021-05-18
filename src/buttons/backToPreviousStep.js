@@ -35,11 +35,11 @@ export class BackToPreviousStepButton extends SpinalContextApp {
   constructor() {
     super('Back to previous step',
       'backward the ticket to previous step', {
-        icon: "skip_previous",
-        icon_type: 'in',
-        backgroundColor: "#356BAB",
-        fontColor: '#ffffff'
-      })
+      icon: "skip_previous",
+      icon_type: 'in',
+      backgroundColor: "#356BAB",
+      fontColor: '#ffffff'
+    })
   }
 
 
@@ -59,7 +59,7 @@ export class BackToPreviousStepButton extends SpinalContextApp {
     const ticketId = option.selectedNode.id.get();
     const processId = await getProcessId(ticketId);
 
-    console.log(contextId, ticketId, processId)
+    // console.log(contextId, ticketId, processId)
 
     if (contextId && ticketId && processId) {
       spinalPanelManagerService.openPanel("confirmationDialog", {
@@ -68,12 +68,12 @@ export class BackToPreviousStepButton extends SpinalContextApp {
           serviceTicketPersonalized
             .moveTicketToPreviousStep(contextId, processId, ticketId,
               user).then((step) => {
-              const info = SpinalGraphService.getInfo(ticketId).get();
-              EventBUS.$emit(TICKET_EVENTS.changeStep, {
-                ticket: info,
-                step: step
-              });
-            })
+                const info = SpinalGraphService.getInfo(ticketId).get();
+                EventBUS.$emit(TICKET_EVENTS.changeStep, {
+                  ticket: info,
+                  step: step
+                });
+              })
         }
       })
     }

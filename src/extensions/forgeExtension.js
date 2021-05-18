@@ -3,7 +3,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 AutodeskNamespace("Autodesk.ADN.Viewing.Extension");
-Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
+Autodesk.ADN.Viewing.Extension.Color = function (viewer, options) {
   Autodesk.Viewing.Extension.call(this, viewer, options);
 
   // var overlayName = "temperary-colored-overlay";
@@ -28,9 +28,9 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
       })
     return promise;
   }
-  _self.load = function() {
+  _self.load = function () {
     initialize();
-    console.log("Autodesk.ADN.Viewing.Extension.Color loaded");
+    // console.log("Autodesk.ADN.Viewing.Extension.Color loaded");
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
     ///////////////////////////////////////////////////////////////////////////
     function newGuid() {
       var d = new Date().getTime();
-      var guid = "xxxx-xxxx-xxxx-xxxx-xxxx".replace(/[xy]/g, function(c) {
+      var guid = "xxxx-xxxx-xxxx-xxxx-xxxx".replace(/[xy]/g, function (c) {
         var r = ((d + Math.random() * 16) % 16) | 0;
         d = Math.floor(d / 16);
         return (c == "x" ? r : (r & 0x7) | 0x8).toString(16);
@@ -74,7 +74,7 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
     //
     //
     ///////////////////////////////////////////////////////////////////////////
-    Autodesk.Viewing.Viewer3D.prototype.setColorMaterial = function(
+    Autodesk.Viewing.Viewer3D.prototype.setColorMaterial = function (
       objectIds,
       color
     ) {
@@ -96,7 +96,7 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
             let it = _self.viewer.model.getData().instanceTree;
             it.enumNodeFragments(
               dbid,
-              function(fragId) {
+              function (fragId) {
                 var renderProxy = _self.viewer.impl.getRenderProxy(
                   _self.viewer.model,
                   fragId
@@ -125,7 +125,7 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
       });
     };
 
-    Autodesk.Viewing.Viewer3D.prototype.restoreColorMaterial = function(
+    Autodesk.Viewing.Viewer3D.prototype.restoreColorMaterial = function (
       objectIds
     ) {
       for (var i = 0; i < objectIds.length; i++) {
@@ -138,7 +138,7 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
 
         it.enumNodeFragments(
           dbid,
-          function(fragId) {
+          function (fragId) {
             var renderProxy = _self.viewer.impl.getRenderProxy(
               _self.viewer.model,
               fragId
@@ -159,7 +159,7 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
       }
     };
 
-    Autodesk.Viewing.Viewer3D.prototype.colorAllMaterials = function(
+    Autodesk.Viewing.Viewer3D.prototype.colorAllMaterials = function (
       objects) {
       for (var i = 0; i < objects.length; i++) {
         this.setColorMaterial(objects[i].ids, objects[i].color, objects[i]
@@ -167,7 +167,7 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
       }
     };
 
-    Autodesk.Viewing.Viewer3D.prototype.restoreAllMaterialColor = function(
+    Autodesk.Viewing.Viewer3D.prototype.restoreAllMaterialColor = function (
       objects
     ) {
       for (var i = 0; i < objects.length; i++) {
@@ -175,8 +175,8 @@ Autodesk.ADN.Viewing.Extension.Color = function(viewer, options) {
       }
     };
 
-    _self.unload = function() {
-      console.log("Autodesk.ADN.Viewing.Extension.Color unloaded");
+    _self.unload = function () {
+      // console.log("Autodesk.ADN.Viewing.Extension.Color unloaded");
       return true;
     };
 
