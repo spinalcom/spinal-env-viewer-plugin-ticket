@@ -32,7 +32,7 @@ with this file. If not, see
                        v-if="ticket"> -->
   <div class="mdDialogContainer">
     <div class="mdDialogContent"
-         v-if="ticket">
+         v-if="ticket && !isLoading">
       <div class="ticketDetail">
         <md-content class="details md-scrollbar">
           <div class="detail">
@@ -120,6 +120,11 @@ with this file. If not, see
         </div>
       </div>
     </div>
+
+    <div v-else-if="isLoading"
+         class="loading">
+      <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+    </div>
   </div>
   <!-- </md-dialog-content>
 
@@ -136,9 +141,6 @@ with this file. If not, see
 import { TICKET_PRIORITIES } from "spinal-service-ticket/dist/Constants";
 import { SpinalGraphService } from "spinal-env-viewer-graph-service";
 import { serviceTicketPersonalized } from "spinal-service-ticket";
-import { serviceDocumentation } from "spinal-env-viewer-plugin-documentation-service";
-import { FileExplorer } from "spinal-env-viewer-plugin-documentation/service/fileSystemExplorer.js";
-import { MESSAGE_TYPES } from "spinal-models-documentation";
 import { spinalIO } from "../../extensions/spinalIO";
 import messageComponentVue from "spinal-env-viewer-plugin-documentation/view/notes/components/messageComponent.vue";
 
@@ -171,6 +173,7 @@ export default {
       ticket: {},
       step: {},
       logs: [],
+      isLoading: false,
       messages: [],
       formatStepId: "",
       note: {
@@ -191,6 +194,8 @@ export default {
 
   methods: {
     async opened(option) {
+      this.isLoading = true;
+
       this.ticket = option.selectedNode;
       this.nodeInfo = {
         selectedNode: SpinalGraphService.getRealNode(option.selectedNode.id),
@@ -211,6 +216,8 @@ export default {
           selectedNode: SpinalGraphService.getInfo(this.ticket.id),
           context: SpinalGraphService.getInfo(contextId),
         };
+
+        this.isLoading = false;
 
         // this.messages = values[2];
       });
@@ -330,6 +337,14 @@ export default {
 .mdDialogContainer {
   width: 100%;
   height: calc(100% - 15px);
+}
+
+.mdDialogContainer .loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .mdDialogContainer .mdDialogContent {
