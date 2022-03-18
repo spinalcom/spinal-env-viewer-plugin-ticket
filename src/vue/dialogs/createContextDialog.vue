@@ -23,61 +23,80 @@ with this file. If not, see
 -->
 
 <template>
-  <md-dialog :md-active.sync="showDialog"
-             @md-closed="closeDialog(false)"
-             class="mdDialog">
-    <md-dialog-title class="mdDialogTitle">Create Ticket context
+  <md-dialog
+    :md-active.sync="showDialog"
+    @md-closed="closeDialog(false)"
+    class="mdDialog"
+  >
+    <md-dialog-title class="mdDialogTitle"
+      >Create Ticket context
     </md-dialog-title>
 
     <md-dialog-content class="mdDialogContainer">
-
-      <md-steppers :md-active-step.sync="stepper.active"
-                   @md-changed="changeStep"
-                   md-linear
-                   class="mySteppers">
-        <md-step class="mdStep"
-                 :id="STEPPERS_DATA.context"
-                 md-label="Context"
-                 :md-done.sync="stepper.first">
+      <md-steppers
+        :md-active-step.sync="stepper.active"
+        @md-changed="changeStep"
+        md-linear
+        class="mySteppers"
+      >
+        <md-step
+          class="mdStep"
+          :id="STEPPERS_DATA.context"
+          md-label="Context"
+          :md-done.sync="stepper.first"
+        >
           <md-content class="contents">
             <md-field>
-              <label>Context name</label>
-              <md-input v-model="inputValue"
-                        ref="nameTextField"></md-input>
+              <label>Context Name</label>
+              <md-input v-model="inputValue" ref="nameTextField"></md-input>
             </md-field>
+
+            <md-autocomplete
+              v-model="contextType"
+              :md-options="contextTypeList"
+              md-dense
+            >
+              <label>Context Type</label>
+            </md-autocomplete>
           </md-content>
-
         </md-step>
 
-        <md-step class="mdStep"
-                 :id="STEPPERS_DATA.steps"
-                 md-label="Steps"
-                 :md-done.sync="stepper.second">
-
-          <sortable-list :items="steps"
-                         ref="draggableComponent"
-                         @addStep="addStep"
-                         @delete="deleteItem"></sortable-list>
-
+        <md-step
+          class="mdStep"
+          :id="STEPPERS_DATA.steps"
+          md-label="Steps"
+          :md-done.sync="stepper.second"
+        >
+          <sortable-list
+            :items="steps"
+            ref="draggableComponent"
+            @addStep="addStep"
+            @delete="deleteItem"
+          ></sortable-list>
         </md-step>
-
       </md-steppers>
-
     </md-dialog-content>
 
     <md-dialog-actions>
-      <md-button class="md-primary"
-                 @click="closeDialog(false)">Close</md-button>
+      <md-button class="md-primary" @click="closeDialog(false)"
+        >Close</md-button
+      >
 
-      <md-button class="md-primary"
-                 v-if="stepper.active === this.STEPPERS_DATA.context"
-                 :disabled="!(inputValue.trim().length > 0)"
-                 @click="PassToSecondStep">Next</md-button>
+      <md-button
+        class="md-primary"
+        v-if="stepper.active === this.STEPPERS_DATA.context"
+        :disabled="!(inputValue.trim().length > 0)"
+        @click="PassToSecondStep"
+        >Next</md-button
+      >
 
-      <md-button v-if="stepper.active === this.STEPPERS_DATA.steps"
-                 :disabled="disabledButton()"
-                 class="md-primary"
-                 @click="closeDialog(true)">Save</md-button>
+      <md-button
+        v-if="stepper.active === this.STEPPERS_DATA.steps"
+        :disabled="disabledButton()"
+        class="md-primary"
+        @click="closeDialog(true)"
+        >Save</md-button
+      >
     </md-dialog-actions>
 
     <!-- <form class="dialogForm"
@@ -118,7 +137,10 @@ export default {
     return {
       showDialog: true,
       inputValue: "",
+      contextTypeList: ["Ticket", "Alarm"],
+      contextType: "Ticket",
       steps: [],
+      alarmSteps: [{name: "En cours", color:"#FF0000", order: 1}, {name: "Acquittées", color: "#00FF00",order: 2} /*, {name: "Archivées", color: "#CECECE", order: 3}*/],
       stepper: {
         active: this.STEPPERS_DATA.context,
         first: false,
@@ -137,7 +159,8 @@ export default {
       if (res.closeResult && value.length > 0) {
         const context = await serviceTicketPersonalized.createContext(
           value,
-          res.steps
+          res.steps,
+          this.contextType
         );
         EventBus.$emit("ticketContextCreated", context.getId().get());
       }
@@ -185,11 +208,15 @@ export default {
     },
 
     PassToSecondStep() {
+      if (this.contextType == "Alarm"){
+        this.steps = this.alarmSteps;
+      }
       this.stepper.first = true;
       this.stepper.active = this.STEPPERS_DATA.steps;
     },
 
     addStep(res) {
+      console.log(res);
       this.steps = [...this.steps, res];
     },
 
@@ -230,9 +257,10 @@ export default {
 .mdDialog .mdDialogContainer .mdStep .contents {
   width: 100%;
   height: 100%;
-  display: flex;
+  /* display: flex; */
   align-items: center;
   overflow: auto;
+  flex-direction: column;
 }
 
 /* .mdDialog .mdDialogContainer .contents.contextName {
