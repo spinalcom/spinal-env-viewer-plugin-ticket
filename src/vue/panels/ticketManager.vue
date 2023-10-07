@@ -24,8 +24,7 @@ with this file. If not, see
 
 <template>
   <md-content class="ticket_container">
-    <div class="breadcrumb"
-         v-if="contextSelected">
+    <div class="breadcrumb" v-if="contextSelected">
       <!-- <div class="breadcrumbItem"
            v-for="(breadcrumb,index) in breadcrumbs"
            :key="breadcrumb.id"
@@ -37,53 +36,57 @@ with this file. If not, see
         <md-icon>arrow_back</md-icon>
         Back
       </md-button>
-
     </div>
 
     <div class="data-content">
-      <list-item v-if="pageDisplayed === PAGES.contexts"
-                 :data="data"
-                 @select="selectContext"></list-item>
+      <list-item
+        v-if="pageDisplayed === PAGES.contexts"
+        :data="data"
+        @select="selectContext"
+      ></list-item>
 
-      <list-item v-else-if="pageDisplayed === PAGES.processes"
-                 :data="processes"
-                 @select="selectProcess"></list-item>
+      <list-item
+        v-else-if="pageDisplayed === PAGES.processes"
+        :data="processes"
+        @select="selectProcess"
+      ></list-item>
 
-      <list-item v-else-if="pageDisplayed === PAGES.steps"
-                 :data="steps"
-                 @select="selectStep">
-
+      <list-item
+        v-else-if="pageDisplayed === PAGES.steps"
+        :data="steps"
+        @select="selectStep"
+      >
         <md-list-item @click="selectAllTickets">
           <div class="stepsColor"></div>
           <span class="md-list-item-text">All</span>
           <md-icon>keyboard_arrow_right</md-icon>
         </md-list-item>
-
       </list-item>
 
-      <tickets-vue v-else-if="pageDisplayed === PAGES.tickets"
-                   :data="tickets"
-                   @reload="reloadData"></tickets-vue>
-
+      <tickets-vue
+        v-else-if="pageDisplayed === PAGES.tickets"
+        :data="tickets"
+        @reload="reloadData"
+      ></tickets-vue>
     </div>
   </md-content>
 </template>
 
 <script>
-import { utilities } from "./service/utilities";
-import ListItem from "./components/listItem.vue";
+import { utilities } from './service/utilities';
+import ListItem from './components/listItem.vue';
 // import processesVue from "./components/processes.vue";
 // import stepsVue from "./components/steps.vue";
-import ticketsVue from "./components/tickets.vue";
+import ticketsVue from './components/tickets.vue';
 
 export default {
-  name: "ticketManagerPanel",
+  name: 'ticketManagerPanel',
   components: {
-    "list-item": ListItem,
+    'list-item': ListItem,
     // "contexts-vue": contextsVue,
     // "processes-vue": processesVue,
     // "steps-vue": stepsVue,
-    "tickets-vue": ticketsVue,
+    'tickets-vue': ticketsVue,
   },
   data() {
     this.PAGES = {
@@ -98,10 +101,6 @@ export default {
       contextSelected: undefined,
       processSelected: undefined,
       stepSelected: undefined,
-      // breadcrumbs: [],
-      /////////////////////////////////
-      //            Listes           //
-      /////////////////////////////////
       processes: [],
       steps: [],
       tickets: [],
@@ -117,63 +116,44 @@ export default {
       this.getProcessId(params);
       this.getStepId(params);
     },
-
-    //////////////////////////////////////////
-    //              SELECT                  //
-    //////////////////////////////////////////
     selectContext(contextId) {
       this.contextSelected = contextId;
       this.pageDisplayed = this.PAGES.processes;
     },
-
     selectProcess(processId) {
       this.processSelected = processId;
       this.pageDisplayed = this.PAGES.steps;
     },
-
     selectStep(stepId) {
       this.stepSelected = stepId;
       this.pageDisplayed = this.PAGES.tickets;
     },
-
     selectAllTickets() {
       this.pageDisplayed = this.PAGES.tickets;
       this.formatAllTickets();
     },
-
     formatAllTickets() {
       const res = [];
-
       for (const step of this.steps) {
         res.push(...this._formatTickets(step));
       }
-
       this.tickets = res;
     },
-    //////////////////////////////////////////
-    //              UPDATE                  //
-    //////////////////////////////////////////
-
     async updateData() {
       this.data = await utilities.getAllData();
     },
-
     updateProcesses() {
       const find = this.data.find((el) => el.id === this.contextSelected);
       if (find) {
-        // this.breadcrumbs.push(find);
         this.processes = find.processes;
       }
     },
-
     updateSteps() {
       const find = this.processes.find((el) => el.id === this.processSelected);
       if (find) {
-        // this.breadcrumbs.push(find);
         this.steps = find.steps;
       }
     },
-
     updateTickets() {
       if (this.stepSelected) {
         const find = this.steps.find((el) => el.id === this.stepSelected);
@@ -185,16 +165,10 @@ export default {
         this.formatAllTickets();
       }
     },
-
-    //////////////////////////////////////////
-    //              RESET                   //
-    //////////////////////////////////////////
-
     resetProcesses() {
       this.contextSelected = undefined;
       this.processes = [];
     },
-
     resetSteps() {
       this.processSelected = undefined;
       this.steps = [];
@@ -203,57 +177,47 @@ export default {
       this.tickets = [];
       this.stepSelected = undefined;
     },
-
     goBack() {
       switch (this.pageDisplayed) {
         case this.PAGES.processes:
           this.pageDisplayed = this.PAGES.contexts;
           this.resetProcesses();
           break;
-
         case this.PAGES.steps:
           this.pageDisplayed = this.PAGES.processes;
           this.resetSteps();
           break;
-
         case this.PAGES.tickets:
           this.pageDisplayed = this.PAGES.steps;
           this.resetTickets();
           break;
-
         default:
           break;
       }
     },
-
-    /////////////////////////////////////////
     _formatTickets(step) {
       return step.tickets.map((el) => {
-        el["step"] = step;
-        el["contextId"] = this.contextSelected;
+        el['step'] = step;
+        el['contextId'] = this.contextSelected;
         return el;
       });
     },
-
     async reloadData() {
       await this.updateData();
     },
-
     getContextId(params) {
       this.selectContext(params.context.id);
     },
     getProcessId(params) {
       if (params.context.id === params.selectedNode.id) return;
-
       let nodeId =
-        typeof params.selectedNode.processId === "undefined"
+        typeof params.selectedNode.processId === 'undefined'
           ? params.selectedNode.id
           : params.selectedNode.processId;
-
       this.selectProcess(nodeId);
     },
     getStepId(params) {
-      if (typeof params.selectedNode.processId !== "undefined")
+      if (typeof params.selectedNode.processId !== 'undefined')
         this.selectStep(params.selectedNode.id);
     },
   },
